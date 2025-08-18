@@ -1,0 +1,1 @@
+ALTER TABLE "user" ADD COLUMN "riot_ids" text[] DEFAULT '{}'::text[] NOT NULL;

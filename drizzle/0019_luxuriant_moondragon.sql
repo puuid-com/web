@@ -1,0 +1,1 @@
+ALTER TABLE "id" ADD COLUMN "region" text NOT NULL;

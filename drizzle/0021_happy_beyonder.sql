@@ -1,0 +1,1 @@
+ALTER TABLE "id" RENAME COLUMN "region" TO "platform";

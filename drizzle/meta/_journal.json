@@ -1,0 +1,209 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1754477487121,
+      "tag": "0000_tired_skrulls",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1754480573614,
+      "tag": "0001_lovely_mimic",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1754527708324,
+      "tag": "0002_next_black_crow",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1754528411200,
+      "tag": "0003_dashing_starbolt",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1754529116250,
+      "tag": "0004_sweet_valeria_richards",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1755033498946,
+      "tag": "0005_empty_jubilee",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1755034133165,
+      "tag": "0006_bright_rogue",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1755034204387,
+      "tag": "0007_loose_maestro",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1755036667601,
+      "tag": "0008_nasty_talisman",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1755036955318,
+      "tag": "0009_steep_king_cobra",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1755037520227,
+      "tag": "0010_tidy_giant_girl",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1755037610858,
+      "tag": "0011_smooth_mastermind",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1755037639644,
+      "tag": "0012_polite_yellowjacket",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1755037760706,
+      "tag": "0013_thin_revanche",
+      "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1755120310835,
+      "tag": "0014_mixed_mister_fear",
+      "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "7",
+      "when": 1755120343702,
+      "tag": "0015_flippant_krista_starr",
+      "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1755124021626,
+      "tag": "0016_vengeful_marvel_zombies",
+      "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1755124135125,
+      "tag": "0017_confused_phantom_reporter",
+      "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1755163410533,
+      "tag": "0018_easy_bushwacker",
+      "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1755174144467,
+      "tag": "0019_luxuriant_moondragon",
+      "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1755174215450,
+      "tag": "0020_sour_morbius",
+      "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1755176798487,
+      "tag": "0021_happy_beyonder",
+      "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1755177557411,
+      "tag": "0022_blue_vin_gonzales",
+      "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1755259063792,
+      "tag": "0023_overjoyed_starfox",
+      "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1755268970924,
+      "tag": "0024_parallel_viper",
+      "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1755275470235,
+      "tag": "0025_opposite_daredevil",
+      "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1755275946785,
+      "tag": "0026_old_terrax",
+      "breakpoints": true
+    },
+    {
+      "idx": 27,
+      "version": "7",
+      "when": 1755276330440,
+      "tag": "0027_clever_clint_barton",
+      "breakpoints": true
+    },
+    {
+      "idx": 28,
+      "version": "7",
+      "when": 1755276390567,
+      "tag": "0028_perfect_thunderball",
+      "breakpoints": true
+    }
+  ]
+}

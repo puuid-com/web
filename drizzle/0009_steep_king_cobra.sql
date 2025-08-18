@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX "uq_le_puuid_queue_day" ON "league_entries" USING btree ("puuid","queue_type",(( "created_at" at time zone 'UTC' )::date));

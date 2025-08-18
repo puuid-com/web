@@ -1,0 +1,1 @@
+ALTER TABLE "match_summoner" ALTER COLUMN "team_id" SET DATA TYPE integer;

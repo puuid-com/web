@@ -1,0 +1,56 @@
+{
+  "name": "start",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/pg": "^8.15.5",
+    "@types/react": "^19.1.10",
+    "@types/react-dom": "^19.1.7",
+    "@vitejs/plugin-react": "^5.0.0",
+    "bun": "^1.2.20",
+    "drizzle-kit": "^0.31.4",
+    "i": "^0.3.7",
+    "tw-animate-css": "^1.3.7",
+    "vite-tsconfig-paths": "^5.1.4"
+  },
+  "peerDependencies": {
+    "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "@radix-ui/react-label": "^2.1.7",
+    "@radix-ui/react-slot": "^1.2.3",
+    "@radix-ui/react-tooltip": "^1.2.8",
+    "@t3-oss/env-core": "^0.13.8",
+    "@tailwindcss/postcss": "^4.1.12",
+    "@tailwindcss/vite": "^4.1.12",
+    "@tanstack/react-router": "^1.131.26",
+    "@tanstack/react-start": "^1.131.26",
+    "better-auth": "^1.3.7",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "dotenv": "^17.2.1",
+    "drizzle-orm": "^0.44.4",
+    "install": "^0.13.0",
+    "ky": "^1.8.2",
+    "lucide-react": "^0.540.0",
+    "minio": "^8.0.5",
+    "next-themes": "^0.4.6",
+    "pg": "^8.16.3",
+    "postcss": "^8.5.6",
+    "postgres": "^3.4.7",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "sonner": "^2.0.7",
+    "tailwind-merge": "^3.3.1",
+    "tailwindcss": "^4.1.12",
+    "uuidv7": "^1.0.2",
+    "valibot": "^1.1.0",
+    "vite": "^7.1.2"
+  }
+}

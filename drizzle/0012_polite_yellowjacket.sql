@@ -1,0 +1,1 @@
+ALTER TABLE "league_entries" ADD COLUMN "created_day" date GENERATED ALWAYS AS ((created_at at time zone 'UTC')::date) STORED;

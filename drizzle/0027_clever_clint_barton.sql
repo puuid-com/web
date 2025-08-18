@@ -1,0 +1,1 @@
+ALTER TABLE "match_summoner" ADD COLUMN "individual_position" text NOT NULL;

@@ -1,0 +1,37 @@
+import { createEnv } from "@t3-oss/env-core";
+import * as v from "valibot";
+
+export const serverEnv = createEnv({
+  server: {
+    RIOT_API_KEY: v.string(),
+    RIOT_DEFAULT_ROUTING_VALUE: v.picklist([
+      "americas",
+      "europe",
+      "asia",
+      "sea",
+    ]),
+    RIOT_CLIENT_ID: v.string(),
+    RIOT_CLIENT_SECRET: v.string(),
+
+    CLIENT_ORIGIN: v.string(),
+
+    R2_END_POINT: v.string(),
+    R2_ACCESS_KEY: v.string(),
+    R2_SECRET_KEY: v.string(),
+    R2_TOKEN: v.string(),
+
+    DATABASE_URL: v.string(),
+
+    GITHUB_CLIENT_ID: v.string(),
+    GITHUB_CLIENT_SECRET: v.string(),
+
+    DISCORD_CLIENT_ID: v.string(),
+    DISCORD_CLIENT_SECRET: v.string(),
+
+    TWITCH_CLIENT_ID: v.string(),
+    TWITCH_CLIENT_SECRET: v.string(),
+  },
+  extends: [],
+  runtimeEnv: process.env,
+  emptyStringAsUndefined: true,
+});

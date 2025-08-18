@@ -1,0 +1,1 @@
+ALTER TABLE "id" ADD COLUMN "is_main" boolean DEFAULT false NOT NULL;
