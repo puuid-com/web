@@ -14,7 +14,7 @@ type output = v.InferOutput<typeof test>;
 
 export const MatchIDsQueryParamsSchema = v.object({
   queue: optionalStringToNumber,
-  type: optionalStringToNumber,
+  type: v.optional(v.string()),
   startTime: optionalStringToNumber,
   endTime: optionalStringToNumber,
   count: optionalStringToNumberWithDefault(10),
@@ -34,7 +34,7 @@ export type OutputPagedMatchIDsQueryParams = v.InferOutput<
 
 // You can place this above or below the MatchService class, or in a types file.
 
-export type FormattedMatchSummonerDTO = {
+export type FormattedMatchSummonerDTOType = {
   puuid: string;
   gameName: string;
   tagLine: string;
@@ -65,11 +65,11 @@ export type FormattedMatchSummonerDTO = {
   spellIds: [number, number];
 };
 
-export type FormattedMatchDTO = {
+export type FormattedMatchDTOType = {
   matchId: string;
   gameCreation: number;
   gameDuration: number;
   queueId: number;
   platformId: string;
-  summoners: Array<FormattedMatchSummonerDTO>;
+  summoners: Array<FormattedMatchSummonerDTOType>;
 };

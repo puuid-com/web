@@ -1,3 +1,4 @@
+import type { QueueType } from "@/server/api-route/riot/league/LeagueDTO";
 import { user } from "@/server/db/auth-schema";
 import type { LolRegionType } from "@/server/types/riot/common";
 import { relations, sql } from "drizzle-orm";
@@ -25,7 +26,7 @@ export const leagueEntryTable = pgTable(
     leagueId: text("league_id").notNull(),
     puuid: text("puuid").notNull(),
 
-    queueType: text("queue_type").notNull(),
+    queueType: text("queue_type").$type<QueueType>().notNull(),
     tier: text("tier").notNull(),
     rank: text("rank"),
 
@@ -65,6 +66,9 @@ export const summonerTable = pgTable(
       onDelete: "cascade",
     }),
     isMain: boolean("is_main").notNull().default(false),
+    refreshedAt: timestamp("refreshed_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
   },
   (t) => [uniqueIndex("uq_ids_riot_id").on(t.riotId)]
 );
@@ -73,52 +77,3 @@ export type SummonerType = typeof summonerTable.$inferSelect;
 export type InsertSummonerType = typeof summonerTable.$inferInsert;
 
 export type CachedLeagueType = typeof leagueEntryTable.$inferSelect;
-
-export const matchTable = pgTable(
-  "match",
-  {
-    id: text("id").primaryKey(),
-    queueId: integer("queue_id").notNull(),
-    type: text("type").notNull(),
-    gameStartAt: timestamp("game_start_at", { withTimezone: true }).notNull(),
-    gameDurationSec: integer("game_duration_sec").notNull(),
-    r2Key: text("r2Key").notNull(),
-
-    createdAt: timestamp("created_at", { withTimezone: true })
-      .notNull()
-      .defaultNow(),
-  },
-  (t) => [uniqueIndex("uq_match_id").on(t.id)]
-);
-export type MatchType = typeof matchTable.$inferSelect;
-export const matchRelations = relations(matchTable, ({ many }) => ({
-  summoners: many(summonerTable),
-}));
-
-export const matchSummoner = pgTable(
-  "match_summoner",
-  {
-    matchId: text("match_id").notNull(),
-    puuid: text("puuid").notNull(),
-    teamId: integer("team_id").notNull(),
-    win: boolean("win").notNull(),
-    championId: integer("champion_id").notNull(),
-
-    individualPosition: text("individual_position").notNull(),
-
-    kills: integer("kills").notNull(),
-    deaths: integer("deaths").notNull(),
-    assists: integer("assists").notNull(),
-    cs: integer("cs").notNull(),
-    gold: integer("gold").notNull(),
-    damageDealt: integer("damage_dealt").notNull(),
-    damageTaken: integer("damage_taken").notNull(),
-  },
-  (table) => [
-    primaryKey({ columns: [table.matchId, table.puuid] }),
-    index("idx_match_summoner_puuid").on(table.puuid),
-    index("idx_match_summoner_champion").on(table.championId),
-    index("idx_match_summoner_match").on(table.matchId),
-  ]
-);
-export type MatchSummonerType = typeof matchSummoner.$inferSelect;

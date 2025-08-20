@@ -5,10 +5,15 @@ import {
   createRootRoute,
   HeadContent,
   Scripts,
+  createRootRouteWithContext,
 } from "@tanstack/react-router";
+import { QueryClient } from "@tanstack/react-query";
 import appCss from "@/client/styles/app.css?url";
+import { Toaster } from "sonner";
 
-export const Route = createRootRoute({
+export const Route = createRootRouteWithContext<{
+  queryClient: QueryClient;
+}>()({
   head: () => ({
     meta: [
       {
@@ -31,6 +36,7 @@ function RootComponent() {
   return (
     <RootDocument>
       <Outlet />
+      <Toaster richColors />
     </RootDocument>
   );
 }
@@ -43,7 +49,7 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
       </head>
       <body
         className={
-          "w-screen h-screen flex dark bg-neutral-950 text-white justify-center items-center"
+          "flex dark bg-neutral-950 text-white justify-center items-center border-spacing-10"
         }
       >
         {children}

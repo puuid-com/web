@@ -1,4 +1,4 @@
-import { serverEnv } from "@/lib/env/server";
+import { serverEnv } from "@/server/lib/env/server";
 import { serverOnly } from "@tanstack/react-start";
 import ky from "ky";
 

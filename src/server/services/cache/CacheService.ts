@@ -1,4 +1,4 @@
-import { serverEnv } from "@/lib/env/server";
+import { serverEnv } from "@/server/lib/env/server";
 import { Client } from "minio";
 
 export type CacheDir = string;

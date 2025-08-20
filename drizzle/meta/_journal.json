@@ -204,6 +204,27 @@
       "when": 1755276390567,
       "tag": "0028_perfect_thunderball",
       "breakpoints": true
+    },
+    {
+      "idx": 29,
+      "version": "7",
+      "when": 1755631867856,
+      "tag": "0029_pink_the_hand",
+      "breakpoints": true
+    },
+    {
+      "idx": 30,
+      "version": "7",
+      "when": 1755632436179,
+      "tag": "0030_spotty_groot",
+      "breakpoints": true
+    },
+    {
+      "idx": 31,
+      "version": "7",
+      "when": 1755706654062,
+      "tag": "0031_mute_payback",
+      "breakpoints": true
     }
   ]
 }

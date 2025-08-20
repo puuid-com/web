@@ -1,4 +1,4 @@
-import { lolClient } from "@/lib/lolClient";
+import { lolClient } from "@/client/lib/lolClient";
 import {
   RateLimiterService,
   type RateLimit,
@@ -44,7 +44,7 @@ export class ApiRoute<S extends Schema, P> {
 
     const url = this.getUrl(param);
 
-    console.log("> \t", url);
+    console.log("🚨🚨 \t", url);
 
     return lolClient()(url, options).json();
   }
@@ -61,6 +61,10 @@ export class ApiRoute<S extends Schema, P> {
 
       return this.parseData(data);
     } catch (e) {
+      console.error(e);
+
+      process.exit(1);
+
       throw e;
     }
   }

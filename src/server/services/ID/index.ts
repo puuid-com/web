@@ -1,4 +1,4 @@
-import { db } from "@/server/db";
+import { db, type TransactionType } from "@/server/db";
 import type { user } from "@/server/db/auth-schema";
 import { summonerTable, type SummonerType } from "@/server/db/schema";
 import type {
@@ -11,19 +11,28 @@ import { SummonerService } from "@/server/services/Summoner";
 import { and, count, eq } from "drizzle-orm";
 
 export class IDService {
-  static async getByRiotID(
+  static async getIds() {
+    return db.select().from(summonerTable);
+  }
+
+  static async getByRiotIDTx(
+    tx: TransactionType,
     riotID: SummonerType["riotId"],
     refresh: boolean = false
   ) {
     const identifications = getPartsFromRiotID(riotID);
 
-    const cachedRows = await db
-      .select()
-      .from(summonerTable)
-      .where(eq(summonerTable.riotId, identifications.riotID))
-      .limit(1);
+    const t0 = performance.now();
 
-    const cachedData = cachedRows.length === 1 ? cachedRows[0] : null;
+    const cachedData = refresh
+      ? undefined
+      : await tx.query.summonerTable.findFirst({
+          where: eq(summonerTable.riotId, identifications.riotID),
+        });
+
+    const t1 = performance.now();
+
+    console.log(`IDService.getByRiotIDTx took ${t1 - t0}ms`);
 
     if (cachedData && !refresh) {
       return cachedData;
@@ -32,14 +41,15 @@ export class IDService {
     const account = await AccountService.getAccountByRiotID(identifications);
     const accountRegion = await AccountService.getAccountRegion(account.puuid);
 
-    return this.handleIDCreationFromAccount(account, accountRegion);
+    return this.handleIDCreationFromAccountTx(tx, account, accountRegion);
   }
 
-  static async getByPuuid(
+  static async getByPuuidTx(
+    tx: TransactionType,
     puuid: SummonerType["puuid"],
     refresh: boolean = false
   ): Promise<SummonerType> {
-    const cachedRows = await db
+    const cachedRows = await tx
       .select()
       .from(summonerTable)
       .where(eq(summonerTable.puuid, puuid))
@@ -54,10 +64,11 @@ export class IDService {
     const account = await AccountService.getAccountByPuuid({ puuid });
     const accountRegion = await AccountService.getAccountRegion(account.puuid);
 
-    return this.handleIDCreationFromAccount(account, accountRegion);
+    return this.handleIDCreationFromAccountTx(tx, account, accountRegion);
   }
 
-  static async handleIDCreationFromAccount(
+  static async handleIDCreationFromAccountTx(
+    tx: TransactionType,
     account: AccountDTOType,
     accountRegion: AccountRegionDTOType,
     userId: typeof user.$inferSelect.id | null = null,
@@ -77,9 +88,10 @@ export class IDService {
       createdAt: new Date(),
       verifiedUserId: userId,
       isMain: isMain,
+      refreshedAt: new Date(),
     };
 
-    await db.insert(summonerTable).values(data).onConflictDoUpdate({
+    await tx.insert(summonerTable).values(data).onConflictDoUpdate({
       target: summonerTable.puuid,
       set: data,
     });
@@ -120,8 +132,11 @@ export class IDService {
       .returning();
   }
 
-  static async IDIsVerified(puuid: SummonerType["puuid"]) {
-    const data = await db
+  static async IDIsVerifiedTx(
+    tx: TransactionType,
+    puuid: SummonerType["puuid"]
+  ) {
+    const data = await tx
       .select()
       .from(summonerTable)
       .where(eq(summonerTable.puuid, puuid));
@@ -133,17 +148,18 @@ export class IDService {
     return !!id.verifiedUserId;
   }
 
-  static async verifyID(
+  static async verifyIDTx(
+    tx: TransactionType,
     userID: typeof user.$inferSelect.id,
     account: AccountDTOType
   ) {
-    const isAlreadyVerified = await this.IDIsVerified(account.puuid);
+    const isAlreadyVerified = await this.IDIsVerifiedTx(tx, account.puuid);
 
     if (isAlreadyVerified) {
       throw new Error("Account is already verified by a user.");
     }
 
-    const [data] = await db
+    const [data] = await tx
       .select({ count: count() })
       .from(summonerTable)
       .where(eq(summonerTable.verifiedUserId, userID));
@@ -152,7 +168,8 @@ export class IDService {
 
     const accountRegion = await AccountService.getAccountRegion(account.puuid);
 
-    return this.handleIDCreationFromAccount(
+    return this.handleIDCreationFromAccountTx(
+      tx,
       account,
       accountRegion,
       userID,

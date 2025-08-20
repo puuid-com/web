@@ -7,7 +7,7 @@ import * as v from "valibot";
 
 export const LeagueV4ByPuuid = new ApiRoute({
   getUrl: (params: { region: LolRegionType; puuid: AccountDTOType["puuid"] }) =>
-    `https://${params.region}.api.riotgames.com/league/v4/entries/by-puuid/${params.puuid}`,
+    `https://${params.region}.api.riotgames.com/lol/league/v4/entries/by-puuid/${params.puuid}`,
   key: `"league-v4-by-puuid"`,
   limits: [
     parseRateLime("20000 requests every 10 seconds"),

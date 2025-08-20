@@ -1,4 +1,3 @@
-import type { MatchParticipantDTOType } from "@/server/api-route/riot/match/MatchDTO";
 import type { SummonerType } from "@/server/db/schema";
 import {
   VersionsResponseSchema,
@@ -9,6 +8,13 @@ import {
 } from "@/client/services/DDragon/types";
 import ky from "ky";
 import * as v from "valibot";
+import type { MatchSummonerRowType } from "@/server/db/match-schema";
+
+export type DDragonMetadata = {
+  champions: ChampionsResponseType["data"];
+  latest_version: string;
+  summoner_spells: FormattedSummonerSpellsType;
+};
 
 export class DDragonService {
   private static async getVersions() {
@@ -21,48 +27,63 @@ export class DDragonService {
 
   static async getLatestVersion() {
     const versions = await this.getVersions();
-
     return versions[0]!;
   }
 
   static async getChampionsData(version: string) {
     const url = `https://ddragon.leagueoflegends.com/cdn/${version}/data/en_US/champion.json`;
-
     const response = await ky.get(url).json();
-
     return v.parse(ChampionsResponseSchema, response).data;
   }
 
   static async getSpells(version: string) {
     const url = `https://ddragon.leagueoflegends.com/cdn/${version}/data/en_US/summoner.json`;
-
-    // Fetch the data using ky
     const response = await ky.get(url).json();
-
-    // Parse the response with valibot
     const parsed = v.parse(SummonerSpellsResponseSchema, response);
 
-    // Reshape: key is the numeric 'key' (id), value is the summoner data
     const reshaped: FormattedSummonerSpellsType = {};
-
     for (const value of Object.values(parsed.data)) {
       reshaped[value.key] = value;
     }
-
     return reshaped;
   }
 
-  static async getUrls(version: string) {
-    return {
-      profil_icon: `https://ddragon.leagueoflegends.com/cdn/${version}/img/profileicon/{id}.png`,
-      champion_image: `https://ddragon.leagueoflegends.com/cdn/${version}/img/champion/{id}`,
-      summoner_spell_icon: `https://ddragon.leagueoflegends.com/cdn/${version}/img/spell/{id}`,
-      item_icon: `https://ddragon.leagueoflegends.com/cdn/${version}/img/item/{id}.png`,
-      rune_icon: ``,
-    };
+  static getProfileIconUrl(version: string, id: SummonerType["profileIconId"]) {
+    return `https://ddragon.leagueoflegends.com/cdn/${version}/img/profileicon/${id}.png`;
   }
 
-  static async getMetadata() {
+  static getChampionName(champions: ChampionsResponseType["data"], id: number) {
+    return champions[id]!.name;
+  }
+
+  static getItemIconUrl(version: string, id: number) {
+    return `https://ddragon.leagueoflegends.com/cdn/${version}/img/item/${id}.png`;
+  }
+
+  static getChampionIconUrl(
+    version: string,
+    imageFull: ChampionsResponseType["data"][number]["image"]["full"]
+  ) {
+    return `https://ddragon.leagueoflegends.com/cdn/${version}/img/champion/${imageFull}`;
+  }
+
+  static getChampionIconUrlFromParticipant(
+    champions: ChampionsResponseType["data"],
+    version: string,
+    p: MatchSummonerRowType
+  ) {
+    return `https://ddragon.leagueoflegends.com/cdn/${version}/img/champion/${champions[p.championId]!.image.full}`;
+  }
+
+  static getSummonerSpellIconUrl(
+    summoner_spells: FormattedSummonerSpellsType,
+    version: string,
+    id: MatchSummonerRowType["spellIds"][number]
+  ) {
+    return `https://ddragon.leagueoflegends.com/cdn/${version}/img/spell/${summoner_spells[id]!.image.full}`;
+  }
+
+  static async getMetadata(): Promise<DDragonMetadata> {
     const version = await DDragonService.getLatestVersion();
 
     const [spells, champions] = await Promise.all([
@@ -71,71 +92,13 @@ export class DDragonService {
     ]);
 
     return {
-      champions: champions,
+      champions,
       latest_version: version,
       summoner_spells: spells,
-      urls: {
-        profil_icon: `https://ddragon.leagueoflegends.com/cdn/${version}/img/profileicon/{id}.png`,
-        champion_image: `https://ddragon.leagueoflegends.com/cdn/${version}/img/champion/{id}`,
-        summoner_spell_icon: `https://ddragon.leagueoflegends.com/cdn/${version}/img/spell/{id}`,
-        item_icon: `https://ddragon.leagueoflegends.com/cdn/${version}/img/item/{id}.png`,
-        rune_icon: ``,
-      },
     };
   }
 
   static async loadMetadata() {
-    const data = await DDragonService.getMetadata();
-
-    const getProfileIconUrl = (id: SummonerType["profileIconId"]) => {
-      return data.urls.profil_icon.replace("{id}", String(id));
-    };
-
-    const getChampionIconUrl = (
-      id: ChampionsResponseType["data"][number]["image"]["full"]
-    ) => {
-      return data.urls.champion_image.replace("{id}", String(id));
-    };
-
-    const getChampionIconUrlFromParticipant = (p: MatchParticipantDTOType) => {
-      return getChampionIconUrl(data.champions[p.championId]!.image.full);
-    };
-
-    const getItemIconUrl = (id: number) => {
-      return data.urls.item_icon.replace("{id}", String(id));
-    };
-
-    const getSummonerSpellIconUrl = (
-      id: MatchParticipantDTOType["summoner1Id"]
-    ) => {
-      return data.urls.summoner_spell_icon.replace(
-        "{id}",
-        data.summoner_spells[id]!.image.full
-      );
-    };
-
-    return {
-      ...data,
-      /*getQueueName: (queueId: MatchType["queueId"]) => {
-        switch (queueId) {
-          case 420:
-            return "Ranked Solo/Duo";
-          case 440:
-            return "Ranked Flex";
-          case 450:
-            return "Aram";
-          case 400:
-          case 430:
-            return "Normal";
-        }
-      },
-      urls: {
-        getProfileIconUrl,
-        getChampionIconUrl,
-        getChampionIconUrlFromParticipant,
-        getItemIconUrl,
-        getSummonerSpellIconUrl,
-      },*/
-    };
+    return DDragonService.getMetadata();
   }
 }

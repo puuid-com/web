@@ -35,7 +35,7 @@ export class CachedApiRoute<
   ): Promise<v.InferOutput<S>> {
     const r2Cache = refreshCache
       ? null
-      : await CacheService.tryGetFileFromCache<any>(param.id, this.R2Dir);
+      : await this.tryGetCachedDataById(param.id);
 
     if (r2Cache) return this.parseData(r2Cache);
 
@@ -47,5 +47,9 @@ export class CachedApiRoute<
     await CacheService.saveToCache(param.id, data, this.R2Dir);
 
     return parsedData;
+  }
+
+  public tryGetCachedDataById(id: string): Promise<v.InferOutput<S>> {
+    return CacheService.tryGetFileFromCache<v.InferOutput<S>>(id, this.R2Dir);
   }
 }

@@ -48,9 +48,9 @@ export type LoLQueueKeyType =
   | "all_random"
   | "draft_pick"
   | "_ranked_dynamic"
-  | "ranked_solo"
+  | "RANKED_SOLO_5x5"
   | "blind_pick"
-  | "ranked_flex"
+  | "RANKED_FLEX_SR"
   | "aram"
   | "_3v3_blind_pick"
   | "_3v3_ranked_flex"
@@ -345,7 +345,7 @@ export const LOL_QUEUES: Record<LoLQueueKeyType, LoLQueue> = {
     description: "5v5 Ranked Dynamic games",
     notes: "Game mode deprecated in patch 6.22",
   },
-  ranked_solo: {
+  RANKED_SOLO_5x5: {
     queueId: 420,
     map: "Summoner's Rift",
     description: "5v5 Ranked Solo games",
@@ -357,7 +357,7 @@ export const LOL_QUEUES: Record<LoLQueueKeyType, LoLQueue> = {
     description: "5v5 Blind Pick games",
     notes: null,
   },
-  ranked_flex: {
+  RANKED_FLEX_SR: {
     queueId: 440,
     map: "Summoner's Rift",
     description: "5v5 Ranked Flex games",

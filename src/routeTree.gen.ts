@@ -12,7 +12,9 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as LolRouteRouteImport } from './routes/lol/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as LolSummonerIndexRouteImport } from './routes/lol/summoner/index'
-import { Route as LolSummonerRiotIDRouteImport } from './routes/lol/summoner/$riotID'
+import { Route as LolSummonerRiotIDRouteRouteImport } from './routes/lol/summoner/$riotID/route'
+import { Route as LolSummonerRiotIDIndexRouteImport } from './routes/lol/summoner/$riotID/index'
+import { Route as LolSummonerRiotIDRefreshRouteImport } from './routes/lol/summoner/$riotID/refresh'
 
 const LolRouteRoute = LolRouteRouteImport.update({
   id: '/lol',
@@ -29,37 +31,71 @@ const LolSummonerIndexRoute = LolSummonerIndexRouteImport.update({
   path: '/summoner/',
   getParentRoute: () => LolRouteRoute,
 } as any)
-const LolSummonerRiotIDRoute = LolSummonerRiotIDRouteImport.update({
+const LolSummonerRiotIDRouteRoute = LolSummonerRiotIDRouteRouteImport.update({
   id: '/summoner/$riotID',
   path: '/summoner/$riotID',
   getParentRoute: () => LolRouteRoute,
 } as any)
+const LolSummonerRiotIDIndexRoute = LolSummonerRiotIDIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => LolSummonerRiotIDRouteRoute,
+} as any)
+const LolSummonerRiotIDRefreshRoute =
+  LolSummonerRiotIDRefreshRouteImport.update({
+    id: '/refresh',
+    path: '/refresh',
+    getParentRoute: () => LolSummonerRiotIDRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/lol': typeof LolRouteRouteWithChildren
-  '/lol/summoner/$riotID': typeof LolSummonerRiotIDRoute
+  '/lol/summoner/$riotID': typeof LolSummonerRiotIDRouteRouteWithChildren
   '/lol/summoner': typeof LolSummonerIndexRoute
+  '/lol/summoner/$riotID/refresh': typeof LolSummonerRiotIDRefreshRoute
+  '/lol/summoner/$riotID/': typeof LolSummonerRiotIDIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/lol': typeof LolRouteRouteWithChildren
-  '/lol/summoner/$riotID': typeof LolSummonerRiotIDRoute
   '/lol/summoner': typeof LolSummonerIndexRoute
+  '/lol/summoner/$riotID/refresh': typeof LolSummonerRiotIDRefreshRoute
+  '/lol/summoner/$riotID': typeof LolSummonerRiotIDIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/lol': typeof LolRouteRouteWithChildren
-  '/lol/summoner/$riotID': typeof LolSummonerRiotIDRoute
+  '/lol/summoner/$riotID': typeof LolSummonerRiotIDRouteRouteWithChildren
   '/lol/summoner/': typeof LolSummonerIndexRoute
+  '/lol/summoner/$riotID/refresh': typeof LolSummonerRiotIDRefreshRoute
+  '/lol/summoner/$riotID/': typeof LolSummonerRiotIDIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/lol' | '/lol/summoner/$riotID' | '/lol/summoner'
+  fullPaths:
+    | '/'
+    | '/lol'
+    | '/lol/summoner/$riotID'
+    | '/lol/summoner'
+    | '/lol/summoner/$riotID/refresh'
+    | '/lol/summoner/$riotID/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/lol' | '/lol/summoner/$riotID' | '/lol/summoner'
-  id: '__root__' | '/' | '/lol' | '/lol/summoner/$riotID' | '/lol/summoner/'
+  to:
+    | '/'
+    | '/lol'
+    | '/lol/summoner'
+    | '/lol/summoner/$riotID/refresh'
+    | '/lol/summoner/$riotID'
+  id:
+    | '__root__'
+    | '/'
+    | '/lol'
+    | '/lol/summoner/$riotID'
+    | '/lol/summoner/'
+    | '/lol/summoner/$riotID/refresh'
+    | '/lol/summoner/$riotID/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -94,19 +130,49 @@ declare module '@tanstack/react-router' {
       id: '/lol/summoner/$riotID'
       path: '/summoner/$riotID'
       fullPath: '/lol/summoner/$riotID'
-      preLoaderRoute: typeof LolSummonerRiotIDRouteImport
+      preLoaderRoute: typeof LolSummonerRiotIDRouteRouteImport
       parentRoute: typeof LolRouteRoute
+    }
+    '/lol/summoner/$riotID/': {
+      id: '/lol/summoner/$riotID/'
+      path: '/'
+      fullPath: '/lol/summoner/$riotID/'
+      preLoaderRoute: typeof LolSummonerRiotIDIndexRouteImport
+      parentRoute: typeof LolSummonerRiotIDRouteRoute
+    }
+    '/lol/summoner/$riotID/refresh': {
+      id: '/lol/summoner/$riotID/refresh'
+      path: '/refresh'
+      fullPath: '/lol/summoner/$riotID/refresh'
+      preLoaderRoute: typeof LolSummonerRiotIDRefreshRouteImport
+      parentRoute: typeof LolSummonerRiotIDRouteRoute
     }
   }
 }
 
+interface LolSummonerRiotIDRouteRouteChildren {
+  LolSummonerRiotIDRefreshRoute: typeof LolSummonerRiotIDRefreshRoute
+  LolSummonerRiotIDIndexRoute: typeof LolSummonerRiotIDIndexRoute
+}
+
+const LolSummonerRiotIDRouteRouteChildren: LolSummonerRiotIDRouteRouteChildren =
+  {
+    LolSummonerRiotIDRefreshRoute: LolSummonerRiotIDRefreshRoute,
+    LolSummonerRiotIDIndexRoute: LolSummonerRiotIDIndexRoute,
+  }
+
+const LolSummonerRiotIDRouteRouteWithChildren =
+  LolSummonerRiotIDRouteRoute._addFileChildren(
+    LolSummonerRiotIDRouteRouteChildren,
+  )
+
 interface LolRouteRouteChildren {
-  LolSummonerRiotIDRoute: typeof LolSummonerRiotIDRoute
+  LolSummonerRiotIDRouteRoute: typeof LolSummonerRiotIDRouteRouteWithChildren
   LolSummonerIndexRoute: typeof LolSummonerIndexRoute
 }
 
 const LolRouteRouteChildren: LolRouteRouteChildren = {
-  LolSummonerRiotIDRoute: LolSummonerRiotIDRoute,
+  LolSummonerRiotIDRouteRoute: LolSummonerRiotIDRouteRouteWithChildren,
   LolSummonerIndexRoute: LolSummonerIndexRoute,
 }
 
