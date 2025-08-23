@@ -1,5 +1,5 @@
 import { SummonerLeagueItem } from "@/client/components/summoner-stats/leagues/SummonerLeagueItem";
-import type { LeaguesType } from "@/server/services/League/type";
+import type { LeaguesType } from "@/server/services/league/type";
 
 type Props = {
   leagues: LeaguesType;

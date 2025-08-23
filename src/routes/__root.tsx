@@ -10,6 +10,8 @@ import {
 import { QueryClient } from "@tanstack/react-query";
 import appCss from "@/client/styles/app.css?url";
 import { Toaster } from "sonner";
+import { Navbar } from "@/client/components/Navbar";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
@@ -37,6 +39,7 @@ function RootComponent() {
     <RootDocument>
       <Outlet />
       <Toaster richColors />
+      <ReactQueryDevtools initialIsOpen={false} />
     </RootDocument>
   );
 }
@@ -47,12 +50,16 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
       <head>
         <HeadContent />
       </head>
-      <body
-        className={
-          "flex dark bg-neutral-950 text-white justify-center items-center border-spacing-10"
-        }
-      >
-        {children}
+      <body className={"flex flex-col dark bg-neutral-950 text-neutral-300"}>
+        <Navbar />
+        <div
+          style={{
+            minHeight: `calc(100vh - 60px)`,
+          }}
+          className={"flex flex-col w-full"}
+        >
+          {children}
+        </div>
         <Scripts />
       </body>
     </html>

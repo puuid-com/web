@@ -1,13 +1,14 @@
 import { MatchListItem } from "@/client/components/match-list/MatchListItem";
-import type { QueueType } from "@/server/api-route/riot/league/LeagueDTO";
+import type { LolQueueType } from "@/server/api-route/riot/league/LeagueDTO";
 import type { SummonerType } from "@/server/db/schema";
 import React from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { useGetSummonerMatches } from "@/client/queries/getSummonerMatches";
 import { MatchListContent } from "@/client/components/match-list/MatchListContent";
+import LoadingScreen from "@/client/components/Loading";
 
 type Props = {
-  queue: QueueType;
+  queue: LolQueueType;
   summoner: SummonerType;
 };
 
@@ -18,7 +19,7 @@ export const MatchList = ({ queue, summoner }: Props) => {
   });
 
   if (q_matches.status === "pending") {
-    return <div>Loading ...</div>;
+    return <LoadingScreen />;
   } else if (q_matches.status === "error") {
     return (
       <div>

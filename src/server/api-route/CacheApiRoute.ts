@@ -33,20 +33,29 @@ export class CachedApiRoute<
     options?: Options,
     refreshCache: boolean = false
   ): Promise<v.InferOutput<S>> {
-    const r2Cache = refreshCache
-      ? null
-      : await this.tryGetCachedDataById(param.id);
+    try {
+      const r2Cache = refreshCache
+        ? null
+        : await this.tryGetCachedDataById(param.id);
 
-    if (r2Cache) return this.parseData(r2Cache);
+      if (r2Cache) return this.parseData(r2Cache);
 
-    this.ensureRateLimit();
+      this.ensureRateLimit();
 
-    const data = await this.fetchData(param, options);
-    const parsedData = this.parseData(data);
+      const data = await this.fetchData(param, options);
 
-    await CacheService.saveToCache(param.id, data, this.R2Dir);
+      const parsedData = this.parseData(data);
 
-    return parsedData;
+      await CacheService.saveToCache(param.id, data, this.R2Dir);
+
+      return parsedData;
+    } catch (e) {
+      console.error(e);
+
+      process.exit(0);
+
+      throw e;
+    }
   }
 
   public tryGetCachedDataById(id: string): Promise<v.InferOutput<S>> {

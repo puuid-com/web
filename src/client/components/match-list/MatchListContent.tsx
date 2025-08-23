@@ -27,13 +27,7 @@ export const MatchListContent = ({ matches, summoner }: Props) => {
   return (
     <div
       ref={parentRef}
-      className={cn(
-        "overflow-auto rounded-2xl border border-dashed",
-        "bg-background"
-      )}
-      style={{
-        height: `${height * 5}px`,
-      }}
+      className={cn("rounded-2xl border border-dashed w-full", "bg-background")}
     >
       <div
         className="relative w-full"

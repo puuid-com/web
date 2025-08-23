@@ -51,7 +51,7 @@ export class CacheService {
       }
 
       content = Buffer.concat(chunks).toString("utf-8");
-    } catch {
+    } catch (e) {
       return null;
     }
 

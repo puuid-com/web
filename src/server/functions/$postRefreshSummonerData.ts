@@ -1,4 +1,4 @@
-import { QueueTypes } from "@/server/api-route/riot/league/LeagueDTO";
+import { LolQueues } from "@/server/api-route/riot/league/LeagueDTO";
 import { createServerFn } from "@tanstack/react-start";
 import * as v from "valibot";
 
@@ -6,7 +6,7 @@ export const $postRefreshSummonerData = createServerFn({ method: "POST" })
   .validator(
     v.object({
       puuid: v.string(),
-      queueType: v.picklist(QueueTypes),
+      queueType: v.picklist(LolQueues),
     })
   )
   .handler(async (ctx) => {

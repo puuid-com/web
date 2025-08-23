@@ -1,5 +1,6 @@
 import { lolClient } from "@/client/lib/lolClient";
 import {
+  parseRateLime,
   RateLimiterService,
   type RateLimit,
 } from "@/server/services/rate-limiter";
@@ -8,7 +9,10 @@ import * as v from "valibot";
 
 type Schema = v.BaseSchema<any, any, any>;
 
-const ApiRouteRateLimiter = new RateLimiterService();
+const ApiRouteRateLimiter = new RateLimiterService([
+  parseRateLime("500 requests every 10 seconds"),
+  parseRateLime("30000 requests every 10 minutes"),
+]);
 
 export type ApiRouteConfigs<S extends Schema, P> = {
   key: string;
@@ -44,9 +48,12 @@ export class ApiRoute<S extends Schema, P> {
 
     const url = this.getUrl(param);
 
-    console.log("🚨🚨 \t", url);
-
-    return lolClient()(url, options).json();
+    try {
+      return await lolClient()(url, options).json();
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      throw error;
+    }
   }
 
   protected parseData(data: any) {

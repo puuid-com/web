@@ -7,6 +7,7 @@ import {
   index,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
+import type { IndividualPositionType } from "@/server/api-route/riot/match/MatchDTO";
 
 export const matchTable = pgTable("match", {
   matchId: text("match_id").primaryKey(),
@@ -27,7 +28,9 @@ export const matchSummonerTable = pgTable(
     tagLine: text("tag_line"),
     profileIconId: integer("profile_icon_id"),
 
-    individualPosition: text("individual_position"),
+    individualPosition: text("individual_position")
+      .$type<IndividualPositionType>()
+      .notNull(),
     teamId: integer("team_id").notNull(),
     win: boolean("win").notNull(),
 

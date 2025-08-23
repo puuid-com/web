@@ -9,13 +9,26 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ColorsRouteImport } from './routes/colors'
+import { Route as IdRouteImport } from './routes/$id'
 import { Route as LolRouteRouteImport } from './routes/lol/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as LolSummonerIndexRouteImport } from './routes/lol/summoner/index'
 import { Route as LolSummonerRiotIDRouteRouteImport } from './routes/lol/summoner/$riotID/route'
 import { Route as LolSummonerRiotIDIndexRouteImport } from './routes/lol/summoner/$riotID/index'
+import { Route as LolSummonerRiotIDStatsRouteImport } from './routes/lol/summoner/$riotID/stats'
 import { Route as LolSummonerRiotIDRefreshRouteImport } from './routes/lol/summoner/$riotID/refresh'
 
+const ColorsRoute = ColorsRouteImport.update({
+  id: '/colors',
+  path: '/colors',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IdRoute = IdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LolRouteRoute = LolRouteRouteImport.update({
   id: '/lol',
   path: '/lol',
@@ -41,6 +54,11 @@ const LolSummonerRiotIDIndexRoute = LolSummonerRiotIDIndexRouteImport.update({
   path: '/',
   getParentRoute: () => LolSummonerRiotIDRouteRoute,
 } as any)
+const LolSummonerRiotIDStatsRoute = LolSummonerRiotIDStatsRouteImport.update({
+  id: '/stats',
+  path: '/stats',
+  getParentRoute: () => LolSummonerRiotIDRouteRoute,
+} as any)
 const LolSummonerRiotIDRefreshRoute =
   LolSummonerRiotIDRefreshRouteImport.update({
     id: '/refresh',
@@ -51,25 +69,34 @@ const LolSummonerRiotIDRefreshRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/lol': typeof LolRouteRouteWithChildren
+  '/$id': typeof IdRoute
+  '/colors': typeof ColorsRoute
   '/lol/summoner/$riotID': typeof LolSummonerRiotIDRouteRouteWithChildren
   '/lol/summoner': typeof LolSummonerIndexRoute
   '/lol/summoner/$riotID/refresh': typeof LolSummonerRiotIDRefreshRoute
+  '/lol/summoner/$riotID/stats': typeof LolSummonerRiotIDStatsRoute
   '/lol/summoner/$riotID/': typeof LolSummonerRiotIDIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/lol': typeof LolRouteRouteWithChildren
+  '/$id': typeof IdRoute
+  '/colors': typeof ColorsRoute
   '/lol/summoner': typeof LolSummonerIndexRoute
   '/lol/summoner/$riotID/refresh': typeof LolSummonerRiotIDRefreshRoute
+  '/lol/summoner/$riotID/stats': typeof LolSummonerRiotIDStatsRoute
   '/lol/summoner/$riotID': typeof LolSummonerRiotIDIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/lol': typeof LolRouteRouteWithChildren
+  '/$id': typeof IdRoute
+  '/colors': typeof ColorsRoute
   '/lol/summoner/$riotID': typeof LolSummonerRiotIDRouteRouteWithChildren
   '/lol/summoner/': typeof LolSummonerIndexRoute
   '/lol/summoner/$riotID/refresh': typeof LolSummonerRiotIDRefreshRoute
+  '/lol/summoner/$riotID/stats': typeof LolSummonerRiotIDStatsRoute
   '/lol/summoner/$riotID/': typeof LolSummonerRiotIDIndexRoute
 }
 export interface FileRouteTypes {
@@ -77,34 +104,59 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/lol'
+    | '/$id'
+    | '/colors'
     | '/lol/summoner/$riotID'
     | '/lol/summoner'
     | '/lol/summoner/$riotID/refresh'
+    | '/lol/summoner/$riotID/stats'
     | '/lol/summoner/$riotID/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/lol'
+    | '/$id'
+    | '/colors'
     | '/lol/summoner'
     | '/lol/summoner/$riotID/refresh'
+    | '/lol/summoner/$riotID/stats'
     | '/lol/summoner/$riotID'
   id:
     | '__root__'
     | '/'
     | '/lol'
+    | '/$id'
+    | '/colors'
     | '/lol/summoner/$riotID'
     | '/lol/summoner/'
     | '/lol/summoner/$riotID/refresh'
+    | '/lol/summoner/$riotID/stats'
     | '/lol/summoner/$riotID/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LolRouteRoute: typeof LolRouteRouteWithChildren
+  IdRoute: typeof IdRoute
+  ColorsRoute: typeof ColorsRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/colors': {
+      id: '/colors'
+      path: '/colors'
+      fullPath: '/colors'
+      preLoaderRoute: typeof ColorsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$id': {
+      id: '/$id'
+      path: '/$id'
+      fullPath: '/$id'
+      preLoaderRoute: typeof IdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lol': {
       id: '/lol'
       path: '/lol'
@@ -140,6 +192,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LolSummonerRiotIDIndexRouteImport
       parentRoute: typeof LolSummonerRiotIDRouteRoute
     }
+    '/lol/summoner/$riotID/stats': {
+      id: '/lol/summoner/$riotID/stats'
+      path: '/stats'
+      fullPath: '/lol/summoner/$riotID/stats'
+      preLoaderRoute: typeof LolSummonerRiotIDStatsRouteImport
+      parentRoute: typeof LolSummonerRiotIDRouteRoute
+    }
     '/lol/summoner/$riotID/refresh': {
       id: '/lol/summoner/$riotID/refresh'
       path: '/refresh'
@@ -152,12 +211,14 @@ declare module '@tanstack/react-router' {
 
 interface LolSummonerRiotIDRouteRouteChildren {
   LolSummonerRiotIDRefreshRoute: typeof LolSummonerRiotIDRefreshRoute
+  LolSummonerRiotIDStatsRoute: typeof LolSummonerRiotIDStatsRoute
   LolSummonerRiotIDIndexRoute: typeof LolSummonerRiotIDIndexRoute
 }
 
 const LolSummonerRiotIDRouteRouteChildren: LolSummonerRiotIDRouteRouteChildren =
   {
     LolSummonerRiotIDRefreshRoute: LolSummonerRiotIDRefreshRoute,
+    LolSummonerRiotIDStatsRoute: LolSummonerRiotIDStatsRoute,
     LolSummonerRiotIDIndexRoute: LolSummonerRiotIDIndexRoute,
   }
 
@@ -183,6 +244,8 @@ const LolRouteRouteWithChildren = LolRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LolRouteRoute: LolRouteRouteWithChildren,
+  IdRoute: IdRoute,
+  ColorsRoute: ColorsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

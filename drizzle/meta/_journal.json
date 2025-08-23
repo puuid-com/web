@@ -225,6 +225,48 @@
       "when": 1755706654062,
       "tag": "0031_mute_payback",
       "breakpoints": true
+    },
+    {
+      "idx": 32,
+      "version": "7",
+      "when": 1755785636424,
+      "tag": "0032_overjoyed_slapstick",
+      "breakpoints": true
+    },
+    {
+      "idx": 33,
+      "version": "7",
+      "when": 1755797051822,
+      "tag": "0033_productive_phalanx",
+      "breakpoints": true
+    },
+    {
+      "idx": 34,
+      "version": "7",
+      "when": 1755854490869,
+      "tag": "0034_sour_mojo",
+      "breakpoints": true
+    },
+    {
+      "idx": 35,
+      "version": "7",
+      "when": 1755854744554,
+      "tag": "0035_chief_blue_blade",
+      "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "7",
+      "when": 1755857776850,
+      "tag": "0036_hot_guardian",
+      "breakpoints": true
+    },
+    {
+      "idx": 37,
+      "version": "7",
+      "when": 1755871502779,
+      "tag": "0037_mature_ronan",
+      "breakpoints": true
     }
   ]
 }

@@ -1,12 +1,12 @@
 import { SummonerLeagues } from "@/client/components/summoner-stats/leagues/SummonerLeagues";
 import { useGetSummonerStats } from "@/client/queries/getSummonerStats";
 import { DDragonService } from "@/client/services/DDragon";
-import type { QueueType } from "@/server/api-route/riot/league/LeagueDTO";
+import type { LolQueueType } from "@/server/api-route/riot/league/LeagueDTO";
 import type { SummonerType } from "@/server/db/schema";
 import { useLoaderData } from "@tanstack/react-router";
 
 type Props = {
-  queue: QueueType;
+  queue: LolQueueType;
   summoner: SummonerType;
 };
 

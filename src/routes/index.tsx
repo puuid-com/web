@@ -11,6 +11,9 @@ function Home() {
       <Link to={"/lol/summoner"}>
         <Button>See Summoner Page</Button>
       </Link>
+      <Link to={"/$id"} params={{ id: "OlivierDeschênes-00008" }}>
+        <Button>Good RiotID test</Button>
+      </Link>
     </div>
   );
 }

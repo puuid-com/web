@@ -70,9 +70,23 @@ export class DDragonService {
   static getChampionIconUrlFromParticipant(
     champions: ChampionsResponseType["data"],
     version: string,
-    p: MatchSummonerRowType
+    p: Pick<MatchSummonerRowType, "championId">
   ) {
     return `https://ddragon.leagueoflegends.com/cdn/${version}/img/champion/${champions[p.championId]!.image.full}`;
+  }
+
+  static getChampionSplash(
+    champions: ChampionsResponseType["data"],
+    championId: MatchSummonerRowType["championId"]
+  ) {
+    return `https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${champions[championId]!.name}_0.jpg`;
+  }
+
+  static getChampionLoadingScreenImage(
+    champions: ChampionsResponseType["data"],
+    championId: MatchSummonerRowType["championId"]
+  ) {
+    return `https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${champions[championId]!.id}_0.jpg`;
   }
 
   static getSummonerSpellIconUrl(

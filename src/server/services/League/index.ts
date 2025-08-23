@@ -2,21 +2,23 @@ import { LeagueV4ByPuuid } from "@/server/api-route/riot/league/LeagueRoutes";
 import { db, type TransactionType } from "@/server/db";
 import {
   type SummonerType,
-  type CachedLeagueType,
+  type LeagueRowType,
   leagueEntryTable,
 } from "@/server/db/schema";
-import type { LeaguesType } from "@/server/services/League/type";
+import type { LeaguesType } from "@/server/services/league/type";
 import { and, eq, desc, sql } from "drizzle-orm";
 
 export class LeagueService {
   static async cacheLeaguesTx(
     tx: TransactionType,
     id: Pick<SummonerType, "puuid" | "region">
-  ): Promise<CachedLeagueType[]> {
+  ): Promise<LeagueRowType[]> {
     let data = await LeagueV4ByPuuid.call({
       region: id.region,
       puuid: id.puuid,
     });
+
+    if (data.length === 0) return [];
 
     return tx
       .insert(leagueEntryTable)

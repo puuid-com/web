@@ -4,7 +4,7 @@ import {
   MatchIdsV5ByPuuid,
   MatchV5ByID,
 } from "@/server/api-route/riot/match/MatchRoutes";
-import type { OutputPagedMatchIDsQueryParams } from "@/server/services/Match/type";
+import type { OutputPagedMatchIDsQueryParams } from "@/server/services/match/type";
 import {
   routingValueFromRegion,
   type LolRegionType,
@@ -124,7 +124,7 @@ export class MatchService {
           dragonKills: p.dragonKills,
           visionScore: p.visionScore,
           largestCriticalStrike: p.largestCriticalStrike,
-          soloKills: p.challenges.soloKills ?? 0,
+          soloKills: 0,
           wardTakedowns: p.wardsKilled,
           inhibitorKills: p.inhibitorKills,
           turretKills: p.turretKills,
@@ -167,7 +167,7 @@ export class MatchService {
     });
   }
 
-  static async getMatchesDBByPuuid(
+  static async getMatchesDBByPuuidSmall(
     id: Pick<SummonerType, "region" | "puuid">,
     params: OutputPagedMatchIDsQueryParams
   ) {
@@ -199,6 +199,42 @@ export class MatchService {
         ),
       limit: params.count,
       offset: params.start,
+    });
+  }
+
+  static async getMatchesDBByPuuidFull(
+    id: Pick<SummonerType, "region" | "puuid">,
+    params: OutputPagedMatchIDsQueryParams
+  ) {
+    const conditions = this.riotMatchQueryParamsToCacheWhereConditions(
+      id,
+      params
+    );
+
+    return db.query.matchTable.findMany({
+      with: {
+        // ne pas filtrer ici, on veut tous les summoners du match
+        summoners: true,
+      },
+      where: (mt, { and, eq, exists, sql }) =>
+        and(
+          conditions,
+          exists(
+            db
+              .select({ one: sql`1` })
+              .from(matchSummonerTable)
+              .where(
+                and(
+                  eq(matchSummonerTable.matchId, mt.matchId),
+                  eq(matchSummonerTable.puuid, id.puuid)
+                )
+              )
+          )
+        ),
+      limit: params.count,
+      offset: params.start,
+      // optionnel, souvent utile
+      orderBy: (mt, { desc }) => [desc(mt.gameCreationMs)],
     });
   }
 
@@ -240,6 +276,7 @@ export class MatchService {
       start: 0,
       count: 100,
       queue: queueId,
+      startTime: 1736380801, // Thursday, January 9, 2025 12:00:01 AM
     };
 
     let nextStart: number | null = _params.start;
@@ -263,7 +300,7 @@ export class MatchService {
   ) {
     if (matches.length === 0) return;
 
-    const BATCH = 50;
+    const BATCH = 100;
 
     const dbData = matches.map(this.matchDTOtoDB);
     const dbMatches: MatchInsertType[] = dbData.flatMap(({ match }) => match);

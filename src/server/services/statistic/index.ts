@@ -1,12 +1,31 @@
-import type { TransactionType } from "@/server/db";
-import type { MatchSummonerRowType } from "@/server/db/match-schema";
-import type { SummonerType } from "@/server/db/schema";
-import { LeagueService } from "@/server/services/League";
-import { MatchService } from "@/server/services/Match";
+import { DDragonService } from "@/client/services/DDragon";
+import type { LolQueueType } from "@/server/api-route/riot/league/LeagueDTO";
+import type { IndividualPositionType } from "@/server/api-route/riot/match/MatchDTO";
+import { db, type TransactionType } from "@/server/db";
+import type {
+  MatchRowType,
+  MatchSummonerRowType,
+} from "@/server/db/match-schema";
 import {
+  statisticTable,
+  summonerTable,
+  type InsertStatisticRowType,
+  type LeagueRowType,
+  type StatsByChampionId,
+  type StatsByIndividualPosition,
+  type SummonerType,
+} from "@/server/db/schema";
+import { averageBy, maxItemBy, maxItemByKey } from "@/server/lib";
+import { upsert } from "@/server/lib/drizzle";
+import { LeagueService } from "@/server/services/league";
+import { MatchService } from "@/server/services/match";
+import {
+  LOL_QUEUES,
   type LoLQueueKeyType,
   getQueueByKey,
-} from "@/server/services/Match/queues.type";
+} from "@/server/services/match/queues.type";
+import { and, eq } from "drizzle-orm";
+import { Vibrant } from "node-vibrant/node";
 
 export type Stat = {
   wins: number;
@@ -24,70 +43,242 @@ const getInitialStat = (): Stat => ({
   deaths: 0,
 });
 
+type StatsToRefresh = Pick<
+  InsertStatisticRowType,
+  | "statsByChampionId"
+  | "statsByIndividualPosition"
+  | "statsByOppositeIndividualPositionChampionId"
+  | "kills"
+  | "assists"
+  | "deaths"
+> & {
+  averageAssistPerGame: number[];
+  averageDeathPerGame: number[];
+  averageKda: number[];
+  averageKillPerGame: number[];
+};
+
+const sortByMatches = (a: Stat, b: Stat) => {
+  const aTotal = a.losses + a.wins;
+  const bTotal = b.losses + b.wins;
+
+  return bTotal - aTotal;
+};
+
 export class StatisticService {
   static MATCHES_COUNTED: number = 9999;
 
-  static async getSummonerStatisticTx(
+  static async getSummonerStatistic(
+    puuid: SummonerType["puuid"],
+    queueType: LolQueueType
+  ) {
+    return db.query.statisticTable.findFirst({
+      where: and(
+        eq(statisticTable.puuid, puuid),
+        eq(statisticTable.queueType, queueType)
+      ),
+    });
+  }
+
+  static async refreshSummonerStatisticTx(
     tx: TransactionType,
     summoner: Pick<SummonerType, "region" | "puuid">,
-    queue: LoLQueueKeyType
-  ) {
-    const matches = await MatchService.getMatchesDBByPuuid(summoner, {
+    queueType: LolQueueType,
+    cachedLeagues?: LeagueRowType[]
+  ): Promise<void> {
+    const queue = LOL_QUEUES[queueType];
+
+    const league =
+      (
+        cachedLeagues ?? (await LeagueService.cacheLeaguesTx(tx, summoner))
+      ).find((l) => l.queueType === queueType) ?? null;
+
+    if (!league) {
+      throw new Error("League not found");
+    }
+
+    const matches = await MatchService.getMatchesDBByPuuidFull(summoner, {
       count: this.MATCHES_COUNTED,
-      queue: getQueueByKey(queue).queueId,
+      queue: queue.queueId,
       start: 0,
     });
 
-    const statsByChampionId = matches
-      .reduce(
-        (acc, m) => {
-          const summoner = m.summoners[0]!;
+    const _stats: StatsToRefresh = {
+      statsByChampionId: [],
+      statsByIndividualPosition: [],
+      statsByOppositeIndividualPositionChampionId: [],
+      kills: 0,
+      assists: 0,
+      deaths: 0,
+      averageAssistPerGame: [],
+      averageDeathPerGame: [],
+      averageKda: [],
+      averageKillPerGame: [],
+    };
 
-          if (!acc.some((s) => s.championId === summoner.championId)) {
-            acc.push({
-              championId: summoner.championId,
-              ...getInitialStat(),
-            });
-          }
+    const stats = matches.reduce((acc, curr) => {
+      const mainSummoner = curr.summoners.find(
+        (s) => s.puuid === summoner.puuid
+      );
+      if (!mainSummoner) return acc;
 
-          const championStats = acc.find(
-            (s) => s.championId === summoner.championId
-          )!;
+      const vs = curr.summoners.find(
+        (s) => s.puuid === mainSummoner.vsSummonerPuuid
+      );
+      if (!vs) return acc;
 
-          if (summoner.win) {
-            championStats.wins += 1;
-          } else {
-            championStats.losses += 1;
-          }
+      const incWins = mainSummoner.win ? 1 : 0;
+      const incLosses = mainSummoner.win ? 0 : 1;
 
-          championStats.kills += summoner.kills;
-          championStats.assists += summoner.assists;
-          championStats.deaths += summoner.deaths;
+      acc.kills += mainSummoner.kills;
+      acc.assists += mainSummoner.assists;
+      acc.deaths += mainSummoner.deaths;
 
-          return acc;
-        },
-        [] as (Stat & {
-          championId: MatchSummonerRowType["championId"];
-        })[]
-      )
-      .sort((a, b) => b.wins + b.losses - (a.wins + a.losses));
+      // statsByChampionId, incrémente ou crée
+      {
+        const s = acc.statsByChampionId.find(
+          (s) => s.championId === mainSummoner.championId
+        );
+        if (!s) {
+          acc.statsByChampionId.push({
+            championId: mainSummoner.championId,
+            kills: mainSummoner.kills,
+            assists: mainSummoner.assists,
+            deaths: mainSummoner.deaths,
+            wins: incWins,
+            losses: incLosses,
+          });
+        } else {
+          s.kills += mainSummoner.kills;
+          s.assists += mainSummoner.assists;
+          s.deaths += mainSummoner.deaths;
+          s.wins += incWins;
+          s.losses += incLosses;
+        }
+      }
 
-    const stats = statsByChampionId.reduce((acc, curr) => {
-      acc.wins += curr.wins;
-      acc.losses += curr.losses;
-      acc.kills += curr.kills;
-      acc.assists += curr.assists;
-      acc.deaths += curr.deaths;
+      // statsByIndividualPosition, incrémente ou crée
+      {
+        const s = acc.statsByIndividualPosition.find(
+          (s) => s.individualPosition === mainSummoner.individualPosition
+        );
+        if (!s) {
+          acc.statsByIndividualPosition.push({
+            individualPosition:
+              mainSummoner.individualPosition as IndividualPositionType,
+            kills: mainSummoner.kills,
+            assists: mainSummoner.assists,
+            deaths: mainSummoner.deaths,
+            wins: incWins,
+            losses: incLosses,
+          });
+        } else {
+          s.kills += mainSummoner.kills;
+          s.assists += mainSummoner.assists;
+          s.deaths += mainSummoner.deaths;
+          s.wins += incWins;
+          s.losses += incLosses;
+        }
+      }
+
+      // statsByOppositeIndividualPositionChampionId, incrémente ou crée
+      {
+        const s = acc.statsByOppositeIndividualPositionChampionId.find(
+          (s) => s.championId === vs.championId
+        );
+        if (!s) {
+          acc.statsByOppositeIndividualPositionChampionId.push({
+            championId: vs.championId,
+            kills: mainSummoner.kills,
+            assists: mainSummoner.assists,
+            deaths: mainSummoner.deaths,
+            wins: incWins,
+            losses: incLosses,
+          });
+        } else {
+          s.kills += mainSummoner.kills;
+          s.assists += mainSummoner.assists;
+          s.deaths += mainSummoner.deaths;
+          s.wins += incWins;
+          s.losses += incLosses;
+        }
+      }
+
+      acc.averageAssistPerGame.push(mainSummoner.assists);
+      acc.averageDeathPerGame.push(mainSummoner.deaths);
+      acc.averageKda.push(
+        (mainSummoner.kills + mainSummoner.assists) /
+          Math.max(1, mainSummoner.deaths)
+      );
+      acc.averageKillPerGame.push(mainSummoner.kills);
 
       return acc;
-    }, getInitialStat());
+    }, _stats);
 
-    const leagues = await LeagueService.getLeaguesTx(tx, summoner);
+    const mainChampionId = maxItemBy(
+      stats.statsByChampionId,
+      (item) => item.losses + item.wins
+    ).championId;
 
-    return {
-      statsByChampionId,
-      stats,
-      leagues,
+    const version = await DDragonService.getLatestVersion();
+    const champions = await DDragonService.getChampionsData(version);
+
+    const mainChampionSplashImageUrl = `https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${champions[mainChampionId]!.id}_0.jpg`;
+
+    const test = await Vibrant.from(mainChampionSplashImageUrl).getPalette();
+
+    let mainChampionForegroundColor: string | undefined;
+    let mainChampionBackgroundColor: string | undefined;
+
+    if (test.Vibrant) {
+      mainChampionForegroundColor = test.Vibrant.bodyTextColor;
+      mainChampionBackgroundColor = test.Vibrant.hex;
+    }
+
+    const statsToInsert: InsertStatisticRowType = {
+      puuid: summoner.puuid,
+      statsByChampionId: stats.statsByChampionId.sort(sortByMatches),
+      statsByIndividualPosition:
+        stats.statsByIndividualPosition.sort(sortByMatches),
+      statsByOppositeIndividualPositionChampionId:
+        stats.statsByOppositeIndividualPositionChampionId.sort(sortByMatches),
+      kills: stats.kills,
+      assists: stats.assists,
+      deaths: stats.deaths,
+      averageAssistPerGame: averageBy(
+        stats.averageAssistPerGame,
+        (item) => item
+      ),
+      averageDeathPerGame: averageBy(stats.averageDeathPerGame, (item) => item),
+      averageKda: averageBy(stats.averageKda, (item) => item),
+      averageKillPerGame: averageBy(stats.averageKillPerGame, (item) => item),
+      queueType,
+      latestLeagueEntryId: league.id,
+
+      mainChampionId: mainChampionId,
+      mainChampionForegroundColor: mainChampionForegroundColor,
+      mainChampionBackgroundColor: mainChampionBackgroundColor,
+
+      mainIndividualPosition: maxItemBy(
+        stats.statsByIndividualPosition,
+        (item) => item.losses + item.wins
+      ).individualPosition,
+      refreshedAt: new Date(),
     };
+
+    await tx
+      .insert(statisticTable)
+      .values(statsToInsert)
+      .onConflictDoUpdate({
+        target: [statisticTable.puuid, statisticTable.queueType],
+        set: upsert(statisticTable),
+      });
+
+    await tx
+      .update(summonerTable)
+      .set({
+        refreshedAt: new Date(),
+      })
+      .where(eq(summonerTable.puuid, summoner.puuid));
   }
 }

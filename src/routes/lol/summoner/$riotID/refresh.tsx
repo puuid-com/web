@@ -19,8 +19,8 @@ import { Loader2, CheckCircle2, Circle } from "lucide-react";
 import { toast } from "sonner";
 
 import type { SummonerType } from "@/server/db/schema";
-import type { SimpleProgressMsg } from "@/server/functions/$streamSimpleProgress";
 import { progressQueryOptions } from "@/client/queries/refresh/progress-query";
+import type { RefreshProgressMsgType } from "@/server/services/refresh";
 
 export const Route = createFileRoute("/lol/summoner/$riotID/refresh")({
   component: RouteComponent,
@@ -43,36 +43,56 @@ const initialStepStatus: Record<StepKey, StepState> = {
   fetching_stats: "pending",
 };
 
-function reduceProgress(events: SimpleProgressMsg[]) {
-  let status: "idle" | SimpleProgressMsg["status"] = events.length
-    ? events.at(-1)!.status
-    : "idle";
-
+function reduceProgress(events: RefreshProgressMsgType[]) {
+  let globalStatus: "idle" | "started" | "finished" = "idle";
   let stepStatus: Record<StepKey, StepState> = { ...initialStepStatus };
   let currentStep: StepKey | null = null;
   let totalMatches: number | null = null;
   let fetchedMatches = 0;
 
   for (const ev of events) {
-    if (ev.status !== "in_progress") continue;
-    const step = (ev as any).step as StepKey;
+    if (ev.status === "started") {
+      globalStatus = "started";
+      continue;
+    }
+    if (ev.status === "finished") {
+      globalStatus = "finished";
+      continue;
+    }
+
+    // Step events
+    const step = (ev as any).step as StepKey | undefined;
     if (!step) continue;
-    if (stepStatus[step] === "pending") stepStatus[step] = "active";
-    currentStep = step;
-    if (step === "fetching_matches") {
-      if ("matchesToFetch" in ev) totalMatches = ev.matchesToFetch;
-      if ("matchesFetched" in ev) fetchedMatches += ev.matchesFetched;
+
+    if (ev.status === "step_started") {
+      // mark previous steps as done
+      for (const s of stepsOrder) {
+        if (s === step) break;
+        if (stepStatus[s] !== "done") stepStatus[s] = "done";
+      }
+      stepStatus[step] = "active";
+      currentStep = step;
+      continue;
+    }
+
+    if (ev.status === "step_in_progress") {
+      if (stepStatus[step] === "pending") stepStatus[step] = "active";
+      currentStep = step;
+      if (step === "fetching_matches") {
+        if ("matchesToFetch" in ev) totalMatches = ev.matchesToFetch;
+        if ("matchesFetched" in ev) fetchedMatches += ev.matchesFetched;
+      }
+      continue;
+    }
+
+    if (ev.status === "step_finished") {
+      stepStatus[step] = "done";
+      if (currentStep === step) currentStep = null;
+      continue;
     }
   }
 
-  if (currentStep) {
-    for (const s of stepsOrder) {
-      if (s === currentStep) break;
-      if (stepStatus[s] !== "pending") stepStatus[s] = "done";
-    }
-  }
-
-  if (status === "finished") {
+  if (globalStatus === "finished") {
     for (const s of stepsOrder) stepStatus[s] = "done";
     currentStep = null;
   }
@@ -88,7 +108,7 @@ function reduceProgress(events: SimpleProgressMsg[]) {
   const overallPercent = Math.min(100, Math.round(finishedSteps + partial));
 
   return {
-    status,
+    status: globalStatus,
     stepStatus,
     currentStep,
     totalMatches,
@@ -140,7 +160,7 @@ function RouteComponent() {
   const statusBadgeClass =
     status === "finished"
       ? "bg-emerald-900 text-emerald-200"
-      : q.fetchStatus === "fetching"
+      : q.fetchStatus === "fetching" || status === "started"
         ? "bg-zinc-800 text-zinc-200"
         : "bg-zinc-800 text-zinc-200";
 
@@ -243,7 +263,9 @@ function RouteComponent() {
                       ? stepLabel(currentStep)
                       : status === "finished"
                         ? "Terminé"
-                        : "En attente"}
+                        : status === "started"
+                          ? "En cours"
+                          : "En attente"}
                   </div>
                 </div>
                 <div className="rounded-xl border border-zinc-800 bg-zinc-900/30 p-3">
@@ -355,6 +377,7 @@ function RouteComponent() {
                         search={{
                           queue: "RANKED_SOLO_5x5",
                         }}
+                        onClick={handleAcknowledge}
                       >
                         Voir le profil
                       </Link>
@@ -364,7 +387,7 @@ function RouteComponent() {
               ) : (
                 <div className="rounded-xl border border-zinc-800 bg-zinc-900/30 p-3">
                   <div className="text-sm text-zinc-400">
-                    Besoin d'interrompre
+                    Besoin d’interrompre
                   </div>
                   <div className="mt-2 flex items-center gap-2">
                     <Button variant="ghost" onClick={handleCancel}>

@@ -1,0 +1,2 @@
+ALTER TABLE "league_entry" ADD CONSTRAINT "league_entry_puuid_summoner_puuid_fk" FOREIGN KEY ("puuid") REFERENCES "public"."summoner"("puuid") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "statistic" ADD CONSTRAINT "statistic_puuid_summoner_puuid_fk" FOREIGN KEY ("puuid") REFERENCES "public"."summoner"("puuid") ON DELETE cascade ON UPDATE no action;

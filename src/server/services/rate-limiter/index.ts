@@ -20,52 +20,86 @@ export class RateLimiterError extends Error {
 export class RateLimiterService<T extends string = any> {
   private requestHistory: Map<T, RequestRecord[]> = new Map();
   private endpointConfigs: Map<T, RateLimitEndpointConfig> = new Map();
+  private defaultLimits: RateLimit[];
 
-  configure(endpoint: T, limits: RateLimit[]) {
-    this.endpointConfigs.set(endpoint, { limits });
+  constructor(defaultLimits: RateLimit[] = []) {
+    this.defaultLimits = this.normalizeAndDedupe(defaultLimits);
   }
 
-  configureAll(configurations: Record<T, { limits: RateLimit[] }>) {
-    Object.entries(configurations).forEach(([key, value]) => {
-      const _key = key as T;
-      const _value = value as { limits: RateLimit[] };
+  setDefaultLimits(limits: RateLimit[]) {
+    this.defaultLimits = this.normalizeAndDedupe(limits);
+  }
 
-      this.endpointConfigs.set(_key, _value);
-    });
+  configure(endpoint: T, limits: RateLimit[]) {
+    const merged = this.mergeWithDefaults(limits);
+    this.endpointConfigs.set(endpoint, { limits: merged });
   }
 
   ensureRateLimit(endpoint: T): void {
-    const config = this.endpointConfigs.get(endpoint)!;
+    const config = this.getEffectiveConfig(endpoint);
+    if (config.limits.length === 0) {
+      this.record(endpoint, Date.now());
+      return;
+    }
 
     const now = Date.now();
     const history = this.requestHistory.get(endpoint) || [];
 
-    // Clean old requests outside all windows
-    const maxWindow = Math.max(...config.limits.map((limit) => limit.windowMs));
-    const cleanedHistory = history.filter(
-      (record) => now - record.timestamp < maxWindow
-    );
+    const maxWindow = Math.max(...config.limits.map((l) => l.windowMs));
+    const cleanedHistory = history.filter((r) => now - r.timestamp < maxWindow);
     this.requestHistory.set(endpoint, cleanedHistory);
 
-    // Check each rate limit
     for (const limit of config.limits) {
       const windowStart = now - limit.windowMs;
       const requestsInWindow = cleanedHistory.filter(
-        (record) => record.timestamp >= windowStart
+        (r) => r.timestamp >= windowStart
       ).length;
 
       if (requestsInWindow >= limit.requests) {
         const windowSeconds = limit.windowMs / 1000;
 
+        console.error(
+          `[RateLimiter] Rate limit exceeded for ${endpoint}: ${requestsInWindow}/${limit.requests} requests in ${windowSeconds}s window`
+        );
+
         throw new RateLimiterError(
-          `Rate limit exceeded for ${endpoint}: ${requestsInWindow}/${limit.requests} requests in ${windowSeconds}s window`
+          `(Internal) Rate limit exceeded for ${endpoint}: ${requestsInWindow}/${limit.requests} requests in ${windowSeconds}s window`
         );
       }
     }
 
-    // Record this request
-    cleanedHistory.push({ timestamp: now });
-    this.requestHistory.set(endpoint, cleanedHistory);
+    this.record(endpoint, now);
+  }
+
+  private record(endpoint: T, timestamp: number) {
+    const history = this.requestHistory.get(endpoint) || [];
+    history.push({ timestamp });
+    this.requestHistory.set(endpoint, history);
+  }
+
+  private getEffectiveConfig(endpoint: T): RateLimitEndpointConfig {
+    const configured = this.endpointConfigs.get(endpoint);
+    if (!configured) {
+      return { limits: this.defaultLimits };
+    }
+    return { limits: this.mergeWithDefaults(configured.limits) };
+  }
+
+  private mergeWithDefaults(limits: RateLimit[] = []): RateLimit[] {
+    return this.normalizeAndDedupe([...this.defaultLimits, ...limits]);
+  }
+
+  private normalizeAndDedupe(limits: RateLimit[]): RateLimit[] {
+    const byWindow = new Map<number, number>();
+    for (const l of limits) {
+      const prev = byWindow.get(l.windowMs);
+      if (prev == null || l.requests < prev) {
+        byWindow.set(l.windowMs, l.requests);
+      }
+    }
+    return Array.from(byWindow.entries())
+      .map(([windowMs, requests]) => ({ windowMs, requests }))
+      .sort((a, b) => a.windowMs - b.windowMs);
   }
 }
 
@@ -81,7 +115,6 @@ export function parseRateLime(
   rateLimitStr: `${number} requests every ${TimeWindow}`
 ): RateLimit {
   const [requests, timeWindowStr] = rateLimitStr.split(" requests every ");
-
   return {
     requests: Number(requests),
     windowMs: parseTimeWindow(timeWindowStr as TimeWindow),

@@ -1,121 +1,171 @@
+import { createFileRoute, useLoaderData } from "@tanstack/react-router";
 import { DDragonService } from "@/client/services/DDragon";
-import { $getSummonerByRiotID } from "@/server/functions/$getSummonerByRiotID";
-import {
-  createFileRoute,
-  Link,
-  useLoaderData,
-  useRouter,
-} from "@tanstack/react-router";
-import * as v from "valibot";
 import { MatchList } from "@/client/components/match-list/MatchList";
-import { SummonerStats } from "@/client/components/summoner-stats/SummonerStats";
-import { Button } from "@/client/components/ui/button";
-import { $postRefreshSummonerData } from "@/server/functions/$postRefreshSummonerData";
-import { QueueTypes } from "@/server/api-route/riot/league/LeagueDTO";
-import { toast } from "sonner";
-import { Badge } from "@/client/components/ui/badge";
-import { timeago } from "@/client/lib/utils";
-import { SimpleProgressDialog } from "@/client/components/SimpleProgressViewer";
-import React from "react";
+import { PositionIcon } from "@/client/components/PositionIcon";
+import { SummonerNeverFetchedNotice } from "@/client/components/summoner/NoRefreshPage";
 
 export const Route = createFileRoute("/lol/summoner/$riotID/")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  const { summoner } = useLoaderData({ from: "/lol/summoner/$riotID" });
+  const { summoner, stats } = useLoaderData({ from: "/lol/summoner/$riotID" });
   const { queue } = Route.useSearch();
+
   const metadata = useLoaderData({ from: "/lol" });
 
-  const [gameName, tagLine] = summoner.riotId.split("#");
+  if (!stats) {
+    return (
+      <div>
+        <SummonerNeverFetchedNotice summoner={summoner} queue={queue} />
+      </div>
+    );
+  }
 
   return (
-    <div className={"flex flex-col gap-5 container m-10"}>
-      <div>
-        <div className={"flex items-center gap-2"}>
-          <div>
-            <img
-              src={DDragonService.getProfileIconUrl(
+    <div className={"flex gap-10"}>
+      <div className={"flex flex-col gap-10 w-50"}>
+        <div
+          className={
+            "flex flex-col bg-neutral-900 border rounded-md justify-center divide-y-1"
+          }
+        >
+          <div
+            className={
+              "px-3 py-2 font-bold text-center bg-main/30 rounded-t-md"
+            }
+          >
+            Stats by Champion
+          </div>
+          {stats?.statsByChampionId.map((s) => {
+            const championName = DDragonService.getChampionName(
+              metadata.champions,
+              s.championId
+            );
+            const championUrl =
+              DDragonService.getChampionIconUrlFromParticipant(
+                metadata.champions,
                 metadata.latest_version,
-                summoner.profileIconId
-              )}
-              alt=""
-              className={"w-16 aspect-square"}
-            />
-          </div>
-          <div>
-            <h1 className={"text-3xl"}>
-              <span>{gameName}</span>
-              <span className={"text-muted italic"}>#{tagLine}</span>
-            </h1>
-            <div>
-              <Link
-                to={"/lol/summoner/$riotID/refresh"}
-                params={{
-                  riotID: summoner.riotId,
-                }}
-                search={{
-                  queue: queue,
-                }}
+                s
+              );
+
+            return (
+              <div
+                key={`statsByChampionId-#${s.championId}`}
+                className={
+                  "flex gap-2.5 items-center justify-between px-2 py-1"
+                }
               >
-                Refresh Summoner
-              </Link>
-              <Badge variant={"secondary"}>
-                Last refresh : {timeago(summoner.refreshedAt)}
-              </Badge>
-            </div>
+                <div className={"flex gap-1 items-center"}>
+                  <img
+                    className={"w-8 rounded-full"}
+                    src={championUrl}
+                    alt={`${championName} profil icon`}
+                  />
+                  <div>{championName}</div>
+                </div>
+                <div className={"leading-none"}>
+                  <div
+                    className={"text-xs"}
+                  >{`${((s.wins / (s.wins + s.losses)) * 100).toFixed(0)}%`}</div>
+                  <div className={"text-xs text-neutral-400"}>
+                    {s.wins + s.losses} matches
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+        <div
+          className={
+            "flex flex-col bg-neutral-900 border rounded-md justify-center divide-y-1"
+          }
+        >
+          <div
+            className={
+              "px-3 py-2 font-bold text-center bg-main/30 rounded-t-md"
+            }
+          >
+            Stats by Position
           </div>
+          {stats?.statsByIndividualPosition.map((p) => {
+            return (
+              <div
+                key={`statsByIndividualPosition-#${p.individualPosition}`}
+                className={
+                  "flex gap-2.5 items-center justify-between px-2 py-1"
+                }
+              >
+                <div className={"flex gap-1 items-center"}>
+                  <PositionIcon individualPosition={p.individualPosition} />
+                  <div>{p.individualPosition}</div>
+                </div>
+                <div className={"leading-none"}>
+                  <div
+                    className={"text-xs"}
+                  >{`${((p.wins / (p.wins + p.losses)) * 100).toFixed(0)}%`}</div>
+                  <div className={"text-xs text-neutral-400"}>
+                    {p.wins + p.losses} matches
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
-        <div className={"font-mono bg-neutral-700 rounded-md px-1"}>
-          {summoner.puuid}
+        <div
+          className={
+            "flex flex-col bg-neutral-900 border rounded-md justify-center divide-y-1"
+          }
+        >
+          <div
+            className={
+              "px-3 py-2 font-bold text-center bg-main/30 rounded-t-md"
+            }
+          >
+            Stats by Oponent Champion
+          </div>
+          {stats?.statsByOppositeIndividualPositionChampionId.map((s) => {
+            const championName = DDragonService.getChampionName(
+              metadata.champions,
+              s.championId
+            );
+            const championUrl =
+              DDragonService.getChampionIconUrlFromParticipant(
+                metadata.champions,
+                metadata.latest_version,
+                s
+              );
+
+            return (
+              <div
+                key={`statsByOppositeIndividualPositionChampionId-#${s.championId}`}
+                className={
+                  "flex gap-2.5 items-center justify-between px-2 py-1"
+                }
+              >
+                <div className={"flex gap-1 items-center"}>
+                  <img
+                    className={"w-8 rounded-full"}
+                    src={championUrl}
+                    alt={`${championName} profil icon`}
+                  />
+                  <div>{championName}</div>
+                </div>
+                <div className={"leading-none"}>
+                  <div
+                    className={"text-xs"}
+                  >{`${((s.wins / (s.wins + s.losses)) * 100).toFixed(0)}%`}</div>
+                  <div className={"text-xs text-neutral-400"}>
+                    {s.wins + s.losses} matches
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
-      <div className={"flex flex-col justify-center items-start"}>
-        <div className={"bg-purple-500 rounded-md p-0.5"}>
-          {summoner.region}
-        </div>
-      </div>
-      <div>
-        <SummonerStats queue={queue} summoner={summoner} />
-      </div>
-      <div>
-        <div>
-          <h1>Matches</h1>
-        </div>
-        <div>
-          <MatchList queue={queue} summoner={summoner} />
-        </div>
-        <div>
-          {/* <Pagination>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious
-                  disabled={matches.previousPage === null}
-                  onClick={() =>
-                    navigate({
-                      to: ".",
-                      search: (s) => ({ ...s, page: matches.previousPage! }),
-                    })
-                  }
-                />
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink disabled>{matches.currentPage}</PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationNext
-                  disabled={matches.nextPage === null}
-                  onClick={() =>
-                    navigate({
-                      to: ".",
-                      search: (s) => ({ ...s, page: matches.nextPage! }),
-                    })
-                  }
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination> */}
-        </div>
+      <div className={"flex flex-1"}>
+        <MatchList summoner={summoner} queue={queue} />
       </div>
     </div>
   );

@@ -1,0 +1,1 @@
+ALTER TABLE "statistic" DROP COLUMN "main_champion_color";

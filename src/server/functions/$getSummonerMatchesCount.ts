@@ -1,6 +1,6 @@
 import { AccountRegionDTOSchema } from "@/server/api-route/riot/account/AccountDTO";
-import { QueueTypes } from "@/server/api-route/riot/league/LeagueDTO";
-import { LOL_QUEUES } from "@/server/services/Match/queues.type";
+import { LolQueues } from "@/server/api-route/riot/league/LeagueDTO";
+import { LOL_QUEUES } from "@/server/services/match/queues.type";
 import { createServerFn } from "@tanstack/react-start";
 import * as v from "valibot";
 
@@ -9,7 +9,7 @@ export const $getSummonerMatchesCount = createServerFn({ method: "GET" })
     v.object({
       puuid: AccountRegionDTOSchema.entries.puuid,
       region: AccountRegionDTOSchema.entries.region,
-      queue: v.picklist(QueueTypes),
+      queue: v.picklist(LolQueues),
     })
   )
   .handler(async (ctx) => {
@@ -17,7 +17,7 @@ export const $getSummonerMatchesCount = createServerFn({ method: "GET" })
 
     const { region, puuid, queue } = ctx.data;
 
-    const { MatchService } = await import("@/server/services/Match");
+    const { MatchService } = await import("@/server/services/match");
     const data = await MatchService.getMatchesDBCountByPuuid(
       {
         puuid,
@@ -29,7 +29,6 @@ export const $getSummonerMatchesCount = createServerFn({ method: "GET" })
     );
 
     const t1 = performance.now();
-    console.log(`$getSummonerMatches took ${t1 - t0}ms`);
 
     return {
       count: data,

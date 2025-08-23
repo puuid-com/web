@@ -1,7 +1,11 @@
-import type { QueueType } from "@/server/api-route/riot/league/LeagueDTO";
+import type { LolQueueType } from "@/server/api-route/riot/league/LeagueDTO";
+import type {
+  individualPositions,
+  IndividualPositionType,
+} from "@/server/api-route/riot/match/MatchDTO";
 import { user } from "@/server/db/auth-schema";
 import type { LolRegionType } from "@/server/types/riot/common";
-import { relations, sql } from "drizzle-orm";
+import { relations, sql, sum } from "drizzle-orm";
 import {
   pgTable,
   uuid,
@@ -13,6 +17,9 @@ import {
   boolean,
   integer,
   primaryKey,
+  jsonb,
+  numeric,
+  doublePrecision,
 } from "drizzle-orm/pg-core";
 import { uuidv7 } from "uuidv7";
 
@@ -24,9 +31,11 @@ export const leagueEntryTable = pgTable(
       .$defaultFn(() => uuidv7()),
     region: text("region").$type<LolRegionType>().notNull(),
     leagueId: text("league_id").notNull(),
-    puuid: text("puuid").notNull(),
+    puuid: text("puuid")
+      .references(() => summonerTable.puuid, { onDelete: "cascade" })
+      .notNull(),
 
-    queueType: text("queue_type").$type<QueueType>().notNull(),
+    queueType: text("queue_type").$type<LolQueueType>().notNull(),
     tier: text("tier").notNull(),
     rank: text("rank"),
 
@@ -51,6 +60,16 @@ export const leagueEntryTable = pgTable(
   ]
 );
 
+export const leagueEntryTableRelations = relations(
+  leagueEntryTable,
+  ({ one }) => ({
+    summoner: one(summonerTable, {
+      fields: [leagueEntryTable.puuid],
+      references: [summonerTable.puuid],
+    }),
+  })
+);
+
 export const summonerTable = pgTable(
   "summoner",
   {
@@ -66,6 +85,7 @@ export const summonerTable = pgTable(
       onDelete: "cascade",
     }),
     isMain: boolean("is_main").notNull().default(false),
+
     refreshedAt: timestamp("refreshed_at", { withTimezone: true })
       .notNull()
       .defaultNow(),
@@ -73,7 +93,88 @@ export const summonerTable = pgTable(
   (t) => [uniqueIndex("uq_ids_riot_id").on(t.riotId)]
 );
 
+export const summonerTableRelations = relations(summonerTable, ({ many }) => ({
+  statistics: many(statisticTable),
+  leagues: many(leagueEntryTable),
+}));
+
 export type SummonerType = typeof summonerTable.$inferSelect;
 export type InsertSummonerType = typeof summonerTable.$inferInsert;
 
-export type CachedLeagueType = typeof leagueEntryTable.$inferSelect;
+export type StatItemType = {
+  wins: number;
+  losses: number;
+  kills: number;
+  assists: number;
+  deaths: number;
+};
+
+export type StatsByChampionId = (StatItemType & { championId: number })[];
+export type StatsByIndividualPosition = (StatItemType & {
+  individualPosition: IndividualPositionType;
+})[];
+export type StatsByTeamId = (StatItemType & { teamId: number })[];
+
+export const statisticTable = pgTable(
+  "statistic",
+  {
+    puuid: text("puuid")
+      .references(() => summonerTable.puuid, { onDelete: "cascade" })
+      .notNull(),
+    queueType: text("queue_type").$type<LolQueueType>().notNull(),
+
+    latestLeagueEntryId: uuid("latest_league_entry_id")
+      .references(() => leagueEntryTable.id, { onDelete: "set null" })
+      .notNull(),
+    mainIndividualPosition: text(
+      "main_individual_position"
+    ).$type<IndividualPositionType | null>(),
+
+    mainChampionId: integer("main_champion_id").notNull(),
+    mainChampionBackgroundColor: text("main_champion_background_color"),
+    mainChampionForegroundColor: text("main_champion_foreground_color"),
+
+    kills: integer("kills").notNull(),
+    assists: integer("assists").notNull(),
+    deaths: integer("deaths").notNull(),
+
+    averageKda: doublePrecision("average_kda").notNull(),
+    averageKillPerGame: doublePrecision("average_kill_per_game").notNull(),
+    averageDeathPerGame: doublePrecision("average_death_per_game").notNull(),
+    averageAssistPerGame: doublePrecision("average_assist_per_game").notNull(),
+
+    // stats
+    statsByChampionId: jsonb("stats_by_champion_id")
+      .$type<StatsByChampionId>()
+      .notNull(),
+    statsByIndividualPosition: jsonb("stats_by_individual_position")
+      .$type<StatsByIndividualPosition>()
+      .notNull(),
+    statsByOppositeIndividualPositionChampionId: jsonb(
+      "stats_by_opposite_individual_position_champion_id"
+    )
+      .$type<StatsByChampionId>()
+      .notNull(),
+
+    refreshedAt: timestamp("refreshed_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (t) => [primaryKey({ columns: [t.puuid, t.queueType] })]
+);
+
+export const statisticTableRelations = relations(statisticTable, ({ one }) => ({
+  summoner: one(summonerTable, {
+    fields: [statisticTable.puuid],
+    references: [summonerTable.puuid],
+  }),
+  league: one(leagueEntryTable, {
+    fields: [statisticTable.latestLeagueEntryId],
+    references: [leagueEntryTable.id],
+  }),
+}));
+
+export type StatisticRowType = typeof statisticTable.$inferSelect;
+export type InsertStatisticRowType = typeof statisticTable.$inferInsert;
+
+export type LeagueRowType = typeof leagueEntryTable.$inferSelect;
