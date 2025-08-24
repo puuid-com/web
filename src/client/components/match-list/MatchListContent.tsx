@@ -94,7 +94,7 @@ export const MatchListContent = ({ matches, summoner }: Props) => {
 
   const rowVirtualizer = useVirtualizer({
     count: rows.length,
-    getScrollElement: () => parentRef.current,
+    getScrollElement: () => document.querySelector("#body-content"),
     estimateSize: (index) =>
       rows[index]?.type === "header" ? HEADER_ESTIMATE : ITEM_ESTIMATE,
     overscan: 8,

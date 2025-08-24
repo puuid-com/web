@@ -61,7 +61,7 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
           style={{
             height: `calc(100vh - 60px)`,
           }}
-          className={"flex flex-col w-full overflow-auto"}
+          className={"flex flex-col w-full overflow-auto relative isolate"}
         >
           {children}
         </div>

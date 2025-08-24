@@ -25,7 +25,7 @@ function RouteComponent() {
 
   return (
     <div className={"flex gap-10 relative"}>
-      <div className={"flex flex-col gap-10 w-70 sticky top-0"}>
+      <div className={"flex flex-col gap-10 w-70 sticky top-1000"}>
         <SummonerSidebarStatsByChampionId
           statsByChampionId={stats?.statsByChampionId}
           iconName={PawPrintIcon}

@@ -1,3 +1,5 @@
+"use client";
+
 import { Badge } from "@/client/components/ui/badge";
 import { Button } from "@/client/components/ui/button";
 import { DDragonService } from "@/client/services/DDragon";
@@ -10,11 +12,15 @@ import {
   Outlet,
   useLoaderData,
 } from "@tanstack/react-router";
-import { Clock3 } from "lucide-react";
+import { Clock3, PawPrintIcon, RatIcon } from "lucide-react";
 import * as v from "valibot";
 
-import React from "react";
-import { timeago } from "@/client/lib/utils";
+import type React from "react";
+import { useEffect, useState } from "react";
+import { cn, timeago } from "@/client/lib/utils";
+import { SummonerSidebarStatsByChampionId } from "@/client/components/summoner/sidebar/SummonerSidebarStatsByChampion";
+import { MatchList } from "@/client/components/match-list/MatchList";
+import { SummonerSidebarFilters } from "@/client/components/summoner/sidebar/SummonerSidebarFilters";
 
 export const Route = createFileRoute("/lol/summoner/$riotID")({
   component: RouteComponent,
@@ -69,6 +75,55 @@ function RouteComponent() {
   const bgColor = stats?.mainChampionBackgroundColor;
   const textColor = stats?.mainChampionForegroundColor;
 
+  const [scrollY, setScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const bodyContent = document.getElementById("body-content");
+      if (!bodyContent) return;
+
+      const currentScrollY = bodyContent.scrollTop;
+      requestAnimationFrame(() => {
+        setScrollY(currentScrollY);
+      });
+    };
+
+    const bodyContent = document.getElementById("body-content");
+    if (bodyContent) {
+      bodyContent.addEventListener("scroll", handleScroll, { passive: true });
+      return () => bodyContent.removeEventListener("scroll", handleScroll);
+    }
+  }, []);
+
+  const maxScroll = 100;
+  const scrollProgress = Math.min(scrollY / maxScroll, 1);
+
+  console.log(
+    "[v0] scrollY:",
+    scrollY,
+    "scrollProgress:",
+    scrollProgress,
+    "headerHeight:",
+    180 - 60 * scrollProgress
+  );
+
+  const iconSize = 128 - 96 * scrollProgress;
+
+  const statsOpacity = 1 - Math.min(scrollProgress * 3, 1);
+
+  const padding = 20 - 12 * scrollProgress;
+
+  const bgMixPercent = 30 + 70 * scrollProgress;
+
+  const headerHeight = iconSize + padding * 2; // Shrinks from 180px to 120px
+  const gapSize = 20 - 15 * scrollProgress; // Reduces gap from 20px to 5px
+  const titleSize = scrollProgress > 0.3 ? "text-lg" : "text-2xl"; // Smaller title when scrolled
+  const hideSecondaryInfo = scrollProgress > 0.6; // Hide secondary info when mostly scrolled
+
+  const minR = 12;
+  const maxR = iconSize / 2;
+  const borderRadiusPx = minR + (maxR - minR) * scrollProgress;
+
   return (
     <div
       className={"flex flex-col container mx-auto gap-10"}
@@ -79,35 +134,65 @@ function RouteComponent() {
         } as React.CSSProperties
       }
     >
-      <div className={"rounded-b-3xl p-5 relative overflow-hidden bg-main/30"}>
+      <div
+        className={
+          "rounded-b-3xl overflow-hidden sticky top-0 z-10 transition-all duration-300 ease-out"
+        }
+        style={{
+          padding: `${padding}px`,
+          backgroundColor: `color-mix(in oklab, var(--color-main) ${bgMixPercent}%, transparent)`,
+          height: `${headerHeight}px`,
+        }}
+      >
         {stats?.mainChampionId ? (
           <>
             <img
-              src={DDragonService.getChampionLoadingScreenImage(
-                metadata.champions,
-                stats?.mainChampionId
-              )}
+              src={
+                DDragonService.getChampionLoadingScreenImage(
+                  metadata.champions,
+                  stats?.mainChampionId
+                ) ||
+                "/placeholder.svg" ||
+                "/placeholder.svg" ||
+                "/placeholder.svg" ||
+                "/placeholder.svg" ||
+                "/placeholder.svg"
+              }
               alt="Decor"
               className="absolute bottom-[-250px] right-[100px] h-full object-cover scale-400
                mask-l-from-5% opacity-50"
             />
           </>
         ) : null}
-        <div className={"flex flex-col gap-5"}>
+        <div
+          className={cn(
+            "flex flex-col h-full transition-all duration-300 ease-out",
+            scrollProgress > 0.3 ? "justify-start" : "justify-center"
+          )}
+          style={{ gap: `${gapSize}px` }}
+        >
           <div className={"flex gap-2.5"}>
-            <div className={"relative"}>
-              <img
-                src={DDragonService.getProfileIconUrl(
+            <div
+              className="relative flex-shrink-0 object-cover bg-cover"
+              style={{
+                width: `${iconSize}px`,
+                height: `${iconSize}px`,
+                borderRadius: `${borderRadiusPx}px`,
+                backgroundImage: `url(${DDragonService.getProfileIconUrl(
                   metadata.latest_version,
                   summoner.profileIconId
-                )}
-                alt={`${summoner.riotId} profil icon`}
-                className={"w-32 rounded-md"}
-              />
+                )})`,
+                willChange: "border-radius",
+              }}
+            >
               <div
                 className={
-                  "absolute left-1/2 bottom-0 -translate-x-1/2 translate-y-1/2"
+                  "absolute left-1/2 bottom-0 -translate-x-1/2 translate-y-1/2 transition-opacity duration-300 ease-out border-inherit"
                 }
+                style={{
+                  opacity: statsOpacity,
+                  pointerEvents: statsOpacity < 0.1 ? "none" : "auto",
+                }}
               >
                 <Badge
                   variant={"secondary"}
@@ -117,7 +202,12 @@ function RouteComponent() {
                 </Badge>
               </div>
             </div>
-            <div className={"flex flex-col justify-between"}>
+            <div
+              className={cn(
+                "flex flex-col min-w-0 flex-1 transition-all duration-300 ease-out",
+                scrollProgress > 0.3 ? "justify-start" : "justify-between"
+              )}
+            >
               <div>
                 <div className={"flex gap-2.5 items-center"}>
                   <Link
@@ -125,31 +215,50 @@ function RouteComponent() {
                     params={params}
                     search={search}
                   >
-                    <h1 className={"text-2xl"}>
+                    <h1
+                      className={cn(
+                        "transition-all duration-300 ease-out",
+                        titleSize
+                      )}
+                    >
                       <span className={"font-bold"}>{gameName}</span>
                       <span className={"text-neutral-500"}>#{tagLine}</span>
                     </h1>
                   </Link>
                 </div>
-                <div>
-                  <Button size={"xs"} asChild>
-                    <Link
-                      to={"/lol/summoner/$riotID/refresh"}
-                      params={params}
-                      search={search}
-                    >
-                      <Clock3 />
-                      Refreshed{" "}
-                      <span className={"font-bold"}>
-                        {timeago(summoner.refreshedAt)}
-                      </span>{" "}
-                      ago
-                    </Link>
-                  </Button>
-                </div>
+                {!hideSecondaryInfo && (
+                  <div
+                    className="transition-opacity duration-300 ease-out"
+                    style={{
+                      opacity: statsOpacity,
+                      pointerEvents: statsOpacity < 0.1 ? "none" : "auto",
+                    }}
+                  >
+                    <Button size={"xs"} asChild>
+                      <Link
+                        to={"/lol/summoner/$riotID/refresh"}
+                        params={params}
+                        search={search}
+                      >
+                        <Clock3 />
+                        Refreshed{" "}
+                        <span className={"font-bold"}>
+                          {timeago(summoner.refreshedAt)}
+                        </span>{" "}
+                        ago
+                      </Link>
+                    </Button>
+                  </div>
+                )}
               </div>
-              {stats ? (
-                <div>
+              {stats && !hideSecondaryInfo ? (
+                <div
+                  className="transition-opacity duration-300 ease-out"
+                  style={{
+                    opacity: statsOpacity,
+                    pointerEvents: statsOpacity < 0.1 ? "none" : "auto",
+                  }}
+                >
                   <div>Main Position : {stats?.mainIndividualPosition}</div>
                   <div>
                     Main Champion:{" "}
@@ -164,8 +273,32 @@ function RouteComponent() {
           </div>
         </div>
       </div>
-      <div>
-        <Outlet />
+      <div className={"flex gap-10"}>
+        <div
+          className={
+            "flex flex-col gap-10 w-70 sticky self-start basis-70 shrink-0"
+          }
+          style={{
+            top: `${headerHeight + 40}px`,
+          }}
+        >
+          <SummonerSidebarFilters />
+          <SummonerSidebarStatsByChampionId
+            statsByChampionId={stats?.statsByChampionId}
+            iconName={PawPrintIcon}
+            label={"Stats By Champion"}
+          />
+          <SummonerSidebarStatsByChampionId
+            statsByChampionId={
+              stats?.statsByOppositeIndividualPositionChampionId
+            }
+            iconName={RatIcon}
+            label={"Stats by Matchup"}
+          />
+        </div>
+        <div className={"flex flex-1"}>
+          <MatchList summoner={summoner} queue={search.queue} />
+        </div>
       </div>
     </div>
   );
