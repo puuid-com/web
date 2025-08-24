@@ -60,9 +60,7 @@ export function SummonerNeverFetchedNotice({ summoner, queue }: Props) {
         </div>
 
         <div className={"flex flex-col gap-1.5"}>
-          <h3 className="mt-5 text-xl font-semibold tracking-tight">
-            No data yet
-          </h3>
+          <h3 className="mt-5 text-xl font-semibold tracking-tight">No data yet</h3>
           <Button asChild className={"animate-pulse"} size={"sm"}>
             <Link
               to={"/lol/summoner/$riotID/refresh"}

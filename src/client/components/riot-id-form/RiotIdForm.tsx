@@ -1,6 +1,4 @@
-import ChecklistInline, {
-  type Status,
-} from "@/client/components/riot-id-form/helpers";
+import ChecklistInline, { type Status } from "@/client/components/riot-id-form/helpers";
 import { Button } from "@/client/components/ui/button";
 import { Input } from "@/client/components/ui/input";
 import { cn } from "@/client/lib/utils";
@@ -21,7 +19,7 @@ const validationSchema = v.object({
     v.string(),
     v.regex(HAS_FORMAT, "RiotIdForm-#_CHECK"),
     v.regex(GAME_OK, "RiotIdForm-GAME_NAME"),
-    v.regex(TAG_OK, "RiotIdForm-TAG_LINE")
+    v.regex(TAG_OK, "RiotIdForm-TAG_LINE"),
   ),
 });
 
@@ -29,8 +27,8 @@ export function RiotIdForm({ onSuccess }: Props) {
   const form = useForm({
     defaultValues: { riotId: "" },
     validators: { onChange: validationSchema },
-    onSubmit: async ({ value }) => {
-      onSuccess?.(value.riotId);
+    onSubmit: ({ value }) => {
+      onSuccess(value.riotId);
     },
   });
 
@@ -39,6 +37,7 @@ export function RiotIdForm({ onSuccess }: Props) {
       onSubmit={(e) => {
         e.preventDefault();
         e.stopPropagation();
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         form.handleSubmit();
       }}
       className="flex items-start gap-3 w-90"
@@ -53,7 +52,9 @@ export function RiotIdForm({ onSuccess }: Props) {
                 name={field.name}
                 value={field.state.value}
                 onBlur={field.handleBlur}
-                onChange={(e) => field.handleChange(e.target.value)}
+                onChange={(e) => {
+                  field.handleChange(e.target.value);
+                }}
                 placeholder="GameName#TagLine"
                 className="bg-neutral-900 border-neutral-800 text-neutral-200 placeholder:text-neutral-500"
                 aria-describedby={`${field.name}-checks`}
@@ -66,7 +67,7 @@ export function RiotIdForm({ onSuccess }: Props) {
                   "absolute left-0 right-0 top-full z-20 mt-2",
                   "pointer-events-none opacity-0 translate-y-1",
                   "group-focus-within:pointer-events-auto group-focus-within:opacity-100 group-focus-within:translate-y-0",
-                  "transition-[opacity,transform] duration-150"
+                  "transition-[opacity,transform] duration-150",
                 )}
                 aria-live="polite"
               >
@@ -91,13 +92,7 @@ export function RiotIdForm({ onSuccess }: Props) {
   );
 }
 
-function Checks({
-  field,
-  className,
-}: {
-  field: AnyFieldApi;
-  className?: string;
-}) {
+function Checks({ field, className }: { field: AnyFieldApi; className?: string }) {
   const value = String(field.state.value ?? "");
   const statuses = computeStatuses(value);
 

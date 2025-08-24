@@ -1,9 +1,9 @@
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
-import { Button } from "@/client/components/ui/button";
 
 export const Route = createFileRoute("/")({
   component: Home,
   beforeLoad: () => {
+    // eslint-disable-next-line @typescript-eslint/only-throw-error
     throw redirect({
       to: "/lol/summoner",
     });
@@ -14,9 +14,7 @@ function Home() {
   return (
     <div className={"w-full h-full flex items-center justify-center flex-1"}>
       <Link to={"/lol/summoner"}>
-        <h1 className={"text-neutral-900 text-[200px] font-extrabold"}>
-          (League of Legends)
-        </h1>
+        <h1 className={"text-neutral-900 text-[200px] font-extrabold"}>(League of Legends)</h1>
       </Link>
     </div>
   );

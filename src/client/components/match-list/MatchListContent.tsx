@@ -23,11 +23,11 @@ type Row =
 const formatDuration = (totalSec: number) => {
   const h = Math.floor(totalSec / 3600);
   const m = Math.floor((totalSec % 3600) / 60);
-  if (h > 0) return `${h} h ${m} min`;
-  return `${m} min`;
+  if (h > 0) return `${String(h)} h ${String(m)} min`;
+  return `${String(m)} min`;
 };
 
-export const MatchListContent = ({ matches, summoner }: Props) => {
+export const MatchListContent = ({ matches }: Props) => {
   const parentRef = React.useRef<HTMLDivElement | null>(null);
 
   const ITEM_ESTIMATE = 60;
@@ -37,10 +37,7 @@ export const MatchListContent = ({ matches, summoner }: Props) => {
     const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
     // key, label, idxs, and running stats
-    const groups = new Map<
-      string,
-      { label: string; idxs: number[]; stats: GroupStats }
-    >();
+    const groups = new Map<string, { label: string; idxs: number[]; stats: GroupStats }>();
 
     for (let i = 0; i < matches.length; i++) {
       const m = matches[i]!.match;
@@ -74,8 +71,9 @@ export const MatchListContent = ({ matches, summoner }: Props) => {
       bucket.idxs.push(i);
 
       bucket.stats.totalTimePlayed += m.gameDurationSec;
-      if (p.win === true) bucket.stats.wins += 1;
-      else if (p.win === false) bucket.stats.loses += 1;
+
+      if (p.win) bucket.stats.wins += 1;
+      else bucket.stats.loses += 1;
     }
 
     const flat: Row[] = [];
@@ -95,39 +93,30 @@ export const MatchListContent = ({ matches, summoner }: Props) => {
   const rowVirtualizer = useVirtualizer({
     count: rows.length,
     getScrollElement: () => document.querySelector("#body-content"),
-    estimateSize: (index) =>
-      rows[index]?.type === "header" ? HEADER_ESTIMATE : ITEM_ESTIMATE,
+    estimateSize: (index) => (rows[index]?.type === "header" ? HEADER_ESTIMATE : ITEM_ESTIMATE),
     overscan: 8,
-    measureElement: (el) => el?.getBoundingClientRect().height,
+    measureElement: (el) => el.getBoundingClientRect().height,
   });
 
   return (
-    <div
-      ref={parentRef}
-      className={cn("border border-dashed w-full rounded-md", "bg-background")}
-    >
-      <div
-        className="relative w-full"
-        style={{ height: rowVirtualizer.getTotalSize() }}
-      >
+    <div ref={parentRef} className={cn("border border-dashed w-full rounded-md", "bg-background")}>
+      <div className="relative w-full" style={{ height: rowVirtualizer.getTotalSize() }}>
         {rowVirtualizer.getVirtualItems().map((vRow) => {
           const row = rows[vRow.index]!;
           return (
             <div
               data-index={vRow.index}
-              key={row.key + ":" + vRow.index}
+              key={row.key + ":" + String(vRow.index)}
               ref={rowVirtualizer.measureElement}
               className="absolute left-0 top-0 w-full"
-              style={{ transform: `translateY(${vRow.start}px)` }}
+              style={{ transform: `translateY(${String(vRow.start)}px)` }}
             >
               {row.type === "header" ? (
                 <div className="px-3 py-2 border-b bg-main/5 border-dashed justify-between items-center flex">
                   <div className={"flex gap-2.5"}>
                     <div>{row.label}</div>
                     {row.groupStats.loses + row.groupStats.wins > 1 ? (
-                      <div>
-                        {`(${formatDuration(row.groupStats.totalTimePlayed)})`}
-                      </div>
+                      <div>{`(${formatDuration(row.groupStats.totalTimePlayed)})`}</div>
                     ) : null}
                   </div>
                   {row.groupStats.loses + row.groupStats.wins > 1 ? (
@@ -138,7 +127,7 @@ export const MatchListContent = ({ matches, summoner }: Props) => {
                         >{`${((row.groupStats.wins / (row.groupStats.loses + row.groupStats.wins)) * 100).toFixed(0)}% WR`}</div>
                         <div
                           className={"text-tiny"}
-                        >{`${row.groupStats.loses + row.groupStats.wins} matches`}</div>
+                        >{`${String(row.groupStats.loses + row.groupStats.wins)} matches`}</div>
                       </div>
                     </div>
                   ) : null}
@@ -146,8 +135,7 @@ export const MatchListContent = ({ matches, summoner }: Props) => {
               ) : (
                 <div className="border-b border-dashed">
                   {(() => {
-                    const { match: m, match_summoner: p } =
-                      matches[row.matchIndex]!;
+                    const { match: m, match_summoner: p } = matches[row.matchIndex]!;
                     return (
                       <MatchListItem
                         m={m}

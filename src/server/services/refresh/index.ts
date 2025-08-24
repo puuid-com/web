@@ -1,21 +1,12 @@
-import type {
-  LeagueDTOType,
-  LolQueueType,
-} from "@/server/api-route/riot/league/LeagueDTO";
-import { db, type TransactionType } from "@/server/db";
-import type {
-  MatchRowType,
-  MatchWithSummonersType,
-} from "@/server/db/match-schema";
+import type { LolQueueType } from "@/server/api-route/riot/league/LeagueDTO";
+import { db } from "@/server/db";
+import type { MatchRowType, MatchWithSummonersType } from "@/server/db/match-schema";
 import type { LeagueRowType, SummonerType } from "@/server/db/schema";
 import { pipeStep } from "@/server/lib/generator";
 import { SummonerService } from "@/server/services/summoner";
 import { LeagueService } from "@/server/services/league";
-import type { LeaguesType } from "@/server/services/league/type";
 import { LOL_QUEUES } from "@/server/services/match/queues.type";
 import { StatisticService } from "@/server/services/statistic";
-import { SummonerDTOService } from "@/server/services/summoner-dto";
-import type { LolRegionType } from "@/server/types/riot/common";
 
 export type FetchingSummonerSteps = {
   step: "fetching_summoner";
@@ -55,7 +46,7 @@ export type RefreshProgressMsgType =
 export class RefreshService {
   static async *refreshSummonerData(
     puuid: SummonerType["puuid"],
-    queueType: LolQueueType
+    queueType: LolQueueType,
   ): AsyncGenerator<RefreshProgressMsgType, void, void> {
     const queueId = LOL_QUEUES[queueType].queueId;
 
@@ -63,28 +54,28 @@ export class RefreshService {
 
     // progressFetchSummoner()
     const { stream: $summonerStream, result: $summonerResult } = pipeStep(
-      this.progressFetchSummoner(puuid)
+      this.progressFetchSummoner(puuid),
     );
     for await (const msg of $summonerStream) yield msg;
     const summoner = await $summonerResult;
 
     // progressFetchMatches()
     const { stream: $matchesStream, result: $matchesResult } = pipeStep(
-      this.progressFetchMatches(summoner, queueId)
+      this.progressFetchMatches(summoner, queueId),
     );
     for await (const msg of $matchesStream) yield msg;
     const matches = await $matchesResult;
 
     // progressFetchLeagues()
     const { stream: $leaguesStream, result: $leaguesResult } = pipeStep(
-      this.progressFetchLeagues(summoner)
+      this.progressFetchLeagues(summoner),
     );
     for await (const msg of $leaguesStream) yield msg;
     const leagues = await $leaguesResult;
 
     // progressFetchStats()
     const { stream: $statsStream } = pipeStep(
-      this.progressFetchStats(summoner, queueType, leagues, matches)
+      this.progressFetchStats(summoner, queueType, leagues, matches),
     );
     for await (const msg of $statsStream) yield msg;
 
@@ -92,7 +83,7 @@ export class RefreshService {
   }
 
   private static async *progressFetchSummoner(
-    puuid: SummonerType["puuid"]
+    puuid: SummonerType["puuid"],
   ): AsyncGenerator<RefreshProgressMsgType, SummonerType, void> {
     yield { status: "step_started", step: "fetching_summoner" };
 
@@ -101,7 +92,7 @@ export class RefreshService {
     yield { status: "step_in_progress", step: "fetching_summoner" };
 
     const summoner = await db.transaction((tx) =>
-      SummonerService.getSummonerByPuuidTx(tx, puuid, true)
+      SummonerService.getSummonerByPuuidTx(tx, puuid, true),
     );
 
     yield { status: "step_finished", step: "fetching_summoner" };
@@ -111,7 +102,7 @@ export class RefreshService {
 
   private static async *progressFetchMatches(
     id: Pick<SummonerType, "region" | "puuid">,
-    queueId: MatchRowType["queueId"]
+    queueId: MatchRowType["queueId"],
   ): AsyncGenerator<RefreshProgressMsgType, MatchWithSummonersType[], void> {
     const { MatchService } = await import("@/server/services/match");
 
@@ -121,14 +112,11 @@ export class RefreshService {
       status: "step_in_progress",
       step: "fetching_matches",
       matchesToFetch: ids.length,
-      ids: ids,
-    } as any;
+    };
 
     const alreadySaved = await MatchService.getMatchesDBByMatchIds(ids);
 
-    const notSavedIds = ids.filter(
-      (mid) => !alreadySaved.some((m) => m.matchId === mid)
-    );
+    const notSavedIds = ids.filter((mid) => !alreadySaved.some((m) => m.matchId === mid));
 
     if (alreadySaved.length > 0) {
       yield {
@@ -147,7 +135,7 @@ export class RefreshService {
       const end = Math.min(notSavedIds.length, start + batchSize);
       const slice = notSavedIds.slice(start, end);
 
-      const tasks = slice.map((mid, i) => MatchService.getMatchDTOById(mid));
+      const tasks = slice.map((mid) => MatchService.getMatchDTOById(mid));
 
       const newMatches = await Promise.all(tasks);
 
@@ -168,7 +156,7 @@ export class RefreshService {
   }
 
   private static async *progressFetchLeagues(
-    id: Pick<SummonerType, "region" | "puuid">
+    id: Pick<SummonerType, "region" | "puuid">,
   ): AsyncGenerator<RefreshProgressMsgType, LeagueRowType[], void> {
     yield { status: "step_started", step: "fetching_leagues" };
 
@@ -176,9 +164,7 @@ export class RefreshService {
 
     yield { status: "step_in_progress", step: "fetching_leagues" };
 
-    const leagues = await db.transaction((tx) =>
-      LeagueService.cacheLeaguesTx(tx, id)
-    );
+    const leagues = await db.transaction((tx) => LeagueService.cacheLeaguesTx(tx, id));
 
     yield { status: "step_finished", step: "fetching_leagues" };
 
@@ -189,7 +175,7 @@ export class RefreshService {
     id: Pick<SummonerType, "region" | "puuid">,
     queue: LolQueueType,
     leagues: LeagueRowType[],
-    matches: MatchWithSummonersType[]
+    matches: MatchWithSummonersType[],
   ): AsyncGenerator<RefreshProgressMsgType, void, void> {
     yield { status: "step_started", step: "fetching_stats" };
 
@@ -199,13 +185,7 @@ export class RefreshService {
 
     await db.transaction(async (tx) => {
       try {
-        await StatisticService.refreshSummonerStatisticTx(
-          tx,
-          id,
-          queue,
-          leagues,
-          matches
-        );
+        await StatisticService.refreshSummonerStatisticTx(tx, id, queue, leagues, matches);
       } catch (e) {
         console.error("Error fetching stats:", e);
         tx.rollback();

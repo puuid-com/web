@@ -1,10 +1,10 @@
 import ky, { type Options } from "ky";
 import * as v from "valibot";
 
-export const safeFetch = async <S extends v.BaseSchema<any, any, any>>(
+export const safeFetch = async <S extends v.BaseSchema<unknown, unknown, v.BaseIssue<unknown>>>(
   s: S,
   url: string,
-  options?: Options
+  options?: Options,
 ): Promise<v.InferOutput<S>> => {
   options = {
     method: "get",

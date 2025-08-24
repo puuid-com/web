@@ -8,9 +8,7 @@ export type TimeWindow =
   | `${number} hour`
   | `${number} hours`;
 
-export function parseRateLime(
-  rateLimitStr: `${number} requests every ${TimeWindow}`
-): RateLimit {
+export function parseRateLime(rateLimitStr: `${number} requests every ${TimeWindow}`): RateLimit {
   const [requests, timeWindowStr] = rateLimitStr.split(" requests every ");
   return {
     points: Number(requests),
@@ -19,9 +17,8 @@ export function parseRateLime(
 }
 
 export function parseTimeWindow(timeStr: TimeWindow): number {
-  const match = timeStr.match(/(\d+)\s*(second|minute|hour)s?/i);
-  if (!match || match.length < 3)
-    throw new Error(`Invalid time format: ${timeStr}`);
+  const match = /(\d+)\s*(second|minute|hour)s?/i.exec(timeStr);
+  if (!match || match.length < 3) throw new Error(`Invalid time format: ${timeStr}`);
 
   const value = Number.parseInt(match[1]!);
   const unit = match[2]!.toLowerCase();

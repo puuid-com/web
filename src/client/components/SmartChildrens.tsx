@@ -14,20 +14,13 @@ type ShowButtonProps = {
 
 const ShowButton = ({ toggleShowAll, showAll }: ShowButtonProps) => {
   return (
-    <Button
-      onClick={toggleShowAll}
-      className={"m-1.5 w-fit mx-auto"}
-      size={"xs"}
-    >
+    <Button onClick={toggleShowAll} className={"m-1.5 w-fit mx-auto"} size={"xs"}>
       {showAll ? "Show Less" : "Show all"}
     </Button>
   );
 };
 
-export const SmartChildrens = ({
-  children,
-  firstCount = 5,
-}: React.PropsWithChildren<Props>) => {
+export const SmartChildrens = ({ children, firstCount = 5 }: React.PropsWithChildren<Props>) => {
   const [showAll, setShowAll] = React.useState(false);
   const items = React.Children.toArray(children);
   const visible = showAll ? items : items.slice(0, firstCount);
@@ -39,7 +32,9 @@ export const SmartChildrens = ({
       {visible}
       <ShowButton
         showAll={showAll}
-        toggleShowAll={() => setShowAll((s) => !s)}
+        toggleShowAll={() => {
+          setShowAll((s) => !s);
+        }}
       />
     </React.Fragment>
   );

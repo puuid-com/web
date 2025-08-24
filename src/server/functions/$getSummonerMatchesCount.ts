@@ -10,11 +10,9 @@ export const $getSummonerMatchesCount = createServerFn({ method: "GET" })
       puuid: AccountRegionDTOSchema.entries.puuid,
       region: AccountRegionDTOSchema.entries.region,
       queue: v.picklist(LolQueues),
-    })
+    }),
   )
   .handler(async (ctx) => {
-    const t0 = performance.now();
-
     const { region, puuid, queue } = ctx.data;
 
     const { MatchService } = await import("@/server/services/match");
@@ -25,16 +23,12 @@ export const $getSummonerMatchesCount = createServerFn({ method: "GET" })
       },
       {
         queue: LOL_QUEUES[queue].queueId,
-      }
+      },
     );
-
-    const t1 = performance.now();
 
     return {
       count: data,
     };
   });
 
-export type $getSummonerMatchesCountType = Awaited<
-  ReturnType<typeof $getSummonerMatchesCount>
->;
+export type $getSummonerMatchesCountType = Awaited<ReturnType<typeof $getSummonerMatchesCount>>;

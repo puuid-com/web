@@ -1,36 +1,19 @@
 import * as v from "valibot";
 
-const optionalStringToNumber = v.pipe(
-  v.optional(v.string()),
-  v.transform((s) => (s !== undefined ? Number(s) : undefined))
-);
-
 const optionalStringToNumberWithDefault = (optionalValue: number) =>
   v.pipe(v.optional(v.string(), String(optionalValue)), v.transform(Number));
 
-const test = optionalStringToNumber;
-
-type output = v.InferOutput<typeof test>;
-
 export const MatchIDsQueryParamsSchema = v.object({
-  queue: optionalStringToNumber,
+  queue: v.number(),
   type: v.optional(v.string()),
-  startTime: optionalStringToNumber,
-  endTime: optionalStringToNumber,
-  count: optionalStringToNumberWithDefault(10),
+  startTime: v.optional(v.number()),
+  endTime: v.optional(v.number()),
+  count: optionalStringToNumberWithDefault(9999),
   start: optionalStringToNumberWithDefault(0),
 });
-export type MatchIDsQueryParams = v.InferOutput<
-  typeof MatchIDsQueryParamsSchema
->;
 
-export const PagedMatchIDsQueryParamsSchema = MatchIDsQueryParamsSchema;
-export type InputPagedMatchIDsQueryParams = v.InferInput<
-  typeof PagedMatchIDsQueryParamsSchema
->;
-export type OutputPagedMatchIDsQueryParams = v.InferOutput<
-  typeof PagedMatchIDsQueryParamsSchema
->;
+export type InputPagedMatchIDsQueryParams = v.InferInput<typeof MatchIDsQueryParamsSchema>;
+export type OutputPagedMatchIDsQueryParams = v.InferOutput<typeof MatchIDsQueryParamsSchema>;
 
 // You can place this above or below the MatchService class, or in a types file.
 
@@ -71,5 +54,5 @@ export type FormattedMatchDTOType = {
   gameDuration: number;
   queueId: number;
   platformId: string;
-  summoners: Array<FormattedMatchSummonerDTOType>;
+  summoners: FormattedMatchSummonerDTOType[];
 };

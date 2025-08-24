@@ -8,11 +8,7 @@ type Args = { puuid: string; region: LolRegionType; queue: LolQueueType };
 
 export function progressAnswer(args: Args, signal: AbortSignal) {
   return {
-    async *[Symbol.asyncIterator](): AsyncGenerator<
-      RefreshProgressMsgType,
-      void,
-      void
-    > {
+    async *[Symbol.asyncIterator](): AsyncGenerator<RefreshProgressMsgType, void, void> {
       const res = await $streamSimpleProgress({ data: args, signal });
       if (!res.body) return;
 
@@ -42,10 +38,11 @@ export function progressAnswer(args: Args, signal: AbortSignal) {
       async function* streamToAsyncIterable<T>(rs: ReadableStream<T>) {
         const reader = rs.getReader();
         try {
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
           while (true) {
             const { value, done } = await reader.read();
             if (done) break;
-            yield value as T;
+            yield value;
           }
         } finally {
           reader.releaseLock();
@@ -54,12 +51,12 @@ export function progressAnswer(args: Args, signal: AbortSignal) {
 
       for await (const line of streamToAsyncIterable(lines)) {
         try {
-          const msg = JSON.parse(
-            line as unknown as string
-          ) as RefreshProgressMsgType;
+          const msg = JSON.parse(line as unknown as string) as RefreshProgressMsgType;
 
           yield msg;
-        } catch {}
+        } catch {
+          // ignore
+        }
       }
     },
   };

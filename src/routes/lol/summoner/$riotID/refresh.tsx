@@ -1,26 +1,17 @@
 import * as React from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  createFileRoute,
-  Link,
-  useLoaderData,
-  useSearch,
-} from "@tanstack/react-router";
+import { createFileRoute, Link, useLoaderData } from "@tanstack/react-router";
 import { Badge } from "@/client/components/ui/badge";
 import { Button } from "@/client/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/client/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/client/components/ui/card";
 import { Progress } from "@/client/components/ui/progress";
 import { Loader2, CheckCircle2, Circle } from "lucide-react";
 import { toast } from "sonner";
 
 import type { SummonerType } from "@/server/db/schema";
 import { progressQueryOptions } from "@/client/queries/refresh/progress-query";
-import type { RefreshProgressMsgType } from "@/server/services/refresh";
+import type { RefreshProgressMsgType, StepsType } from "@/server/services/refresh";
+import type { LolQueueType } from "@/server/api-route/riot/league/LeagueDTO";
 
 export const Route = createFileRoute("/lol/summoner/$riotID/refresh")({
   component: RouteComponent,
@@ -45,7 +36,7 @@ const initialStepStatus: Record<StepKey, StepState> = {
 
 function reduceProgress(events: RefreshProgressMsgType[]) {
   let globalStatus: "idle" | "started" | "finished" = "idle";
-  let stepStatus: Record<StepKey, StepState> = { ...initialStepStatus };
+  const stepStatus: Record<StepKey, StepState> = { ...initialStepStatus };
   let currentStep: StepKey | null = null;
   let totalMatches: number | null = null;
   let fetchedMatches = 0;
@@ -61,7 +52,7 @@ function reduceProgress(events: RefreshProgressMsgType[]) {
     }
 
     // Step events
-    const step = (ev as any).step as StepKey | undefined;
+    const step = (ev as StepsType).step as StepKey | undefined;
     if (!step) continue;
 
     if (ev.status === "step_started") {
@@ -85,11 +76,9 @@ function reduceProgress(events: RefreshProgressMsgType[]) {
       continue;
     }
 
-    if (ev.status === "step_finished") {
-      stepStatus[step] = "done";
-      if (currentStep === step) currentStep = null;
-      continue;
-    }
+    stepStatus[step] = "done";
+    if (currentStep === step) currentStep = null;
+    continue;
   }
 
   if (globalStatus === "finished") {
@@ -98,8 +87,7 @@ function reduceProgress(events: RefreshProgressMsgType[]) {
   }
 
   const perStep = 100 / stepsOrder.length;
-  const finishedSteps =
-    stepsOrder.filter((s) => stepStatus[s] === "done").length * perStep;
+  const finishedSteps = stepsOrder.filter((s) => stepStatus[s] === "done").length * perStep;
   const partial =
     currentStep === "fetching_matches" && totalMatches && totalMatches > 0
       ? Math.min(1, fetchedMatches / totalMatches) * perStep
@@ -134,8 +122,10 @@ export type SimpleProgressPageProps = {
 function RouteComponent() {
   const [enable, setEnable] = React.useState(false);
 
-  const { summoner } = useLoaderData({ from: "/lol/summoner/$riotID" });
-  const { queue } = useSearch({ from: "/lol/summoner/$riotID" });
+  const { summoner } = useLoaderData({
+    from: "/lol/summoner/$riotID",
+  });
+  const { queue } = { queue: "RANKED_SOLO_5x5" as LolQueueType };
 
   const qc = useQueryClient();
 
@@ -149,16 +139,10 @@ function RouteComponent() {
     enabled: enable,
   });
 
-  const events = q.data ?? [];
+  const events = React.useMemo(() => q.data ?? [], [q.data]);
 
-  const {
-    status,
-    stepStatus,
-    currentStep,
-    totalMatches,
-    fetchedMatches,
-    overallPercent,
-  } = React.useMemo(() => reduceProgress(events), [events]);
+  const { status, stepStatus, currentStep, totalMatches, fetchedMatches, overallPercent } =
+    React.useMemo(() => reduceProgress(events), [events]);
 
   const statusBadgeClass =
     status === "finished"
@@ -169,10 +153,8 @@ function RouteComponent() {
 
   const renderStepIcon = (s: StepKey) => {
     const st = stepStatus[s];
-    if (st === "done")
-      return <CheckCircle2 className="h-4 w-4 text-emerald-400" />;
-    if (st === "active")
-      return <Loader2 className="h-4 w-4 animate-spin text-zinc-200" />;
+    if (st === "done") return <CheckCircle2 className="h-4 w-4 text-emerald-400" />;
+    if (st === "active") return <Loader2 className="h-4 w-4 animate-spin text-zinc-200" />;
     return <Circle className="h-4 w-4 text-zinc-600" />;
   };
 
@@ -187,17 +169,19 @@ function RouteComponent() {
     qc.removeQueries({
       queryKey: ["summoner-progress", summoner.puuid, summoner.region, queue],
     });
-    if (status === "finished")
-      toast.success(`Profil ${summoner.riotId} synchronisé`);
+    if (status === "finished") toast.success(`Profil ${summoner.riotId} synchronisé`);
   };
 
   return (
-    <div className="relative min-h-screen bg-zinc-950 text-zinc-100">
-      <Button onClick={() => setEnable(true)}>Refresh :)</Button>
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 overflow-hidden"
+    <div className="relative bg-zinc-950 text-zinc-100 flex-1">
+      <Button
+        onClick={() => {
+          setEnable(true);
+        }}
       >
+        Refresh :)
+      </Button>
+      <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute -top-24 -left-24 h-72 w-72 rounded-full bg-emerald-500/10 blur-3xl" />
         <div className="absolute -bottom-24 -right-24 h-72 w-72 rounded-full bg-indigo-500/10 blur-3xl" />
       </div>
@@ -209,9 +193,7 @@ function RouteComponent() {
               <Loader2 className="h-5 w-5 animate-spin" />
             ) : null}
             <div>
-              <h1 className="text-lg font-semibold tracking-tight">
-                Mise à jour du profil
-              </h1>
+              <h1 className="text-lg font-semibold tracking-tight">Mise à jour du profil</h1>
               <p className="text-xs text-zinc-400">
                 Synchronisation des données, restez sur la page
               </p>
@@ -251,9 +233,7 @@ function RouteComponent() {
             <CardHeader>
               <CardTitle className="flex items-center justify-between gap-2">
                 <span>Progression globale</span>
-                <span className="text-sm tabular-nums text-zinc-400">
-                  {overallPercent}%
-                </span>
+                <span className="text-sm tabular-nums text-zinc-400">{overallPercent}%</span>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -274,9 +254,7 @@ function RouteComponent() {
                 </div>
                 <div className="rounded-xl border border-zinc-800 bg-zinc-900/30 p-3">
                   <div className="text-zinc-400">Statut</div>
-                  <div className="mt-1 font-medium">
-                    {status === "idle" ? "pending" : status}
-                  </div>
+                  <div className="mt-1 font-medium">{status === "idle" ? "pending" : status}</div>
                 </div>
               </div>
             </CardContent>
@@ -309,9 +287,7 @@ function RouteComponent() {
                       <span className="text-xs tabular-nums text-zinc-400">
                         {Math.min(
                           100,
-                          Math.round(
-                            (fetchedMatches / Math.max(1, totalMatches)) * 100
-                          )
+                          Math.round((fetchedMatches / Math.max(1, totalMatches)) * 100),
                         )}
                         %
                       </span>
@@ -347,18 +323,14 @@ function RouteComponent() {
               </div>
               {currentStep === "fetching_matches" && totalMatches !== null ? (
                 <div className="rounded-xl border border-zinc-800 bg-zinc-900/30 p-3">
-                  <div className="text-sm text-zinc-400">
-                    Téléchargement des matchs
-                  </div>
+                  <div className="text-sm text-zinc-400">Téléchargement des matchs</div>
                   <div className="mt-1 text-sm tabular-nums">
                     {fetchedMatches}/{totalMatches}
                   </div>
                   <Progress
                     value={Math.min(
                       100,
-                      Math.round(
-                        (fetchedMatches / Math.max(1, totalMatches)) * 100
-                      )
+                      Math.round((fetchedMatches / Math.max(1, totalMatches)) * 100),
                     )}
                     className="mt-2 h-1.5 bg-zinc-900"
                   />
@@ -390,9 +362,7 @@ function RouteComponent() {
                 </div>
               ) : (
                 <div className="rounded-xl border border-zinc-800 bg-zinc-900/30 p-3">
-                  <div className="text-sm text-zinc-400">
-                    Besoin d’interrompre
-                  </div>
+                  <div className="text-sm text-zinc-400">Besoin d’interrompre</div>
                   <div className="mt-2 flex items-center gap-2">
                     <Button variant="ghost" onClick={handleCancel}>
                       Annuler

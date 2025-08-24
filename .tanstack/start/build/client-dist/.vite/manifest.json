@@ -1,74 +1,69 @@
 {
   "../../../../../../~start/default-client-entry.tsx": {
-    "file": "assets/main-Cmqr_NjK.js",
+    "file": "assets/main-CGbeZWPF.js",
     "name": "main",
     "src": "../../../../../../~start/default-client-entry.tsx",
     "isEntry": true,
     "dynamicImports": [
       "src/routes/colors.tsx?tsr-split=component",
-      "src/routes/$id.tsx?tsr-split=component",
       "src/routes/lol/route.tsx?tsr-split=component",
       "src/routes/index.tsx?tsr-split=component",
       "src/routes/lol/summoner/index.tsx?tsr-split=component",
       "src/routes/lol/summoner/$riotID/route.tsx?tsr-split=component",
       "src/routes/lol/summoner/$riotID/index.tsx?tsr-split=component",
       "src/routes/lol/summoner/$riotID/stats.tsx?tsr-split=component",
-      "src/routes/lol/summoner/$riotID/refresh.tsx?tsr-split=component"
+      "src/routes/lol/summoner/$riotID/refresh.tsx?tsr-split=component",
+      "src/routes/lol/summoner/$riotID/matches.tsx?tsr-split=component",
+      "src/routes/lol/summoner/$riotID/mastery.tsx?tsr-split=component"
     ],
     "assets": [
-      "assets/app-LpnM5tfp.css"
+      "assets/app-WXB4mTxi.css"
     ]
   },
   "/Users/odeschenes/Documents/git/championsmastery.lol/start/src/client/styles/app.css": {
-    "file": "assets/app-LpnM5tfp.css",
+    "file": "assets/app-WXB4mTxi.css",
     "src": "/Users/odeschenes/Documents/git/championsmastery.lol/start/src/client/styles/app.css"
   },
-  "_badge-DAzccFxR.js": {
-    "file": "assets/badge-DAzccFxR.js",
+  "_badge-DoS3K9_r.js": {
+    "file": "assets/badge-DoS3K9_r.js",
     "name": "badge",
     "imports": [
       "../../../../../../~start/default-client-entry.tsx"
     ]
   },
-  "_loader-circle-B2hfbd1y.js": {
-    "file": "assets/loader-circle-B2hfbd1y.js",
-    "name": "loader-circle",
+  "_index-B-fB-t8l.js": {
+    "file": "assets/index-B-fB-t8l.js",
+    "name": "index",
     "imports": [
       "../../../../../../~start/default-client-entry.tsx"
     ]
   },
-  "_queryOptions-C9woPjwX.js": {
-    "file": "assets/queryOptions-C9woPjwX.js",
-    "name": "queryOptions"
+  "_index-CywOVssP.js": {
+    "file": "assets/index-CywOVssP.js",
+    "name": "index",
+    "imports": [
+      "../../../../../../~start/default-client-entry.tsx"
+    ]
   },
-  "_useQuery-CPOzgXzX.js": {
-    "file": "assets/useQuery-CPOzgXzX.js",
+  "_useQuery-C_bI6VZF.js": {
+    "file": "assets/useQuery-C_bI6VZF.js",
     "name": "useQuery",
     "imports": [
       "../../../../../../~start/default-client-entry.tsx"
     ]
   },
-  "src/routes/$id.tsx?tsr-split=component": {
-    "file": "assets/_id-gBk9jNCp.js",
-    "name": "_id",
-    "src": "src/routes/$id.tsx?tsr-split=component",
-    "isDynamicEntry": true,
-    "imports": [
-      "../../../../../../~start/default-client-entry.tsx"
-    ]
-  },
   "src/routes/colors.tsx?tsr-split=component": {
-    "file": "assets/colors-I9yl3vpR.js",
+    "file": "assets/colors-DpTLgURl.js",
     "name": "colors",
     "src": "src/routes/colors.tsx?tsr-split=component",
     "isDynamicEntry": true,
     "imports": [
       "../../../../../../~start/default-client-entry.tsx",
-      "_useQuery-CPOzgXzX.js"
+      "_useQuery-C_bI6VZF.js"
     ]
   },
   "src/routes/index.tsx?tsr-split=component": {
-    "file": "assets/index-BosyjCtJ.js",
+    "file": "assets/index-DpJdv4Xv.js",
     "name": "index",
     "src": "src/routes/index.tsx?tsr-split=component",
     "isDynamicEntry": true,
@@ -77,7 +72,7 @@
     ]
   },
   "src/routes/lol/route.tsx?tsr-split=component": {
-    "file": "assets/route-XFPEbt_K.js",
+    "file": "assets/route-BRioVgMY.js",
     "name": "route",
     "src": "src/routes/lol/route.tsx?tsr-split=component",
     "isDynamicEntry": true,
@@ -86,41 +81,59 @@
     ]
   },
   "src/routes/lol/summoner/$riotID/index.tsx?tsr-split=component": {
-    "file": "assets/index-DI4qQGIE.js",
+    "file": "assets/index-2jJRpyT4.js",
     "name": "index",
     "src": "src/routes/lol/summoner/$riotID/index.tsx?tsr-split=component",
     "isDynamicEntry": true,
     "imports": [
+      "../../../../../../~start/default-client-entry.tsx"
+    ]
+  },
+  "src/routes/lol/summoner/$riotID/mastery.tsx?tsr-split=component": {
+    "file": "assets/mastery-DSUMfefW.js",
+    "name": "mastery",
+    "src": "src/routes/lol/summoner/$riotID/mastery.tsx?tsr-split=component",
+    "isDynamicEntry": true,
+    "imports": [
+      "../../../../../../~start/default-client-entry.tsx"
+    ]
+  },
+  "src/routes/lol/summoner/$riotID/matches.tsx?tsr-split=component": {
+    "file": "assets/matches-CFGeJHDL.js",
+    "name": "matches",
+    "src": "src/routes/lol/summoner/$riotID/matches.tsx?tsr-split=component",
+    "isDynamicEntry": true,
+    "imports": [
       "../../../../../../~start/default-client-entry.tsx",
-      "_useQuery-CPOzgXzX.js",
-      "_queryOptions-C9woPjwX.js"
+      "_useQuery-C_bI6VZF.js",
+      "_index-B-fB-t8l.js",
+      "_index-CywOVssP.js"
     ]
   },
   "src/routes/lol/summoner/$riotID/refresh.tsx?tsr-split=component": {
-    "file": "assets/refresh-BAhtestJ.js",
+    "file": "assets/refresh-B_hyGcf1.js",
     "name": "refresh",
     "src": "src/routes/lol/summoner/$riotID/refresh.tsx?tsr-split=component",
     "isDynamicEntry": true,
     "imports": [
       "../../../../../../~start/default-client-entry.tsx",
-      "_useQuery-CPOzgXzX.js",
-      "_badge-DAzccFxR.js",
-      "_queryOptions-C9woPjwX.js",
-      "_loader-circle-B2hfbd1y.js"
+      "_useQuery-C_bI6VZF.js",
+      "_badge-DoS3K9_r.js",
+      "_index-B-fB-t8l.js"
     ]
   },
   "src/routes/lol/summoner/$riotID/route.tsx?tsr-split=component": {
-    "file": "assets/route-CEbpCuhQ.js",
+    "file": "assets/route-B-C3ujqw.js",
     "name": "route",
     "src": "src/routes/lol/summoner/$riotID/route.tsx?tsr-split=component",
     "isDynamicEntry": true,
     "imports": [
       "../../../../../../~start/default-client-entry.tsx",
-      "_badge-DAzccFxR.js"
+      "_badge-DoS3K9_r.js"
     ]
   },
   "src/routes/lol/summoner/$riotID/stats.tsx?tsr-split=component": {
-    "file": "assets/stats-DOes_sgt.js",
+    "file": "assets/stats-CFdgcd4_.js",
     "name": "stats",
     "src": "src/routes/lol/summoner/$riotID/stats.tsx?tsr-split=component",
     "isDynamicEntry": true,
@@ -129,14 +142,14 @@
     ]
   },
   "src/routes/lol/summoner/index.tsx?tsr-split=component": {
-    "file": "assets/index-B5_A7Dt5.js",
+    "file": "assets/index-nCMDOz6_.js",
     "name": "index",
     "src": "src/routes/lol/summoner/index.tsx?tsr-split=component",
     "isDynamicEntry": true,
     "imports": [
       "../../../../../../~start/default-client-entry.tsx",
-      "_loader-circle-B2hfbd1y.js",
-      "_badge-DAzccFxR.js"
+      "_index-CywOVssP.js",
+      "_badge-DoS3K9_r.js"
     ]
   }
 }

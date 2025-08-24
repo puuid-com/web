@@ -11,7 +11,7 @@ export function createRouter() {
     routeTree,
     scrollRestoration: true,
     context: { queryClient },
-    defaultNotFoundComponent: (e) => {
+    defaultNotFoundComponent: () => {
       return (
         <div className={"w-screen h-screen flex justify-center items-center"}>
           <h1 className={"text-neutral-800 text-3xl font-bold"}>Not Found</h1>

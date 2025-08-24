@@ -1,1 +1,0 @@
-import{a as t,j as e}from"./main-Cmqr_NjK.js";function r(){const{id:s}=t.useParams();return e.jsx("div",{className:"bg-purple-500 flex flex-1 justify-center items-center",children:e.jsx("div",{children:e.jsxs("h1",{className:"text-3xl break-all",children:["<",s,">"]})})})}export{r as component};

@@ -1,11 +1,4 @@
-import {
-  pgTable,
-  text,
-  integer,
-  boolean,
-  bigint,
-  index,
-} from "drizzle-orm/pg-core";
+import { pgTable, text, integer, boolean, bigint, index } from "drizzle-orm/pg-core";
 import { relations, type InferSelectModel } from "drizzle-orm";
 import type { IndividualPositionType } from "@/server/api-route/riot/match/MatchDTO";
 
@@ -21,7 +14,7 @@ export const matchTable = pgTable(
   (t) => [
     index("idx_match_game_time").on(t.gameCreationMs, t.matchId),
     index("idx_match_queue_time").on(t.queueId, t.gameCreationMs),
-  ]
+  ],
 );
 
 export const matchSummonerTable = pgTable(
@@ -35,9 +28,7 @@ export const matchSummonerTable = pgTable(
     tagLine: text("tag_line").notNull(),
     profileIconId: integer("profile_icon_id").notNull(),
 
-    individualPosition: text("individual_position")
-      .$type<IndividualPositionType>()
-      .notNull(),
+    individualPosition: text("individual_position").$type<IndividualPositionType>().notNull(),
     teamId: integer("team_id").notNull(),
     win: boolean("win").notNull(),
 
@@ -45,9 +36,7 @@ export const matchSummonerTable = pgTable(
     deaths: integer("deaths").notNull(),
     assists: integer("assists").notNull(),
 
-    totalDamageDealtToChampions: integer(
-      "total_damage_dealt_to_champions"
-    ).notNull(),
+    totalDamageDealtToChampions: integer("total_damage_dealt_to_champions").notNull(),
     totalDamageTaken: integer("total_damage_taken").notNull(),
 
     championId: integer("champion_id").notNull(),
@@ -74,22 +63,19 @@ export const matchSummonerTable = pgTable(
     index("idx_fms_puuid").on(t.puuid),
     index("idx_ms_puuid_matchid").on(t.puuid, t.matchId),
     index("idx_ms_match_puuid").on(t.matchId, t.puuid),
-  ]
+  ],
 );
 
 export const matchRelations = relations(matchTable, ({ many }) => ({
   summoners: many(matchSummonerTable),
 }));
 
-export const matchSummonerRelations = relations(
-  matchSummonerTable,
-  ({ one }) => ({
-    match: one(matchTable, {
-      fields: [matchSummonerTable.matchId],
-      references: [matchTable.matchId],
-    }),
-  })
-);
+export const matchSummonerRelations = relations(matchSummonerTable, ({ one }) => ({
+  match: one(matchTable, {
+    fields: [matchSummonerTable.matchId],
+    references: [matchTable.matchId],
+  }),
+}));
 
 export type MatchRowType = typeof matchTable.$inferSelect;
 export type MatchInsertType = typeof matchTable.$inferInsert;

@@ -9,10 +9,7 @@ export const $getSummonerByRiotID = createServerFn({ method: "GET" })
     const { SummonerService } = await import("@/server/services/summoner");
     const { db } = await import("@/server/db");
     const data = await db.transaction(async (tx) => {
-      const data = await SummonerService.getSummonerByRiotIDTx(
-        tx,
-        riotID.replace("-", "#")
-      );
+      const data = await SummonerService.getSummonerByRiotIDTx(tx, riotID.replace("-", "#"));
 
       return {
         summoner: data,

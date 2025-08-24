@@ -7,10 +7,7 @@ import {
 import type { LolRoutingValueType } from "@/server/types/riot/common";
 
 export const AcountRegionV1ByPuuid = new RiotApiRoute({
-  getUrl: (params: {
-    routingValue: LolRoutingValueType;
-    puuid: AccountDTOType["puuid"];
-  }) =>
+  getUrl: (params: { routingValue: LolRoutingValueType; puuid: AccountDTOType["puuid"] }) =>
     `https://${params.routingValue}.api.riotgames.com/riot/account/v1/region/by-game/lol/by-puuid/${params.puuid}`,
   key: `account-v1__region`,
   schema: AccountRegionDTOSchema,
@@ -28,10 +25,7 @@ export const AcountV1ByRiotID = new RiotApiRoute({
 });
 
 export const AcountV1ByPuuid = new RiotApiRoute({
-  getUrl: (params: {
-    routingValue: LolRoutingValueType;
-    puuid: AccountDTOType["puuid"];
-  }) =>
+  getUrl: (params: { routingValue: LolRoutingValueType; puuid: AccountDTOType["puuid"] }) =>
     `https://${params.routingValue}.api.riotgames.com/riot/account/v1/accounts/by-puuid/${params.puuid}`,
   key: `account-v1__by-puuid`,
   schema: AccountDTOSchema,

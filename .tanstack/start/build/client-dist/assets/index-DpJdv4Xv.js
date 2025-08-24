@@ -1,0 +1,1 @@
+import{j as e,L as t}from"./main-CGbeZWPF.js";function s(){return e.jsx("div",{className:"w-full h-full flex items-center justify-center flex-1",children:e.jsx(t,{to:"/lol/summoner",children:e.jsx("h1",{className:"text-neutral-900 text-[200px] font-extrabold",children:"(League of Legends)"})})})}export{s as component};

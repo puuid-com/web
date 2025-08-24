@@ -27,16 +27,12 @@ export default function ChecklistInline({ items, className }: Props) {
         const { text } = stylesFor(it.status ?? "neutral");
         return (
           <li key={it.id} className="flex items-center gap-2 text-sm">
-            <span
-              className={cn("inline-flex h-5 w-5 items-center justify-center")}
-            >
+            <span className={cn("inline-flex h-5 w-5 items-center justify-center")}>
               {statusIcon(it.status ?? "neutral")}
             </span>
             <span className="text-emerald-500">{iconFor(it.icon)}</span>
             <span className={cn("transition-colors", text)}>{it.label}</span>
-            {it.hint && (
-              <span className="ml-2 text-xs text-neutral-500">{it.hint}</span>
-            )}
+            {it.hint && <span className="ml-2 text-xs text-neutral-500">{it.hint}</span>}
           </li>
         );
       })}

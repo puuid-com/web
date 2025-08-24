@@ -22,25 +22,23 @@ export const ChampionsResponseSchema = v.pipe(
     version: v.string(),
   }),
   v.transform((data) => {
-    const flippedData = Object.entries(data.data).reduce(
+    const flippedData = Object.entries(data.data).reduce<Record<string, ChampionResponseType>>(
       (acc, [, value]) => {
         acc[value.key] = value;
 
         return acc;
       },
-      {} as Record<string, ChampionResponseType>
+      {},
     );
 
     return {
       ...data,
       data: flippedData,
     };
-  })
+  }),
 );
 
-export type ChampionsResponseType = v.InferOutput<
-  typeof ChampionsResponseSchema
->;
+export type ChampionsResponseType = v.InferOutput<typeof ChampionsResponseSchema>;
 
 const SummonerSpellSchema = v.object({
   key: v.string(),
@@ -59,7 +57,4 @@ export const SummonerSpellsResponseSchema = v.object({
   data: v.record(SummonerSpellSchema.entries.id, SummonerSpellSchema),
 });
 
-export type FormattedSummonerSpellsType = Record<
-  string,
-  v.InferOutput<typeof SummonerSpellSchema>
->;
+export type FormattedSummonerSpellsType = Record<string, v.InferOutput<typeof SummonerSpellSchema>>;

@@ -3,8 +3,9 @@ import { RiotAPIRateLimiter } from "@/server/api-route/riot/RiotRateLimiter";
 import { type Options } from "ky";
 import * as v from "valibot";
 
-type Schema = v.BaseSchema<any, any, any>;
+type Schema = v.BaseSchema<unknown, unknown, v.BaseIssue<unknown>>;
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars, unused-imports/no-unused-vars
 const keys = RiotAPIRateLimiter.getKeys();
 
 export type ApiRouteConfigs<S extends Schema, P> = {
@@ -33,14 +34,14 @@ export class RiotApiRoute<S extends Schema, P> {
     const url = this.configs.getUrl(param);
 
     try {
-      return await lolClient()(url, options).json();
+      return await lolClient()(url, options).json<unknown>();
     } catch (error) {
       console.error("Error fetching data:", error);
       throw error;
     }
   }
 
-  protected parseData(data: any) {
+  protected parseData(data: unknown): v.InferOutput<S> {
     return v.parse(this.configs.schema, data, { abortEarly: true });
   }
 

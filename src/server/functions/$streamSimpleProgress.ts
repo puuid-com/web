@@ -12,24 +12,22 @@ export const $streamSimpleProgress = createServerFn({
       puuid: v.string(),
       region: v.picklist(LolRegions),
       queue: v.picklist(LolQueues),
-    })
+    }),
   )
   .handler(async ({ data, signal }) => {
     const { RefreshService } = await import("@/server/services/refresh");
 
-    const { puuid, queue, region } = data;
+    const { puuid, queue } = data;
     const encoder = new TextEncoder();
 
     const stream = new ReadableStream<Uint8Array>({
       async start(controller) {
-        const send = (obj: unknown) =>
+        const send = (obj: unknown) => {
           controller.enqueue(encoder.encode(JSON.stringify(obj) + "\n"));
+        };
 
         try {
-          for await (const msg of RefreshService.refreshSummonerData(
-            puuid,
-            queue
-          )) {
+          for await (const msg of RefreshService.refreshSummonerData(puuid, queue)) {
             if (signal.aborted) break;
             send(msg);
           }

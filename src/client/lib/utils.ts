@@ -7,7 +7,7 @@ export function cn(...inputs: ClassValue[]) {
 
 export function timeago(
   input: Date | string,
-  locale: string | string[] = navigator.language
+  locale: string | string[] = navigator.language,
 ): string {
   const date = typeof input === "string" ? new Date(input) : input;
   const now = new Date();

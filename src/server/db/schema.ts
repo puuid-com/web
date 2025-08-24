@@ -1,11 +1,8 @@
 import type { LolQueueType } from "@/server/api-route/riot/league/LeagueDTO";
-import type {
-  individualPositions,
-  IndividualPositionType,
-} from "@/server/api-route/riot/match/MatchDTO";
+import type { IndividualPositionType } from "@/server/api-route/riot/match/MatchDTO";
 import { user } from "@/server/db/auth-schema";
 import type { LolRegionType } from "@/server/types/riot/common";
-import { relations, sql, sum } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import {
   pgTable,
   uuid,
@@ -18,7 +15,6 @@ import {
   integer,
   primaryKey,
   jsonb,
-  numeric,
   doublePrecision,
 } from "drizzle-orm/pg-core";
 import { uuidv7 } from "uuidv7";
@@ -43,41 +39,30 @@ export const leagueEntryTable = pgTable(
     wins: integer("wins").notNull(),
     losses: integer("losses").notNull(),
 
-    createdAt: timestamp("created_at", { withTimezone: true })
-      .notNull()
-      .defaultNow(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     createdDate: date("created_day").generatedAlwaysAs(
-      () => sql`((created_at at time zone 'UTC')::date)`
+      () => sql`((created_at at time zone 'UTC')::date)`,
     ),
   },
   (t) => [
     index("idx_le_puuid").on(t.puuid),
-    uniqueIndex("uq_le_puuid_queue_day").on(
-      t.puuid,
-      t.queueType,
-      t.createdDate
-    ),
-  ]
+    uniqueIndex("uq_le_puuid_queue_day").on(t.puuid, t.queueType, t.createdDate),
+  ],
 );
 
-export const leagueEntryTableRelations = relations(
-  leagueEntryTable,
-  ({ one }) => ({
-    summoner: one(summonerTable, {
-      fields: [leagueEntryTable.puuid],
-      references: [summonerTable.puuid],
-    }),
-  })
-);
+export const leagueEntryTableRelations = relations(leagueEntryTable, ({ one }) => ({
+  summoner: one(summonerTable, {
+    fields: [leagueEntryTable.puuid],
+    references: [summonerTable.puuid],
+  }),
+}));
 
 export const summonerTable = pgTable(
   "summoner",
   {
     puuid: text("puuid").primaryKey(),
     riotId: text("riot_id").notNull(),
-    createdAt: timestamp("created_at", { withTimezone: true })
-      .notNull()
-      .defaultNow(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     profileIconId: integer("profile_icon_id"),
     summonerLevel: integer("summoner_level").notNull(),
     region: text("region").$type<LolRegionType>().notNull(),
@@ -86,11 +71,9 @@ export const summonerTable = pgTable(
     }),
     isMain: boolean("is_main").notNull().default(false),
 
-    refreshedAt: timestamp("refreshed_at", { withTimezone: true })
-      .notNull()
-      .defaultNow(),
+    refreshedAt: timestamp("refreshed_at", { withTimezone: true }).notNull().defaultNow(),
   },
-  (t) => [uniqueIndex("uq_ids_riot_id").on(t.riotId)]
+  (t) => [uniqueIndex("uq_ids_riot_id").on(t.riotId)],
 );
 
 export const summonerTableRelations = relations(summonerTable, ({ many }) => ({
@@ -126,9 +109,7 @@ export const statisticTable = pgTable(
     latestLeagueEntryId: uuid("latest_league_entry_id")
       .references(() => leagueEntryTable.id, { onDelete: "set null" })
       .notNull(),
-    mainIndividualPosition: text(
-      "main_individual_position"
-    ).$type<IndividualPositionType | null>(),
+    mainIndividualPosition: text("main_individual_position").$type<IndividualPositionType | null>(),
 
     mainChampionId: integer("main_champion_id").notNull(),
     mainChampionBackgroundColor: text("main_champion_background_color"),
@@ -144,23 +125,19 @@ export const statisticTable = pgTable(
     averageAssistPerGame: doublePrecision("average_assist_per_game").notNull(),
 
     // stats
-    statsByChampionId: jsonb("stats_by_champion_id")
-      .$type<StatsByChampionId>()
-      .notNull(),
+    statsByChampionId: jsonb("stats_by_champion_id").$type<StatsByChampionId>().notNull(),
     statsByIndividualPosition: jsonb("stats_by_individual_position")
       .$type<StatsByIndividualPosition>()
       .notNull(),
     statsByOppositeIndividualPositionChampionId: jsonb(
-      "stats_by_opposite_individual_position_champion_id"
+      "stats_by_opposite_individual_position_champion_id",
     )
       .$type<StatsByChampionId>()
       .notNull(),
 
-    refreshedAt: timestamp("refreshed_at", { withTimezone: true })
-      .notNull()
-      .defaultNow(),
+    refreshedAt: timestamp("refreshed_at", { withTimezone: true }).notNull().defaultNow(),
   },
-  (t) => [primaryKey({ columns: [t.puuid, t.queueType] })]
+  (t) => [primaryKey({ columns: [t.puuid, t.queueType] })],
 );
 
 export const statisticTableRelations = relations(statisticTable, ({ one }) => ({
@@ -176,5 +153,14 @@ export const statisticTableRelations = relations(statisticTable, ({ one }) => ({
 
 export type StatisticRowType = typeof statisticTable.$inferSelect;
 export type InsertStatisticRowType = typeof statisticTable.$inferInsert;
+
+export type StatisticWithLeagueType = StatisticRowType & {
+  league: LeagueRowType;
+};
+
+export type SummonerWithRelationsType = SummonerType & {
+  statistics: StatisticWithLeagueType[];
+  leagues: LeagueRowType[];
+};
 
 export type LeagueRowType = typeof leagueEntryTable.$inferSelect;

@@ -44,8 +44,8 @@ export const $getPuuidFromID = createServerFn({ method: "GET" })
       v.object({
         id: v.string(),
       }),
-      raw
-    )
+      raw,
+    ),
   )
   .handler(async (ctx) => {
     const { id } = ctx.data;
@@ -62,9 +62,7 @@ export const $getPuuidFromID = createServerFn({ method: "GET" })
 
     const { SummonerService } = await import("@/server/services/summoner");
     const { db } = await import("@/server/db");
-    const summoner = await db.transaction((tx) =>
-      SummonerService.getSummonerByRiotIDTx(tx, id)
-    );
+    const summoner = await db.transaction((tx) => SummonerService.getSummonerByRiotIDTx(tx, id));
 
     return summoner.puuid;
   });

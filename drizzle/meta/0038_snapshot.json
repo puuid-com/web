@@ -93,12 +93,8 @@
           "name": "account_user_id_user_id_fk",
           "tableFrom": "account",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -168,12 +164,8 @@
           "name": "session_user_id_user_id_fk",
           "tableFrom": "session",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -183,9 +175,7 @@
         "session_token_unique": {
           "name": "session_token_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "token"
-          ]
+          "columns": ["token"]
         }
       },
       "policies": {},
@@ -253,9 +243,7 @@
         "user_email_unique": {
           "name": "user_email_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "email"
-          ]
+          "columns": ["email"]
         }
       },
       "policies": {},
@@ -536,12 +524,8 @@
           "name": "match_summoner_match_id_match_match_id_fk",
           "tableFrom": "match_summoner",
           "tableTo": "match",
-          "columnsFrom": [
-            "match_id"
-          ],
-          "columnsTo": [
-            "match_id"
-          ],
+          "columnsFrom": ["match_id"],
+          "columnsTo": ["match_id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -726,12 +710,8 @@
           "name": "league_entry_puuid_summoner_puuid_fk",
           "tableFrom": "league_entry",
           "tableTo": "summoner",
-          "columnsFrom": [
-            "puuid"
-          ],
-          "columnsTo": [
-            "puuid"
-          ],
+          "columnsFrom": ["puuid"],
+          "columnsTo": ["puuid"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -862,12 +842,8 @@
           "name": "statistic_puuid_summoner_puuid_fk",
           "tableFrom": "statistic",
           "tableTo": "summoner",
-          "columnsFrom": [
-            "puuid"
-          ],
-          "columnsTo": [
-            "puuid"
-          ],
+          "columnsFrom": ["puuid"],
+          "columnsTo": ["puuid"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -875,12 +851,8 @@
           "name": "statistic_latest_league_entry_id_league_entry_id_fk",
           "tableFrom": "statistic",
           "tableTo": "league_entry",
-          "columnsFrom": [
-            "latest_league_entry_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["latest_league_entry_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -888,10 +860,7 @@
       "compositePrimaryKeys": {
         "statistic_puuid_queue_type_pk": {
           "name": "statistic_puuid_queue_type_pk",
-          "columns": [
-            "puuid",
-            "queue_type"
-          ]
+          "columns": ["puuid", "queue_type"]
         }
       },
       "uniqueConstraints": {},
@@ -983,12 +952,8 @@
           "name": "summoner_user_id_user_id_fk",
           "tableFrom": "summoner",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }

@@ -4,38 +4,29 @@ import {
   MatchIdsV5ByPuuid,
   MatchV5ByID,
 } from "@/server/api-route/riot/match/MatchRoutes";
-import type { OutputPagedMatchIDsQueryParams } from "@/server/services/match/type";
 import {
-  routingValueFromRegion,
-  type LolRegionType,
-} from "@/server/types/riot/common";
-import {
-  and,
-  asc,
-  desc,
-  eq,
-  exists,
-  ilike,
-  inArray,
-  isNotNull,
-  sql,
-} from "drizzle-orm";
+  MatchIDsQueryParamsSchema,
+  type InputPagedMatchIDsQueryParams,
+  type OutputPagedMatchIDsQueryParams,
+} from "@/server/services/match/type";
+import { routingValueFromRegion, type LolRegionType } from "@/server/types/riot/common";
+import { and, desc, eq, exists, ilike, inArray, sql } from "drizzle-orm";
 import { db, type TransactionType } from "@/server/db";
 import type { SummonerType } from "@/server/db/schema";
 import {
   matchTable,
   matchSummonerTable,
-  type MatchSummonerInsertType,
   type MatchInsertType,
   type MatchRowType,
   type MatchWithSummonersType,
   type MatchSummonerRowType,
 } from "@/server/db/match-schema";
+import * as v from "valibot";
 
 export class MatchService {
   private static riotMatchQueryParamsToCacheWhereConditions(
     summoner: Pick<SummonerType, "region" | "puuid">,
-    params: OutputPagedMatchIDsQueryParams
+    params: OutputPagedMatchIDsQueryParams,
   ) {
     const conditions = [ilike(matchTable.matchId, `${summoner.region}_%`)];
 
@@ -48,28 +39,25 @@ export class MatchService {
 
   static async getMatchIdsDTOByPuuidPaged(
     summoner: Pick<SummonerType, "region" | "puuid">,
-    params: OutputPagedMatchIDsQueryParams
+    params: OutputPagedMatchIDsQueryParams,
   ) {
     const ids = await MatchIdsV5ByPuuid.call(
       {
         routingValue: routingValueFromRegion(summoner.region),
         puuid: summoner.puuid,
       },
-      { searchParams: params }
+      { searchParams: params },
     );
 
     return {
       ids,
-      next_start:
-        ids.length === params.count ? params.start + params.count : null,
+      next_start: ids.length === params.count ? params.start + params.count : null,
     };
   }
 
   static async getMatchTimelineDTOById(id: string) {
     return MatchTimelineV5ByID.call({
-      routingValue: routingValueFromRegion(
-        id.split("_")[0]!.toLowerCase() as LolRegionType
-      ),
+      routingValue: routingValueFromRegion(id.split("_")[0]!.toLowerCase() as LolRegionType),
       id,
     });
   }
@@ -97,56 +85,54 @@ export class MatchService {
       platformId: matchDTO.info.platformId,
     };
 
-    const summoners: MatchSummonerRowType[] = matchDTO.info.participants.map(
-      (p) => {
-        const position = p.individualPosition;
-        const vsSummoner = matchDTO.info.participants.find(
-          (s) => s.individualPosition === position && s.puuid !== p.puuid
-        );
+    const summoners: MatchSummonerRowType[] = matchDTO.info.participants.map((p) => {
+      const position = p.individualPosition;
+      const vsSummoner = matchDTO.info.participants.find(
+        (s) => s.individualPosition === position && s.puuid !== p.puuid,
+      );
 
-        const vsSummonerPuuid = vsSummoner?.puuid ?? null;
+      const vsSummonerPuuid = vsSummoner?.puuid ?? null;
 
-        return {
-          matchId: matchDTO.metadata.matchId,
-          puuid: p.puuid,
-          gameName: p.riotIdGameName,
-          tagLine: p.riotIdTagline,
-          profileIconId: p.profileIcon,
+      return {
+        matchId: matchDTO.metadata.matchId,
+        puuid: p.puuid,
+        gameName: p.riotIdGameName,
+        tagLine: p.riotIdTagline,
+        profileIconId: p.profileIcon,
 
-          individualPosition: position,
+        individualPosition: position,
 
-          teamId: p.teamId,
-          win: p.win,
+        teamId: p.teamId,
+        win: p.win,
 
-          kills: p.kills,
-          deaths: p.deaths,
-          assists: p.assists,
+        kills: p.kills,
+        deaths: p.deaths,
+        assists: p.assists,
 
-          totalDamageDealtToChampions: p.totalDamageDealtToChampions,
-          totalDamageTaken: p.totalDamageTaken,
+        totalDamageDealtToChampions: p.totalDamageDealtToChampions,
+        totalDamageTaken: p.totalDamageTaken,
 
-          championId: p.championId,
-          champLevel: p.champLevel,
+        championId: p.championId,
+        champLevel: p.champLevel,
 
-          items: [p.item0, p.item1, p.item2, p.item3, p.item4, p.item5],
+        items: [p.item0, p.item1, p.item2, p.item3, p.item4, p.item5],
 
-          cs: p.totalMinionsKilled,
+        cs: p.totalMinionsKilled,
 
-          vsSummonerPuuid: vsSummonerPuuid,
+        vsSummonerPuuid: vsSummonerPuuid,
 
-          damageDealtToObjectives: p.damageDealtToObjectives,
-          dragonKills: p.dragonKills,
-          visionScore: p.visionScore,
-          largestCriticalStrike: p.largestCriticalStrike,
-          soloKills: 0,
-          wardTakedowns: p.wardsKilled,
-          inhibitorKills: p.inhibitorKills,
-          turretKills: p.turretKills,
+        damageDealtToObjectives: p.damageDealtToObjectives,
+        dragonKills: p.dragonKills,
+        visionScore: p.visionScore,
+        largestCriticalStrike: p.largestCriticalStrike,
+        soloKills: 0,
+        wardTakedowns: p.wardsKilled,
+        inhibitorKills: p.inhibitorKills,
+        turretKills: p.turretKills,
 
-          spellIds: [p.summoner1Id, p.summoner2Id],
-        };
-      }
-    );
+        spellIds: [p.summoner1Id, p.summoner2Id],
+      };
+    });
 
     return {
       match,
@@ -157,14 +143,10 @@ export class MatchService {
   static async getMatchesDTOByPuuid(
     id: Pick<SummonerType, "region" | "puuid">,
     params: OutputPagedMatchIDsQueryParams,
-    refresh: boolean = false
   ) {
-    const { ids, next_start } = await MatchService.getMatchIdsDTOByPuuidPaged(
-      id,
-      params
-    );
+    const { ids, next_start } = await MatchService.getMatchIdsDTOByPuuidPaged(id, params);
 
-    const matches = await Promise.all(ids.map(this.getMatchDTOById));
+    const matches = await Promise.all(ids.map((id) => this.getMatchDTOById(id)));
 
     return {
       data: matches,
@@ -183,31 +165,27 @@ export class MatchService {
 
   static async getMatchesDBByPuuidSmall(
     id: Pick<SummonerType, "region" | "puuid">,
-    params: OutputPagedMatchIDsQueryParams
+    params: InputPagedMatchIDsQueryParams,
   ) {
-    const conditions = this.riotMatchQueryParamsToCacheWhereConditions(
-      id,
-      params
-    );
+    const _param = v.parse(MatchIDsQueryParamsSchema, params);
+
+    const conditions = this.riotMatchQueryParamsToCacheWhereConditions(id, _param);
 
     return db
       .select()
       .from(matchSummonerTable)
       .innerJoin(matchTable, eq(matchSummonerTable.matchId, matchTable.matchId))
       .where(and(eq(matchSummonerTable.puuid, id.puuid), conditions))
-      .limit(params.count)
-      .offset(params.start)
+      .limit(_param.count)
+      .offset(_param.start)
       .orderBy(desc(matchTable.gameCreationMs), desc(matchTable.matchId));
   }
 
   static async getMatchesDBByPuuidFull(
     id: Pick<SummonerType, "region" | "puuid">,
-    params: OutputPagedMatchIDsQueryParams
+    params: OutputPagedMatchIDsQueryParams,
   ) {
-    const conditions = this.riotMatchQueryParamsToCacheWhereConditions(
-      id,
-      params
-    );
+    const conditions = this.riotMatchQueryParamsToCacheWhereConditions(id, params);
 
     return db.query.matchTable.findMany({
       with: {
@@ -224,10 +202,10 @@ export class MatchService {
               .where(
                 and(
                   eq(matchSummonerTable.matchId, mt.matchId),
-                  eq(matchSummonerTable.puuid, id.puuid)
-                )
-              )
-          )
+                  eq(matchSummonerTable.puuid, id.puuid),
+                ),
+              ),
+          ),
         ),
       limit: params.count,
       offset: params.start,
@@ -238,7 +216,7 @@ export class MatchService {
 
   static async getMatchesDBCountByPuuid(
     id: Pick<SummonerType, "region" | "puuid">,
-    params: Pick<OutputPagedMatchIDsQueryParams, "queue">
+    params: Pick<OutputPagedMatchIDsQueryParams, "queue">,
   ) {
     const result = await db
       .select({ count: sql<number>`cast(count(*) as int)` })
@@ -254,11 +232,11 @@ export class MatchService {
               .where(
                 and(
                   eq(matchSummonerTable.matchId, matchTable.matchId),
-                  eq(matchSummonerTable.puuid, id.puuid)
-                )
-              )
-          )
-        )
+                  eq(matchSummonerTable.puuid, id.puuid),
+                ),
+              ),
+          ),
+        ),
       );
 
     return result[0]?.count ?? 0;
@@ -266,7 +244,7 @@ export class MatchService {
 
   public static async _getAllMatcheIdsDTOByPuuid(
     id: Pick<SummonerType, "region" | "puuid">,
-    queueId: MatchRowType["queueId"]
+    queueId: MatchRowType["queueId"],
   ) {
     const ids: MatchRowType["matchId"][] = [];
 
@@ -294,17 +272,15 @@ export class MatchService {
 
   public static async saveMatchesDTOtoDBTx(
     tx: TransactionType,
-    matches: MatchDTOType[]
+    matches: MatchDTOType[],
   ): Promise<MatchWithSummonersType[]> {
     if (matches.length === 0) return [];
 
     const BATCH = 100;
 
-    const dbData = matches.map(this.matchDTOtoDB);
+    const dbData = matches.map((m) => this.matchDTOtoDB(m));
     const dbMatches: MatchRowType[] = dbData.flatMap(({ match }) => match);
-    const dbSummoners: MatchSummonerRowType[] = dbData.flatMap(
-      ({ summoners }) => summoners
-    );
+    const dbSummoners: MatchSummonerRowType[] = dbData.flatMap(({ summoners }) => summoners);
 
     for (let i = 0; i < dbMatches.length; i += BATCH) {
       const chunk = dbMatches.slice(i, i + BATCH);
@@ -329,18 +305,14 @@ export class MatchService {
   public static async getAllMatchesDTOByPuuidTx(
     tx: TransactionType,
     id: Pick<SummonerType, "region" | "puuid">,
-    queueId: MatchRowType["queueId"]
+    queueId: MatchRowType["queueId"],
   ) {
     const ids = await this._getAllMatcheIdsDTOByPuuid(id, queueId);
 
     const alreadySavedMatches = await this.getMatchesDBByMatchIds(ids);
-    const notSavedMatchIds = ids.filter(
-      (id) => !alreadySavedMatches.some((m) => m.matchId === id)
-    );
+    const notSavedMatchIds = ids.filter((id) => !alreadySavedMatches.some((m) => m.matchId === id));
 
-    const newMatches = await Promise.all(
-      notSavedMatchIds.map(this.getMatchDTOById)
-    );
+    const newMatches = await Promise.all(notSavedMatchIds.map((id) => this.getMatchDTOById(id)));
 
     await this.saveMatchesDTOtoDBTx(tx, newMatches);
   }

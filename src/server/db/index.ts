@@ -14,6 +14,4 @@ export const db = drizzle({
   logger: false,
 });
 
-export type TransactionType = Parameters<
-  Parameters<typeof db.transaction>[0]
->[0];
+export type TransactionType = Parameters<Parameters<typeof db.transaction>[0]>[0];

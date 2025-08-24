@@ -276,8 +276,8 @@ const InfoDTOSchema = v.object({
       v.object({
         participantId: v.number(),
         puuid: v.string(),
-      })
-    )
+      }),
+    ),
   ),
 });
 
@@ -293,7 +293,5 @@ export const MatchTimelineDTOSchema = v.object({
 });
 
 // exports demandés
-export type MatchTimelineEventEventDTOType = v.InferOutput<
-  typeof EventDTOSchema
->;
+export type MatchTimelineEventEventDTOType = v.InferOutput<typeof EventDTOSchema>;
 export type MatchTimelineDTOType = v.InferOutput<typeof MatchTimelineDTOSchema>;

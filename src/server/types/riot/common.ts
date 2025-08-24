@@ -28,9 +28,7 @@ export type LolRoutingValueType = (typeof LolRoutingValues)[number];
 export const RiotIdSchema = pipe(string(), trim(), regex(/.*#.*/));
 export type RiotIdSchemaType = InferOutput<typeof RiotIdSchema>;
 
-export function routingValueFromRegion(
-  region: LolRegionType
-): LolRoutingValueType {
+export function routingValueFromRegion(region: LolRegionType): LolRoutingValueType {
   const platformToRegionMap: Record<LolRegionType, LolRoutingValueType> = {
     na1: "americas",
     br1: "americas",

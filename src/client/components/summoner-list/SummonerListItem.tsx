@@ -10,9 +10,7 @@ type Props = {
 export const SummonerListItem = ({ s }: Props) => {
   const metadata = useLoaderData({ from: "/lol" });
 
-  const soloDuoStats = s.statistics.find(
-    (s) => s.queueType === "RANKED_SOLO_5x5"
-  );
+  const soloDuoStats = s.statistics.find((s) => s.queueType === "RANKED_SOLO_5x5");
   const bgColor = soloDuoStats?.mainChampionBackgroundColor;
   const textColor = soloDuoStats?.mainChampionForegroundColor;
 
@@ -20,9 +18,7 @@ export const SummonerListItem = ({ s }: Props) => {
 
   return (
     <Link
-      className={
-        "bg-main/30 hover:bg-main/50 p-2.5 rounded-md h-[80px] flex items-center"
-      }
+      className={"bg-main/30 hover:bg-main/50 p-2.5 rounded-md h-[80px] flex items-center"}
       key={`default-link-${s.puuid}`}
       to={"/lol/summoner/$riotID"}
       params={{ riotID: s.riotId.replace("#", "-") }}
@@ -42,7 +38,7 @@ export const SummonerListItem = ({ s }: Props) => {
           style={{
             backgroundImage: `url(${DDragonService.getProfileIconUrl(
               metadata.latest_version,
-              s.profileIconId
+              s.profileIconId,
             )})`,
           }}
         >
@@ -72,7 +68,7 @@ export const SummonerListItem = ({ s }: Props) => {
                 src={DDragonService.getChampionIconUrlFromParticipant(
                   metadata.champions,
                   metadata.latest_version,
-                  { championId: soloDuoStats.mainChampionId }
+                  { championId: soloDuoStats.mainChampionId },
                 )}
                 alt=""
               />
@@ -80,7 +76,7 @@ export const SummonerListItem = ({ s }: Props) => {
                 <span className={"font-bold"}>
                   {DDragonService.getChampionName(
                     metadata.champions,
-                    soloDuoStats.mainChampionId
+                    soloDuoStats.mainChampionId,
                   )}{" "}
                 </span>
                 main
@@ -89,9 +85,7 @@ export const SummonerListItem = ({ s }: Props) => {
           ) : null}
         </div>
         {soloLeague ? (
-          <div
-            className={"flex ml-auto flex-col gap-0.5 justify-center items-end"}
-          >
+          <div className={"flex ml-auto flex-col gap-0.5 justify-center items-end"}>
             <div>{`${soloLeague.tier} ${soloLeague.rank} — ${soloLeague.leaguePoints}LP`}</div>
             <div>{`${soloLeague.wins + soloLeague.losses} matches — ${((100 * soloLeague.wins) / (soloLeague.wins + soloLeague.losses)).toFixed(0)}%`}</div>
           </div>

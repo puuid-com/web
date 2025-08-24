@@ -25,15 +25,9 @@ export class CacheService {
     const buffer = Buffer.from(content, "utf-8");
     const objectKey = this.buildKey(id, dir);
 
-    const cachedData = await r2.putObject(
-      BUCKET,
-      objectKey,
-      buffer,
-      buffer.byteLength,
-      {
-        "Content-Type": "application/json",
-      }
-    );
+    const cachedData = await r2.putObject(BUCKET, objectKey, buffer, buffer.byteLength, {
+      "Content-Type": "application/json",
+    });
 
     return cachedData;
   }
@@ -47,23 +41,24 @@ export class CacheService {
       const chunks: Uint8Array[] = [];
 
       for await (const chunk of stream) {
-        chunks.push(chunk);
+        chunks.push(chunk as Uint8Array);
       }
 
       content = Buffer.concat(chunks).toString("utf-8");
     } catch (e) {
+      console.error("Error getting file from cache:", e);
       return null;
     }
 
     try {
-      return JSON.parse(content);
+      return JSON.parse(content) as T;
     } catch {
       await this.deleteFileFromCache(id, dir);
       return null;
     }
   }
 
-  static async deleteFileFromCache<T>(id: string, dir: CacheDir) {
+  static async deleteFileFromCache(id: string, dir: CacheDir) {
     const objectKey = this.buildKey(id, dir);
     try {
       await r2.removeObject(BUCKET, objectKey);
@@ -74,7 +69,7 @@ export class CacheService {
 
   static async tryGetFilesFromCache<T>(ids: string[], dir: CacheDir) {
     const results = await Promise.all(
-      ids.map(async (id) => CacheService.tryGetFileFromCache<T>(id, dir))
+      ids.map(async (id) => CacheService.tryGetFileFromCache<T>(id, dir)),
     );
 
     return results.filter(Boolean) as T[];

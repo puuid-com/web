@@ -46,8 +46,7 @@ export const SummonerList = ({ summoners }: Props) => {
   const virtualizer = useVirtualizer({
     count: rows.length,
     getScrollElement: () => parentRef.current,
-    estimateSize: (i) =>
-      rows[i]!.type === "header" ? HEADER_ESTIMATE : ITEM_ESTIMATE,
+    estimateSize: (i) => (rows[i]!.type === "header" ? HEADER_ESTIMATE : ITEM_ESTIMATE),
     overscan: 10,
   });
 
@@ -63,18 +62,12 @@ export const SummonerList = ({ summoners }: Props) => {
 
   // padding haut et bas pour caler le bloc visible dans la grande hauteur virtuelle
   const padTop = items[0]?.start ?? 0;
-  const padBot =
-    items.length > 0
-      ? virtualizer.getTotalSize() - items[items.length - 1]!.end
-      : 0;
+  const padBot = items.length > 0 ? virtualizer.getTotalSize() - items[items.length - 1]!.end : 0;
 
   return (
     <div ref={parentRef} className="h-full w-full overflow-auto">
       <div className="mx-auto max-w-7xl px-10 py-4">
-        <div
-          className="w-full flex flex-col"
-          style={{ paddingTop: padTop, paddingBottom: padBot }}
-        >
+        <div className="w-full flex flex-col" style={{ paddingTop: padTop, paddingBottom: padBot }}>
           {items.map((vi) => {
             const row = rows[vi.index]!;
 
@@ -92,11 +85,7 @@ export const SummonerList = ({ summoners }: Props) => {
             }
 
             return (
-              <div
-                key={row.key}
-                className="w-full mb-2"
-                style={{ height: vi.size }}
-              >
+              <div key={row.key} className="w-full mb-2" style={{ height: vi.size }}>
                 <SummonerListItem s={row.s} />
               </div>
             );

@@ -1,12 +1,6 @@
 /// <reference types="vite/client" />
 import type { ReactNode } from "react";
-import {
-  Outlet,
-  createRootRoute,
-  HeadContent,
-  Scripts,
-  createRootRouteWithContext,
-} from "@tanstack/react-router";
+import { Outlet, HeadContent, Scripts, createRootRouteWithContext } from "@tanstack/react-router";
 import { QueryClient } from "@tanstack/react-query";
 import appCss from "@/client/styles/app.css?url";
 import { Toaster } from "sonner";
@@ -51,9 +45,7 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
         <HeadContent />
       </head>
       <body
-        className={
-          "flex flex-col dark bg-neutral-950 text-neutral-300 overflow-hidden scrollbar"
-        }
+        className={"flex flex-col dark bg-neutral-950 text-neutral-300 overflow-hidden scrollbar"}
       >
         <Navbar />
         <div

@@ -18,9 +18,7 @@ export type DDragonMetadata = {
 
 export class DDragonService {
   private static async getVersions() {
-    const response = await ky
-      .get(`https://ddragon.leagueoflegends.com/api/versions.json`)
-      .json();
+    const response = await ky.get(`https://ddragon.leagueoflegends.com/api/versions.json`).json();
 
     return v.parse(VersionsResponseSchema, response);
   }
@@ -62,7 +60,7 @@ export class DDragonService {
 
   static getChampionIconUrl(
     version: string,
-    imageFull: ChampionsResponseType["data"][number]["image"]["full"]
+    imageFull: ChampionsResponseType["data"][number]["image"]["full"],
   ) {
     return `https://ddragon.leagueoflegends.com/cdn/${version}/img/champion/${imageFull}`;
   }
@@ -70,21 +68,21 @@ export class DDragonService {
   static getChampionIconUrlFromParticipant(
     champions: ChampionsResponseType["data"],
     version: string,
-    p: Pick<MatchSummonerRowType, "championId">
+    p: Pick<MatchSummonerRowType, "championId">,
   ) {
     return `https://ddragon.leagueoflegends.com/cdn/${version}/img/champion/${champions[p.championId]!.image.full}`;
   }
 
   static getChampionSplash(
     champions: ChampionsResponseType["data"],
-    championId: MatchSummonerRowType["championId"]
+    championId: MatchSummonerRowType["championId"],
   ) {
     return `https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${champions[championId]!.name}_0.jpg`;
   }
 
   static getChampionLoadingScreenImage(
     champions: ChampionsResponseType["data"],
-    championId: MatchSummonerRowType["championId"]
+    championId: MatchSummonerRowType["championId"],
   ) {
     return `https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${champions[championId]!.id}_0.jpg`;
   }
@@ -92,7 +90,7 @@ export class DDragonService {
   static getSummonerSpellIconUrl(
     summoner_spells: FormattedSummonerSpellsType,
     version: string,
-    id: MatchSummonerRowType["spellIds"][number]
+    id: MatchSummonerRowType["spellIds"][number],
   ) {
     return `https://ddragon.leagueoflegends.com/cdn/${version}/img/spell/${summoner_spells[id]!.image.full}`;
   }

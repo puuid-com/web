@@ -1,10 +1,7 @@
-import { statisticTable } from "@/server/db/schema";
 import { getTableColumns, SQL, sql } from "drizzle-orm";
 import type { PgTable } from "drizzle-orm/pg-core";
 
-export const upsert = <T extends PgTable, Q extends keyof T["_"]["columns"]>(
-  table: T
-) => {
+export const upsert = <T extends PgTable, Q extends keyof T["_"]["columns"]>(table: T) => {
   const cls = getTableColumns(table);
 
   return Object.entries(cls).reduce(
@@ -15,6 +12,6 @@ export const upsert = <T extends PgTable, Q extends keyof T["_"]["columns"]>(
 
       return acc;
     },
-    {} as Record<Q, SQL>
+    {} as Record<Q, SQL>,
   );
 };

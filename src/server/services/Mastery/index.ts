@@ -5,11 +5,8 @@ import { DDragonService } from "@/client/services/DDragon";
 import { CacheService } from "@/server/services/cache/CacheService";
 
 export class MasteryService {
-  static async getMasteryByPUUID(id: SummonerType, refresh: boolean = false) {
-    const cachedData = await CacheService.tryGetFileFromCache<MasteryType>(
-      id.puuid,
-      "mastery"
-    );
+  static async getMasteryByPUUID(id: SummonerType, refresh = false) {
+    const cachedData = await CacheService.tryGetFileFromCache<MasteryType>(id.puuid, "mastery");
 
     if (cachedData && !refresh) {
       return cachedData;

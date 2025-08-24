@@ -4,12 +4,7 @@ import * as v from "valibot";
 export const serverEnv = createEnv({
   server: {
     RIOT_API_KEY: v.string(),
-    RIOT_DEFAULT_ROUTING_VALUE: v.picklist([
-      "americas",
-      "europe",
-      "asia",
-      "sea",
-    ]),
+    RIOT_DEFAULT_ROUTING_VALUE: v.picklist(["americas", "europe", "asia", "sea"]),
     RIOT_CLIENT_ID: v.string(),
     RIOT_CLIENT_SECRET: v.string(),
 

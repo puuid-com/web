@@ -1,7 +1,4 @@
-export function maxValueByKey<T, K extends keyof T>(
-  arr: T[],
-  key: K
-): number | undefined {
+export function maxValueByKey<T>(arr: T[], key: keyof T): number | undefined {
   let m = undefined as number | undefined;
   for (const o of arr) {
     const v = o[key] as unknown as number;
@@ -10,7 +7,7 @@ export function maxValueByKey<T, K extends keyof T>(
   return m;
 }
 
-export function maxItemByKey<T, K extends keyof T>(arr: T[], key: K): T {
+export function maxItemByKey<T>(arr: T[], key: keyof T): T {
   if (arr.length === 0) {
     throw new Error("Array is empty");
   }
@@ -31,10 +28,7 @@ export function maxItemByKey<T, K extends keyof T>(arr: T[], key: K): T {
   return best;
 }
 
-export function maxItemBy<T, K extends keyof T>(
-  arr: T[],
-  predicate: (item: T) => number
-): T {
+export function maxItemBy<T>(arr: T[], predicate: (item: T) => number): T {
   if (arr.length === 0) {
     throw new Error("Array is empty");
   }
@@ -61,8 +55,10 @@ export function averageBy<T>(arr: T[], predicate: (item: T) => number): number {
   }
 
   let sum = 0;
-  for (let i = 0; i < arr.length; i++) {
-    sum += predicate(arr[i]!);
+
+  for (const item of arr) {
+    sum += predicate(item);
   }
+
   return sum / arr.length;
 }

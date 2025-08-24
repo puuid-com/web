@@ -5,13 +5,14 @@ export function pipeStep<T, R>(gen: AG<T, R>) {
   const result = new Promise<R>((r) => (resolveResult = r));
 
   const stream = (async function* (): AsyncGenerator<T, void, void> {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     while (true) {
       const { value, done } = await gen.next();
       if (done) {
-        resolveResult(value as R);
+        resolveResult(value);
         return;
       }
-      yield value as T;
+      yield value;
     }
   })();
 

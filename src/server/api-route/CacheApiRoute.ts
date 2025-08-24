@@ -1,17 +1,11 @@
-import {
-  RiotApiRoute,
-  type ApiRouteConfigs,
-} from "@/server/api-route/ApiRoute";
+import { RiotApiRoute, type ApiRouteConfigs } from "@/server/api-route/ApiRoute";
 import { CacheService } from "@/server/services/cache/CacheService";
 import type { Options } from "ky";
 import * as v from "valibot";
 
-type Schema = v.BaseSchema<any, any, any>;
+type Schema = v.BaseSchema<unknown, unknown, v.BaseIssue<unknown>>;
 
-export type CachedApiRouteConfigs<S extends Schema, P> = ApiRouteConfigs<
-  S,
-  P
-> & {
+export type CachedApiRouteConfigs<S extends Schema, P> = ApiRouteConfigs<S, P> & {
   R2Dir: string;
 };
 
@@ -19,10 +13,10 @@ export type CachedApiRouteParams = {
   id: string;
 };
 
-export class CachedApiRoute<
-  S extends Schema,
-  P extends CachedApiRouteParams,
-> extends RiotApiRoute<S, P> {
+export class CachedApiRoute<S extends Schema, P extends CachedApiRouteParams> extends RiotApiRoute<
+  S,
+  P
+> {
   readonly R2Dir: string;
 
   constructor(cfg: CachedApiRouteConfigs<S, P>) {
@@ -34,16 +28,14 @@ export class CachedApiRoute<
   override async call(
     param: P,
     options?: Options,
-    refreshCache: boolean = false
+    refreshCache = false,
   ): Promise<v.InferOutput<S>> {
     try {
-      const r2Cache = refreshCache
-        ? null
-        : await this.tryGetCachedDataById(param.id);
+      const r2Cache = refreshCache ? null : await this.tryGetCachedDataById(param.id);
 
       if (r2Cache) return this.parseData(r2Cache);
 
-      this.ensureRateLimit();
+      await this.ensureRateLimit();
 
       const data = await this.fetchData(param, options);
 

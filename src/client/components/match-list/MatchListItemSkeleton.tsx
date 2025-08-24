@@ -28,10 +28,7 @@ export const MatchListItemSkeleton = () => {
       {/* Items skeleton */}
       <div className="flex-1 min-w-0 flex items-center gap-1">
         {Array.from({ length: 6 }).map((_, idx) => (
-          <div
-            key={idx}
-            className="w-6 h-6 rounded-md bg-gray-300 dark:bg-gray-700"
-          />
+          <div key={idx} className="w-6 h-6 rounded-md bg-gray-300 dark:bg-gray-700" />
         ))}
       </div>
 

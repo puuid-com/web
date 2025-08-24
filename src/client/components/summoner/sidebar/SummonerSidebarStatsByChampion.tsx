@@ -20,18 +20,13 @@ export const SummonerSidebarStatsByChampionId = ({
 
   return (
     <SummonerSidebarStats>
-      <SummonerSidebarStatsHeader iconName={iconName}>
-        {label}
-      </SummonerSidebarStatsHeader>
+      <SummonerSidebarStatsHeader iconName={iconName}>{label}</SummonerSidebarStatsHeader>
       {stats?.map((s) => {
-        const championName = DDragonService.getChampionName(
-          metadata.champions,
-          s.championId
-        );
+        const championName = DDragonService.getChampionName(metadata.champions, s.championId);
         const championUrl = DDragonService.getChampionIconUrlFromParticipant(
           metadata.champions,
           metadata.latest_version,
-          s
+          s,
         );
 
         return (
@@ -52,9 +47,7 @@ export const SummonerSidebarStatsByChampionId = ({
                 {`${((s.wins / (s.wins + s.losses)) * 100).toFixed(0)}% `}
                 <span className={"text-neutral-400 text-tiny"}>WR</span>
               </div>
-              <div className={"text-xs text-neutral-400"}>
-                {s.wins + s.losses} matches
-              </div>
+              <div className={"text-xs text-neutral-400"}>{s.wins + s.losses} matches</div>
             </div>
           </div>
         );

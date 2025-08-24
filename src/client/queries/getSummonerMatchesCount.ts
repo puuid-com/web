@@ -8,12 +8,9 @@ type QueryParams = {
   queue: LolQueueType;
 };
 
-export const getSummonerMatchesCountOptions = ({
-  summoner,
-  queue,
-}: QueryParams) =>
+export const getSummonerMatchesCountOptions = ({ summoner, queue }: QueryParams) =>
   queryOptions({
-    queryKey: ["getSummonerMatchesCountOptions", summoner],
+    queryKey: ["getSummonerMatchesCountOptions", summoner, queue],
     queryFn: () =>
       $getSummonerMatchesCount({
         data: {

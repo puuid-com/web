@@ -1,19 +1,15 @@
 import { LeagueV4ByPuuid } from "@/server/api-route/riot/league/LeagueRoutes";
-import { db, type TransactionType } from "@/server/db";
-import {
-  type SummonerType,
-  type LeagueRowType,
-  leagueEntryTable,
-} from "@/server/db/schema";
+import { type TransactionType } from "@/server/db";
+import { type SummonerType, type LeagueRowType, leagueEntryTable } from "@/server/db/schema";
 import type { LeaguesType } from "@/server/services/league/type";
 import { and, eq, desc, sql } from "drizzle-orm";
 
 export class LeagueService {
   static async cacheLeaguesTx(
     tx: TransactionType,
-    id: Pick<SummonerType, "puuid" | "region">
+    id: Pick<SummonerType, "puuid" | "region">,
   ): Promise<LeagueRowType[]> {
-    let data = await LeagueV4ByPuuid.call({
+    const data = await LeagueV4ByPuuid.call({
       region: id.region,
       puuid: id.puuid,
     });
@@ -35,14 +31,10 @@ export class LeagueService {
           leaguePoints: d.leaguePoints,
           wins: d.wins,
           losses: d.losses,
-        }))
+        })),
       )
       .onConflictDoUpdate({
-        target: [
-          leagueEntryTable.puuid,
-          leagueEntryTable.queueType,
-          leagueEntryTable.createdDate,
-        ],
+        target: [leagueEntryTable.puuid, leagueEntryTable.queueType, leagueEntryTable.createdDate],
         set: {
           tier: sql`excluded.tier`,
           rank: sql`excluded.rank`,
@@ -58,7 +50,7 @@ export class LeagueService {
 
   static async getLeaguesTx(
     tx: TransactionType,
-    summoner: Pick<SummonerType, "region" | "puuid">
+    summoner: Pick<SummonerType, "region" | "puuid">,
   ): Promise<LeaguesType> {
     const cachedLeagues = await tx
       .select()
@@ -66,19 +58,20 @@ export class LeagueService {
       .where(
         and(
           eq(leagueEntryTable.puuid, summoner.puuid),
-          eq(leagueEntryTable.region, summoner.region)
-        )
+          eq(leagueEntryTable.region, summoner.region),
+        ),
       )
       .orderBy(leagueEntryTable.queueType, desc(leagueEntryTable.createdAt));
 
     return cachedLeagues.reduce((acc, league) => {
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (!acc[league.queueType]) {
         acc[league.queueType] = {
           lastest: league,
           history: [],
         };
       } else {
-        acc[league.queueType]!.history.push(league);
+        acc[league.queueType].history.push(league);
       }
 
       return acc;

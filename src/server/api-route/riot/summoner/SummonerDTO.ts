@@ -5,7 +5,7 @@ export const SummonerDTOSchema = v.object({
   profileIconId: v.number(),
   revisionDate: v.pipe(
     v.number(),
-    v.transform((input) => new Date(input).toISOString())
+    v.transform((input) => new Date(input).toISOString()),
   ),
   summonerLevel: v.number(),
 });

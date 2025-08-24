@@ -13,9 +13,7 @@ export class AccountService {
     });
   }
 
-  static async getAccountByRiotID(
-    options: Pick<AccountDTOType, "gameName" | "tagLine">
-  ) {
+  static async getAccountByRiotID(options: Pick<AccountDTOType, "gameName" | "tagLine">) {
     return AcountV1ByRiotID.call({
       routingValue: "europe",
       ...options,

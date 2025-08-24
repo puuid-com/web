@@ -4,7 +4,6 @@ import {
   RateLimiterRes,
   type IRateLimiterOptions,
 } from "rate-limiter-flexible";
-import { object } from "valibot";
 
 export class MultiRouteLimiter<RouteName extends string> {
   private globalLimiters: RateLimiterMemory[];
@@ -14,7 +13,7 @@ export class MultiRouteLimiter<RouteName extends string> {
 
   constructor(
     globalLimits: IRateLimiterOptions[],
-    routeLimits?: Record<RouteName, IRateLimiterOptions[]>
+    routeLimits?: Record<RouteName, IRateLimiterOptions[]>,
   ) {
     this.globalLimiters = globalLimits.map(
       (lim, i) =>
@@ -22,7 +21,7 @@ export class MultiRouteLimiter<RouteName extends string> {
           keyPrefix: `g_${i}_${lim.points}_${lim.duration}`,
           points: lim.points,
           duration: lim.duration,
-        })
+        }),
     );
     if (routeLimits)
       for (const [r, limits] of Object.entries(routeLimits))
@@ -43,7 +42,7 @@ export class MultiRouteLimiter<RouteName extends string> {
           keyPrefix: `r_${route}_${i}_${lim.points}_${lim.duration}`,
           points: lim.points,
           duration: lim.duration,
-        })
+        }),
     );
     this.routeCache.set(route, lims);
     return lims;
@@ -52,10 +51,7 @@ export class MultiRouteLimiter<RouteName extends string> {
   private getUnion(route: RouteName) {
     const u = this.unions.get(route);
     if (u) return u;
-    const union = new RateLimiterUnion(
-      ...this.globalLimiters,
-      ...this.buildRoute(route)
-    );
+    const union = new RateLimiterUnion(...this.globalLimiters, ...this.buildRoute(route));
     this.unions.set(route, union);
     return union;
   }
@@ -70,11 +66,11 @@ export class MultiRouteLimiter<RouteName extends string> {
     } catch (e) {
       const rej = e as Record<RouteName, RateLimiterRes>;
 
-      const catched = Object.values(rej) as RateLimiterRes[];
+      const catched = Object.values<RateLimiterRes>(rej);
       const msBeforeNext = Math.max(...catched.map((r) => r.msBeforeNext));
 
       await new Promise((r) => setTimeout(r, msBeforeNext));
-      this.getUnion(route).consume("all", points);
+      await this.getUnion(route).consume("all", points);
     }
   }
 }

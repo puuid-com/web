@@ -1,6 +1,5 @@
 import type { LolQueueType } from "@/server/api-route/riot/league/LeagueDTO";
 import type { SummonerType } from "@/server/db/schema";
-import { $getSummonerMatches } from "@/server/functions/$getSummonerMatches";
 import { $getSummonerStatsByPuuid } from "@/server/functions/$getSummonerStatsByPuuid";
 import { queryOptions, useQuery } from "@tanstack/react-query";
 
@@ -11,7 +10,7 @@ type QueryParams = {
 
 export const getSummonerStatsOptions = ({ summoner, queue }: QueryParams) =>
   queryOptions({
-    queryKey: ["getSummonerStatsOptions", summoner],
+    queryKey: ["getSummonerStatsOptions", summoner, queue],
     queryFn: () =>
       $getSummonerStatsByPuuid({
         data: {
