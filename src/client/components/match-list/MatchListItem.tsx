@@ -1,12 +1,12 @@
-import { cn, formatSeconds } from "@/client/lib/utils";
+import { cn, formatSeconds, timeago } from "@/client/lib/utils";
 import { DDragonService } from "@/client/services/DDragon";
 import type { $GetSummonerMatchesType } from "@/server/functions/$getSummonerMatches";
 import { useLoaderData } from "@tanstack/react-router";
 import type { metadata } from "valibot";
 
 type Props = {
-  m: $GetSummonerMatchesType["matches"][number];
-  p: $GetSummonerMatchesType["matches"][number]["summoners"][number];
+  m: $GetSummonerMatchesType["matches"][number]["match"];
+  p: $GetSummonerMatchesType["matches"][number]["match_summoner"];
   i: number;
   count: number;
 };
@@ -22,7 +22,7 @@ export const MatchListItem = ({ m, p, i, count }: Props) => {
       <div className="w-fit shrink-0">
         <div
           className={cn("px-2 rounded-md bg-neutral-900")}
-        >{`${i + 1}/${count}`}</div>
+        >{`${i}/${count}`}</div>
       </div>
       <div className="w-fit shrink-0">
         <div

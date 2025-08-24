@@ -7,7 +7,7 @@ export function cn(...inputs: ClassValue[]) {
 
 export function timeago(
   input: Date | string,
-  locale: string | string[] = navigator?.language || "en-US"
+  locale: string | string[] = navigator.language
 ): string {
   const date = typeof input === "string" ? new Date(input) : input;
   const now = new Date();
@@ -46,9 +46,9 @@ export const formatSeconds = (secs: number) => {
 
   const parts = [];
 
-  if (h) parts.push(h + "h");
-  if (m) parts.push(m + "m");
-  if (s || parts.length === 0) parts.push(s + "s");
+  if (h) parts.push(String(h).padStart(2, "0") + "h");
+  if (m) parts.push(String(m).padStart(2, "0") + "m");
+  if (s || parts.length === 0) parts.push(String(s).padStart(2, "0") + "s");
 
   return parts.join(" ");
 };

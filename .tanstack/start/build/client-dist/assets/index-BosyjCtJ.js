@@ -1,0 +1,1 @@
+import{j as e,L as s,B as o}from"./main-Cmqr_NjK.js";function i(){return e.jsxs("div",{className:"",children:[e.jsx(s,{to:"/lol/summoner",children:e.jsx(o,{children:"See Summoner Page"})}),e.jsx(s,{to:"/$id",params:{id:"OlivierDeschênes-00008"},children:e.jsx(o,{children:"Good RiotID test"})})]})}export{i as component};

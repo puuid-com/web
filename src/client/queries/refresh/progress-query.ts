@@ -3,9 +3,12 @@ import {
   experimental_streamedQuery as streamedQuery,
 } from "@tanstack/react-query";
 import { progressAnswer } from "./progress-answer";
-import type { SimpleProgressMsg } from "@/server/functions/$streamSimpleProgress";
+import type { RefreshProgressMsgType } from "@/server/services/refresh";
+import type { LolRegionType } from "@/server/types/riot/common";
+import type { LolQueueType } from "@/server/api-route/riot/league/LeagueDTO";
+import { cache } from "react";
 
-type Args = { puuid: string; region: string; queue: string };
+type Args = { puuid: string; region: LolRegionType; queue: LolQueueType };
 
 export const progressQueryOptions = (args: Args) =>
   queryOptions({
@@ -15,8 +18,16 @@ export const progressQueryOptions = (args: Args) =>
       args.region,
       args.queue,
     ] as const,
-    queryFn: streamedQuery<SimpleProgressMsg>({
-      queryFn: ({ signal }) => progressAnswer(args, signal),
+    queryFn: streamedQuery<RefreshProgressMsgType>({
+      queryFn: ({ signal }) => {
+        try {
+          return progressAnswer(args, signal);
+        } catch (e) {
+          console.error(e);
+
+          throw e;
+        }
+      },
       refetchMode: "reset",
     }),
     staleTime: Infinity,

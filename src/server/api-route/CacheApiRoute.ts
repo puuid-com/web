@@ -1,4 +1,7 @@
-import { ApiRoute, type ApiRouteConfigs } from "@/server/api-route/ApiRoute";
+import {
+  RiotApiRoute,
+  type ApiRouteConfigs,
+} from "@/server/api-route/ApiRoute";
 import { CacheService } from "@/server/services/cache/CacheService";
 import type { Options } from "ky";
 import * as v from "valibot";
@@ -19,7 +22,7 @@ export type CachedApiRouteParams = {
 export class CachedApiRoute<
   S extends Schema,
   P extends CachedApiRouteParams,
-> extends ApiRoute<S, P> {
+> extends RiotApiRoute<S, P> {
   readonly R2Dir: string;
 
   constructor(cfg: CachedApiRouteConfigs<S, P>) {

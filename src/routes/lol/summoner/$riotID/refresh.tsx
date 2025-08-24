@@ -132,6 +132,8 @@ export type SimpleProgressPageProps = {
 };
 
 function RouteComponent() {
+  const [enable, setEnable] = React.useState(false);
+
   const { summoner } = useLoaderData({ from: "/lol/summoner/$riotID" });
   const { queue } = useSearch({ from: "/lol/summoner/$riotID" });
 
@@ -144,6 +146,7 @@ function RouteComponent() {
       queue,
     }),
     refetchOnWindowFocus: false,
+    enabled: enable,
   });
 
   const events = q.data ?? [];
@@ -190,6 +193,7 @@ function RouteComponent() {
 
   return (
     <div className="relative min-h-screen bg-zinc-950 text-zinc-100">
+      <Button onClick={() => setEnable(true)}>Refresh :)</Button>
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 overflow-hidden"

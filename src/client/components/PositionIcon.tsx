@@ -2,6 +2,7 @@ import type { IndividualPositionType } from "@/server/api-route/riot/match/Match
 import {
   ArrowDown,
   ArrowUp,
+  SandwichIcon,
   TreePine,
   Users,
   Zap,
@@ -12,13 +13,14 @@ type Props = {
   individualPosition: IndividualPositionType;
 };
 
-const map = {
+const map: Record<IndividualPositionType, LucideIcon> = {
+  Invalid: SandwichIcon,
   TOP: ArrowUp,
   JUNGLE: TreePine,
   MIDDLE: Zap,
   BOTTOM: ArrowDown,
   UTILITY: Users,
-} satisfies Record<IndividualPositionType, LucideIcon>;
+};
 
 export const PositionIcon = ({ individualPosition }: Props) => {
   const Icon = map[individualPosition];

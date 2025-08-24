@@ -5,6 +5,7 @@ import { db, type TransactionType } from "@/server/db";
 import type {
   MatchRowType,
   MatchSummonerRowType,
+  MatchWithSummonersType,
 } from "@/server/db/match-schema";
 import {
   statisticTable,
@@ -84,7 +85,8 @@ export class StatisticService {
     tx: TransactionType,
     summoner: Pick<SummonerType, "region" | "puuid">,
     queueType: LolQueueType,
-    cachedLeagues?: LeagueRowType[]
+    cachedLeagues?: LeagueRowType[],
+    cachedMatches?: MatchWithSummonersType[]
   ): Promise<void> {
     const queue = LOL_QUEUES[queueType];
 
@@ -97,11 +99,13 @@ export class StatisticService {
       throw new Error("League not found");
     }
 
-    const matches = await MatchService.getMatchesDBByPuuidFull(summoner, {
-      count: this.MATCHES_COUNTED,
-      queue: queue.queueId,
-      start: 0,
-    });
+    const matches =
+      cachedMatches ??
+      (await MatchService.getMatchesDBByPuuidFull(summoner, {
+        count: this.MATCHES_COUNTED,
+        queue: queue.queueId,
+        start: 0,
+      }));
 
     const _stats: StatsToRefresh = {
       statsByChampionId: [],

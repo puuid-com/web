@@ -6,16 +6,23 @@ import {
   bigint,
   index,
 } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
+import { relations, type InferSelectModel } from "drizzle-orm";
 import type { IndividualPositionType } from "@/server/api-route/riot/match/MatchDTO";
 
-export const matchTable = pgTable("match", {
-  matchId: text("match_id").primaryKey(),
-  gameCreationMs: bigint("game_creation_ms", { mode: "number" }).notNull(),
-  gameDurationSec: integer("game_duration_sec").notNull(),
-  queueId: integer("queue_id").notNull(),
-  platformId: text("platform_id").notNull(),
-});
+export const matchTable = pgTable(
+  "match",
+  {
+    matchId: text("match_id").primaryKey(),
+    gameCreationMs: bigint("game_creation_ms", { mode: "number" }).notNull(),
+    gameDurationSec: integer("game_duration_sec").notNull(),
+    queueId: integer("queue_id").notNull(),
+    platformId: text("platform_id").notNull(),
+  },
+  (t) => [
+    index("idx_match_game_time").on(t.gameCreationMs, t.matchId),
+    index("idx_match_queue_time").on(t.queueId, t.gameCreationMs),
+  ]
+);
 
 export const matchSummonerTable = pgTable(
   "match_summoner",
@@ -24,9 +31,9 @@ export const matchSummonerTable = pgTable(
       .notNull()
       .references(() => matchTable.matchId, { onDelete: "cascade" }),
     puuid: text("puuid").notNull(),
-    gameName: text("game_name"),
-    tagLine: text("tag_line"),
-    profileIconId: integer("profile_icon_id"),
+    gameName: text("game_name").notNull(),
+    tagLine: text("tag_line").notNull(),
+    profileIconId: integer("profile_icon_id").notNull(),
 
     individualPosition: text("individual_position")
       .$type<IndividualPositionType>()
@@ -51,20 +58,22 @@ export const matchSummonerTable = pgTable(
 
     vsSummonerPuuid: text("vs_summoner_puuid"),
 
-    damageDealtToObjectives: integer("damage_dealt_to_objectives"),
-    dragonKills: integer("dragon_kills"),
-    visionScore: integer("vision_score"),
-    largestCriticalStrike: integer("largest_critical_strike"),
-    soloKills: integer("solo_kills"),
-    wardTakedowns: integer("ward_takedowns"),
-    inhibitorKills: integer("inhibitor_kills"),
-    turretKills: integer("turret_kills"),
+    damageDealtToObjectives: integer("damage_dealt_to_objectives").notNull(),
+    dragonKills: integer("dragon_kills").notNull(),
+    visionScore: integer("vision_score").notNull(),
+    largestCriticalStrike: integer("largest_critical_strike").notNull(),
+    soloKills: integer("solo_kills").notNull(),
+    wardTakedowns: integer("ward_takedowns").notNull(),
+    inhibitorKills: integer("inhibitor_kills").notNull(),
+    turretKills: integer("turret_kills").notNull(),
 
     spellIds: integer("spell_ids").array().notNull(),
   },
   (t) => [
     index("idx_fms_match").on(t.matchId),
     index("idx_fms_puuid").on(t.puuid),
+    index("idx_ms_puuid_matchid").on(t.puuid, t.matchId),
+    index("idx_ms_match_puuid").on(t.matchId, t.puuid),
   ]
 );
 
@@ -86,3 +95,7 @@ export type MatchRowType = typeof matchTable.$inferSelect;
 export type MatchInsertType = typeof matchTable.$inferInsert;
 export type MatchSummonerRowType = typeof matchSummonerTable.$inferSelect;
 export type MatchSummonerInsertType = typeof matchSummonerTable.$inferInsert;
+
+export type MatchWithSummonersType = InferSelectModel<typeof matchTable> & {
+  summoners: InferSelectModel<typeof matchSummonerTable>[];
+};

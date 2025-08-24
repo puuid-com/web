@@ -21,3 +21,7 @@ export const $getSummonerStatsByPuuid = createServerFn({ method: "GET" })
 
     return data ?? null;
   });
+
+export type $GetSummonerStatsByPuuidType = NonNullable<
+  Awaited<ReturnType<typeof $getSummonerStatsByPuuid>>
+>;

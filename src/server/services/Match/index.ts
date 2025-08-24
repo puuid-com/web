@@ -9,7 +9,17 @@ import {
   routingValueFromRegion,
   type LolRegionType,
 } from "@/server/types/riot/common";
-import { and, eq, exists, ilike, inArray, isNotNull, sql } from "drizzle-orm";
+import {
+  and,
+  asc,
+  desc,
+  eq,
+  exists,
+  ilike,
+  inArray,
+  isNotNull,
+  sql,
+} from "drizzle-orm";
 import { db, type TransactionType } from "@/server/db";
 import type { SummonerType } from "@/server/db/schema";
 import {
@@ -18,6 +28,8 @@ import {
   type MatchSummonerInsertType,
   type MatchInsertType,
   type MatchRowType,
+  type MatchWithSummonersType,
+  type MatchSummonerRowType,
 } from "@/server/db/match-schema";
 
 export class MatchService {
@@ -74,8 +86,8 @@ export class MatchService {
   }
 
   private static matchDTOtoDB(matchDTO: MatchDTOType): {
-    match: MatchInsertType;
-    summoners: MatchSummonerInsertType[];
+    match: MatchRowType;
+    summoners: MatchSummonerRowType[];
   } {
     const match: MatchInsertType = {
       matchId: matchDTO.metadata.matchId,
@@ -85,12 +97,14 @@ export class MatchService {
       platformId: matchDTO.info.platformId,
     };
 
-    const summoners: MatchSummonerInsertType[] = matchDTO.info.participants.map(
+    const summoners: MatchSummonerRowType[] = matchDTO.info.participants.map(
       (p) => {
         const position = p.individualPosition;
         const vsSummoner = matchDTO.info.participants.find(
           (s) => s.individualPosition === position && s.puuid !== p.puuid
         );
+
+        const vsSummonerPuuid = vsSummoner?.puuid ?? null;
 
         return {
           matchId: matchDTO.metadata.matchId,
@@ -118,7 +132,7 @@ export class MatchService {
 
           cs: p.totalMinionsKilled,
 
-          vsSummonerPuuid: vsSummoner?.puuid ?? "cool",
+          vsSummonerPuuid: vsSummonerPuuid,
 
           damageDealtToObjectives: p.damageDealtToObjectives,
           dragonKills: p.dragonKills,
@@ -176,30 +190,14 @@ export class MatchService {
       params
     );
 
-    return db.query.matchTable.findMany({
-      with: {
-        summoners: {
-          where: eq(matchSummonerTable.puuid, id.puuid),
-        },
-      },
-      where: (mt, { and, eq }) =>
-        and(
-          conditions,
-          exists(
-            db
-              .select({ one: sql`1` })
-              .from(matchSummonerTable)
-              .where(
-                and(
-                  eq(matchSummonerTable.matchId, mt.matchId),
-                  eq(matchSummonerTable.puuid, id.puuid)
-                )
-              )
-          )
-        ),
-      limit: params.count,
-      offset: params.start,
-    });
+    return db
+      .select()
+      .from(matchSummonerTable)
+      .innerJoin(matchTable, eq(matchSummonerTable.matchId, matchTable.matchId))
+      .where(and(eq(matchSummonerTable.puuid, id.puuid), conditions))
+      .limit(params.count)
+      .offset(params.start)
+      .orderBy(desc(matchTable.gameCreationMs), desc(matchTable.matchId));
   }
 
   static async getMatchesDBByPuuidFull(
@@ -297,14 +295,14 @@ export class MatchService {
   public static async saveMatchesDTOtoDBTx(
     tx: TransactionType,
     matches: MatchDTOType[]
-  ) {
-    if (matches.length === 0) return;
+  ): Promise<MatchWithSummonersType[]> {
+    if (matches.length === 0) return [];
 
     const BATCH = 100;
 
     const dbData = matches.map(this.matchDTOtoDB);
-    const dbMatches: MatchInsertType[] = dbData.flatMap(({ match }) => match);
-    const dbSummoners: MatchSummonerInsertType[] = dbData.flatMap(
+    const dbMatches: MatchRowType[] = dbData.flatMap(({ match }) => match);
+    const dbSummoners: MatchSummonerRowType[] = dbData.flatMap(
       ({ summoners }) => summoners
     );
 
@@ -317,6 +315,15 @@ export class MatchService {
       const chunk = dbSummoners.slice(i, i + BATCH);
       await tx.insert(matchSummonerTable).values(chunk);
     }
+
+    const dbSummonersByMatchId = Object.groupBy(dbSummoners, (o) => o.matchId);
+
+    return dbData.map((m) => {
+      return {
+        ...m.match,
+        summoners: dbSummonersByMatchId[m.match.matchId]!,
+      };
+    });
   }
 
   public static async getAllMatchesDTOByPuuidTx(

@@ -8,3 +8,5 @@ export const $getSummoners = createServerFn({ method: "GET" }).handler(
     return data;
   }
 );
+
+export type $GetSummonersType = Awaited<ReturnType<typeof $getSummoners>>;

@@ -7,16 +7,14 @@ import { cn } from "@/client/lib/utils";
 import { type AnyFieldApi, useForm } from "@tanstack/react-form";
 import * as v from "valibot";
 
-type Props = {
-  onSuccess: (riotId: string) => void;
-};
+type Props = { onSuccess: (riotId: string) => void };
 
-// Regex used for live status calculation (same logic as your schema)
-const HAS_FORMAT = /^([^#]+)#([^#]+)$/;
-const GAME_OK = /^([\p{L}\p{N}]{3,16})#/u;
-const TAG_OK = /#([\p{L}\p{N}]{3,5})$/u;
-const NAME_CHARS = /^[\p{L}\p{N}]*$/u;
-const TAG_CHARS = /^[\p{L}\p{N}]*$/u;
+const HAS_FORMAT =
+  /^[\p{Zs}]*(?:[\p{L}\p{N}][\p{L}\p{N}\p{Zs}]*)+[\p{Zs}]*#[\p{Zs}]*(?:[\p{L}\p{N}][\p{L}\p{N}\p{Zs}]*)+[\p{Zs}]*$/u;
+const GAME_OK = /^\s*(?:[\p{L}\p{N}][\p{Zs}]*){3,16}#/u;
+const TAG_OK = /#(?:[\p{Zs}]*[\p{L}\p{N}]){3,5}[\p{Zs}]*$/u;
+const NAME_CHARS = /^[\p{L}\p{N}\p{Zs}]*$/u;
+const TAG_CHARS = /^[\p{L}\p{N}\p{Zs}]*$/u;
 
 const validationSchema = v.object({
   riotId: v.pipe(
@@ -43,13 +41,13 @@ export function RiotIdForm({ onSuccess }: Props) {
         e.stopPropagation();
         form.handleSubmit();
       }}
-      className="flex items-start gap-3"
+      className="flex items-start gap-3 w-90"
     >
       <div className="w-full max-w-md">
         <form.Field
           name="riotId"
           children={(field) => (
-            <>
+            <div className="relative group">
               <Input
                 id={field.name}
                 name={field.name}
@@ -58,9 +56,25 @@ export function RiotIdForm({ onSuccess }: Props) {
                 onChange={(e) => field.handleChange(e.target.value)}
                 placeholder="GameName#TagLine"
                 className="bg-neutral-900 border-neutral-800 text-neutral-200 placeholder:text-neutral-500"
+                aria-describedby={`${field.name}-checks`}
               />
-              <Checks field={field} className="mt-3" />
-            </>
+
+              {/* Popup under the input, visible only on focus */}
+              <div
+                id={`${field.name}-checks`}
+                className={cn(
+                  "absolute left-0 right-0 top-full z-20 mt-2",
+                  "pointer-events-none opacity-0 translate-y-1",
+                  "group-focus-within:pointer-events-auto group-focus-within:opacity-100 group-focus-within:translate-y-0",
+                  "transition-[opacity,transform] duration-150"
+                )}
+                aria-live="polite"
+              >
+                <div className="rounded-md border border-neutral-800 bg-neutral-900/95 backdrop-blur p-3 shadow-xl">
+                  <Checks field={field} />
+                </div>
+              </div>
+            </div>
           )}
         />
       </div>
@@ -77,7 +91,6 @@ export function RiotIdForm({ onSuccess }: Props) {
   );
 }
 
-// Drop-in replacement for your FieldInfo that renders the improved checklist UI
 function Checks({
   field,
   className,
@@ -130,7 +143,6 @@ function computeStatuses(riotId: string): {
 
   const [namePart = "", tagPart = ""] = riotId.split("#", 2);
 
-  // Game Name
   let game: Status = "neutral";
   if (namePart.length > 0) {
     if (!NAME_CHARS.test(namePart)) game = "invalid";
@@ -139,7 +151,6 @@ function computeStatuses(riotId: string): {
     else game = "valid";
   }
 
-  // Tag Line
   let tag: Status = "neutral";
   if (riotId.includes("#")) {
     if (!TAG_CHARS.test(tagPart)) tag = "invalid";
@@ -149,7 +160,6 @@ function computeStatuses(riotId: string): {
     else tag = "valid";
   }
 
-  // Format (# present with text on both sides)
   const format: Status = HAS_FORMAT.test(riotId)
     ? "valid"
     : riotId.includes("#")

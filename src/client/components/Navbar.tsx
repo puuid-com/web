@@ -1,13 +1,21 @@
+import { RiotIdForm } from "@/client/components/riot-id-form/RiotIdForm";
 import { Button } from "@/client/components/ui/button";
 import { Input } from "@/client/components/ui/input";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { IdCardIcon, IdCardLanyard, Search, Trophy } from "lucide-react";
 import React from "react";
 
 type Props = {};
 
 export const Navbar = ({}: Props) => {
-  const [searchQuery, setSearchQuery] = React.useState("");
+  const navigate = useNavigate();
+
+  const handleSummonerSearch = (riotID: string) =>
+    navigate({
+      to: "/lol/summoner/$riotID",
+      params: { riotID },
+      search: { queue: "RANKED_SOLO_5x5" },
+    });
 
   return (
     <header className="border-b h-[60px] flex items-center">
@@ -21,15 +29,8 @@ export const Navbar = ({}: Props) => {
           </div>
           <div className="flex items-center gap-3">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                placeholder="Search summoner..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 w-64"
-              />
+              <RiotIdForm onSuccess={handleSummonerSearch} />
             </div>
-            <Button>Search</Button>
           </div>
         </div>
       </div>

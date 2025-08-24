@@ -8,8 +8,6 @@ export const Route = createFileRoute("/$id")({
 
     if (id === ".well#known") return;
 
-    console.log({ id });
-
     const data = await $getPuuidFromID({
       data: {
         id,

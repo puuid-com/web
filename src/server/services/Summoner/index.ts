@@ -8,7 +8,7 @@ import type {
 import { AccountService } from "@/server/services/account";
 import { getPartsFromRiotID } from "@/server/services/summoner/utils";
 import { SummonerDTOService } from "@/server/services/summoner-dto";
-import { and, count, eq } from "drizzle-orm";
+import { and, count, desc, eq } from "drizzle-orm";
 
 export class SummonerService {
   static async getSummoners() {
@@ -18,6 +18,7 @@ export class SummonerService {
         leagues: true,
       },
       limit: 25,
+      orderBy: [summonerTable.region, desc(summonerTable.summonerLevel)],
     });
   }
 

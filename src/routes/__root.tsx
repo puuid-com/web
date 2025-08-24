@@ -50,13 +50,18 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
       <head>
         <HeadContent />
       </head>
-      <body className={"flex flex-col dark bg-neutral-950 text-neutral-300"}>
+      <body
+        className={
+          "flex flex-col dark bg-neutral-950 text-neutral-300 overflow-hidden scrollbar"
+        }
+      >
         <Navbar />
         <div
+          id={"body-content"}
           style={{
-            minHeight: `calc(100vh - 60px)`,
+            height: `calc(100vh - 60px)`,
           }}
-          className={"flex flex-col w-full"}
+          className={"flex flex-col w-full overflow-auto"}
         >
           {children}
         </div>

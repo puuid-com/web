@@ -2,9 +2,11 @@ import type {
   LeagueDTOType,
   LolQueueType,
 } from "@/server/api-route/riot/league/LeagueDTO";
-import type { MatchDTOType } from "@/server/api-route/riot/match/MatchDTO";
 import { db, type TransactionType } from "@/server/db";
-import type { MatchRowType } from "@/server/db/match-schema";
+import type {
+  MatchRowType,
+  MatchWithSummonersType,
+} from "@/server/db/match-schema";
 import type { LeagueRowType, SummonerType } from "@/server/db/schema";
 import { pipeStep } from "@/server/lib/generator";
 import { SummonerService } from "@/server/services/summoner";
@@ -67,10 +69,11 @@ export class RefreshService {
     const summoner = await $summonerResult;
 
     // progressFetchMatches()
-    const { stream: $matchesStream } = pipeStep(
+    const { stream: $matchesStream, result: $matchesResult } = pipeStep(
       this.progressFetchMatches(summoner, queueId)
     );
     for await (const msg of $matchesStream) yield msg;
+    const matches = await $matchesResult;
 
     // progressFetchLeagues()
     const { stream: $leaguesStream, result: $leaguesResult } = pipeStep(
@@ -81,7 +84,7 @@ export class RefreshService {
 
     // progressFetchStats()
     const { stream: $statsStream } = pipeStep(
-      this.progressFetchStats(summoner, queueType, leagues)
+      this.progressFetchStats(summoner, queueType, leagues, matches)
     );
     for await (const msg of $statsStream) yield msg;
 
@@ -109,7 +112,7 @@ export class RefreshService {
   private static async *progressFetchMatches(
     id: Pick<SummonerType, "region" | "puuid">,
     queueId: MatchRowType["queueId"]
-  ): AsyncGenerator<RefreshProgressMsgType, void, void> {
+  ): AsyncGenerator<RefreshProgressMsgType, MatchWithSummonersType[], void> {
     const { MatchService } = await import("@/server/services/match");
 
     const ids = await MatchService._getAllMatcheIdsDTOByPuuid(id, queueId);
@@ -135,97 +138,33 @@ export class RefreshService {
       };
     }
 
-    const withTimeout = <T>(
-      p: Promise<T>,
-      ms: number,
-      idx: number,
-      mid: string
-    ) =>
-      new Promise<
-        | { ok: true; value: T; idx: number; mid: string }
-        | { ok: false; error: unknown; idx: number; mid: string }
-      >((resolve) => {
-        let settled = false;
-        const timer = setTimeout(() => {
-          if (!settled) {
-            console.warn(
-              `[progressFetchMatches] Match #${idx}-${mid} timed out after ${ms}ms`
-            );
-            resolve({ ok: false, error: new Error("timeout"), idx, mid });
-          }
-        }, ms);
-        p.then((value) => {
-          settled = true;
-          clearTimeout(timer);
-          resolve({ ok: true, value, idx, mid });
-        }).catch((err) => {
-          settled = true;
-          clearTimeout(timer);
-          console.error(`[progressFetchMatches] Match #${idx} failed`, err);
-          resolve({ ok: false, error: err, idx, mid });
-        });
+    const batchSize = 200;
+    const totalBatches = Math.ceil(notSavedIds.length / batchSize);
+    const allNewMatches: MatchWithSummonersType[] = alreadySaved;
+
+    for (let b = 0; b < totalBatches; b++) {
+      const start = b * batchSize;
+      const end = Math.min(notSavedIds.length, start + batchSize);
+      const slice = notSavedIds.slice(start, end);
+
+      const tasks = slice.map((mid, i) => MatchService.getMatchDTOById(mid));
+
+      const newMatches = await Promise.all(tasks);
+
+      yield {
+        status: "step_in_progress",
+        step: "fetching_matches",
+        matchesFetched: newMatches.length,
+      };
+
+      const _newMatches = await db.transaction(async (tx) => {
+        return await MatchService.saveMatchesDTOtoDBTx(tx, newMatches);
       });
 
-    const tasks = notSavedIds.map((mid, i) =>
-      withTimeout(MatchService.getMatchDTOById(mid), 20_000, i, mid)
-    );
-
-    const never = new Promise<never>(() => {});
-    const slots = tasks.slice();
-    let remaining = slots.length;
-
-    const batchSize = 50;
-    let buffer: MatchDTOType[] = [];
-
-    const flush = async () => {
-      if (buffer.length === 0) return;
-
-      await db.transaction(async (tx) => {
-        await MatchService.saveMatchesDTOtoDBTx(tx, buffer);
-      });
-
-      buffer = [];
-    };
-
-    while (remaining > 0) {
-      const r = await Promise.race(slots);
-
-      if (r && typeof r === "object" && "idx" in r) {
-        const idx = r.idx;
-        slots[idx] = never;
-        remaining -= 1;
-
-        if (r.ok) {
-          buffer.push(r.value);
-
-          yield {
-            status: "step_in_progress",
-            step: "fetching_matches",
-            matchesFetched: 1,
-          };
-
-          if (buffer.length >= batchSize) {
-            await flush();
-          }
-        } else {
-          console.warn(
-            `[progressFetchMatches] Skipping match #${idx} ${r.mid} due to error/timeout`
-          );
-          yield {
-            status: "step_in_progress",
-            step: "fetching_matches",
-            matchesFetched: 0,
-          };
-        }
-      } else {
-        console.error(
-          `[progressFetchMatches] Unexpected race result, breaking loop to avoid infinite wait`
-        );
-        break;
-      }
+      allNewMatches.push(..._newMatches);
     }
 
-    await flush();
+    return allNewMatches;
   }
 
   private static async *progressFetchLeagues(
@@ -249,7 +188,8 @@ export class RefreshService {
   private static async *progressFetchStats(
     id: Pick<SummonerType, "region" | "puuid">,
     queue: LolQueueType,
-    leagues: LeagueRowType[]
+    leagues: LeagueRowType[],
+    matches: MatchWithSummonersType[]
   ): AsyncGenerator<RefreshProgressMsgType, void, void> {
     yield { status: "step_started", step: "fetching_stats" };
 
@@ -263,7 +203,8 @@ export class RefreshService {
           tx,
           id,
           queue,
-          leagues
+          leagues,
+          matches
         );
       } catch (e) {
         console.error("Error fetching stats:", e);

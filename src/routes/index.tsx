@@ -1,18 +1,22 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { Button } from "@/client/components/ui/button";
 
 export const Route = createFileRoute("/")({
   component: Home,
+  beforeLoad: () => {
+    throw redirect({
+      to: "/lol/summoner",
+    });
+  },
 });
 
 function Home() {
   return (
-    <div className={""}>
+    <div className={"w-full h-full flex items-center justify-center flex-1"}>
       <Link to={"/lol/summoner"}>
-        <Button>See Summoner Page</Button>
-      </Link>
-      <Link to={"/$id"} params={{ id: "OlivierDeschênes-00008" }}>
-        <Button>Good RiotID test</Button>
+        <h1 className={"text-neutral-900 text-[200px] font-extrabold"}>
+          (League of Legends)
+        </h1>
       </Link>
     </div>
   );

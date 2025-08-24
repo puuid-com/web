@@ -1,15 +1,15 @@
 // progress-answer.ts
-import {
-  $streamSimpleProgress,
-  type SimpleProgressMsg,
-} from "@/server/functions/$streamSimpleProgress";
+import type { LolQueueType } from "@/server/api-route/riot/league/LeagueDTO";
+import { $streamSimpleProgress } from "@/server/functions/$streamSimpleProgress";
+import type { RefreshProgressMsgType } from "@/server/services/refresh";
+import type { LolRegionType } from "@/server/types/riot/common";
 
-type Args = { puuid: string; region: string; queue: string };
+type Args = { puuid: string; region: LolRegionType; queue: LolQueueType };
 
 export function progressAnswer(args: Args, signal: AbortSignal) {
   return {
     async *[Symbol.asyncIterator](): AsyncGenerator<
-      SimpleProgressMsg,
+      RefreshProgressMsgType,
       void,
       void
     > {
@@ -56,9 +56,7 @@ export function progressAnswer(args: Args, signal: AbortSignal) {
         try {
           const msg = JSON.parse(
             line as unknown as string
-          ) as SimpleProgressMsg;
-
-          console.log(msg);
+          ) as RefreshProgressMsgType;
 
           yield msg;
         } catch {}

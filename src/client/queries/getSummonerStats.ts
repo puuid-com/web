@@ -16,7 +16,6 @@ export const getSummonerStatsOptions = ({ summoner, queue }: QueryParams) =>
       $getSummonerStatsByPuuid({
         data: {
           puuid: summoner.puuid,
-          region: summoner.region,
           queue,
         },
       }),

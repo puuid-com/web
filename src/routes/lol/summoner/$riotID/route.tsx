@@ -18,6 +18,14 @@ import { timeago } from "@/client/lib/utils";
 
 export const Route = createFileRoute("/lol/summoner/$riotID")({
   component: RouteComponent,
+  params: {
+    parse: (raw) => ({
+      riotID: decodeURIComponent(raw.riotID).normalize("NFC"),
+    }),
+    stringify: (v) => ({
+      riotID: encodeURIComponent(v.riotID.normalize("NFC")),
+    }),
+  },
   validateSearch: (data) =>
     v.parse(
       v.object({
