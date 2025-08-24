@@ -18,18 +18,18 @@ export const MatchItemChampionName = ({ championId }: Props) => {
   const rest = name.slice(c.length);
 
   return (
-    <>
+    <span>
       {prefix ? (
         <span
           className={cn(
             "bg-main/50 text-main-foreground p-0.5 rounded text-shadow-lg",
-            rest && "pr-0 rounded-r-none",
+            "[&:has(+span)]:pr-0 [&:has(+span)]:rounded-r-none",
           )}
         >
           {prefix}
         </span>
       ) : null}
-      {rest}
-    </>
+      {rest ? <span>{rest}</span> : null}
+    </span>
   );
 };

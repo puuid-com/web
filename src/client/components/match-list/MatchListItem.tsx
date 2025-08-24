@@ -1,4 +1,6 @@
 import { MatchItemChampionName } from "@/client/components/match-list/MatchItemChampionName";
+import { ChampionTooltip } from "@/client/components/tooltips/ChampionTooltip";
+import { ItemTooltip } from "@/client/components/tooltips/ItemTooltip";
 import { cn, formatSeconds } from "@/client/lib/utils";
 import { DDragonService } from "@/client/services/DDragon";
 import type { $GetSummonerMatchesType } from "@/server/functions/$getSummonerMatches";
@@ -27,17 +29,19 @@ export const MatchListItem = ({ m, p, i, count }: Props) => {
 
       {/* champion */}
       <div className="w-48 shrink-0 flex items-center gap-2.5">
-        <img
-          src={
-            DDragonService.getChampionIconUrlFromParticipant(
-              metadata.champions,
-              metadata.latest_version,
-              p,
-            ) || "/placeholder.svg"
-          }
-          alt=""
-          className="w-8 aspect-square rounded-md"
-        />
+        <ChampionTooltip championId={p.championId}>
+          <img
+            src={
+              DDragonService.getChampionIconUrlFromParticipant(
+                metadata.champions,
+                metadata.latest_version,
+                p,
+              ) || "/placeholder.svg"
+            }
+            alt=""
+            className="w-8 aspect-square rounded-md"
+          />
+        </ChampionTooltip>
         <div className="font-bold">
           <MatchItemChampionName championId={p.championId} />
         </div>
@@ -56,17 +60,18 @@ export const MatchListItem = ({ m, p, i, count }: Props) => {
 
       {/* items, démarrent tous au même x */}
       <div className="flex-1 min-w-0 flex items-center gap-1">
-        {p.items.map((i, idx) => (
-          <div
-            key={idx}
-            style={{
-              backgroundImage: `url(${DDragonService.getItemIconUrl(metadata.latest_version, i)})`,
-            }}
-            className={cn(
-              "w-6 aspect-square rounded-md bg-cover",
-              p.win ? "bg-emerald-800/20" : "bg-red-800/20",
-            )}
-          />
+        {p.items.map((itemId, idx) => (
+          <ItemTooltip key={idx} itemId={itemId}>
+            <div
+              style={{
+                backgroundImage: `url(${DDragonService.getItemIconUrl(metadata.latest_version, itemId)})`,
+              }}
+              className={cn(
+                "w-6 aspect-square rounded-md bg-cover",
+                p.win ? "bg-emerald-800/20" : "bg-red-800/20",
+              )}
+            />
+          </ItemTooltip>
         ))}
       </div>
 

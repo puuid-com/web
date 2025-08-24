@@ -14,6 +14,7 @@ export const Route = createFileRoute("/lol/summoner/$riotID/matches")({
           v.exactOptional(v.string()),
           v.transform((s) => s || undefined),
         ),
+        w: v.exactOptional(v.boolean()),
       }),
       data,
     ),

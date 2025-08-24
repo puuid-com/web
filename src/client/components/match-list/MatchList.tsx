@@ -10,7 +10,7 @@ type Props = {};
 
 export const MatchList = ({}: Props) => {
   const { summoner } = useLoaderData({ from: "/lol/summoner/$riotID" });
-  const { q, c } = useSearch({
+  const { q, c, w } = useSearch({
     from: "/lol/summoner/$riotID/matches",
   });
   const params = useParams({ from: "/lol/summoner/$riotID/matches" });
@@ -21,6 +21,7 @@ export const MatchList = ({}: Props) => {
       summoner: summoner,
     },
     (c ?? "").toUpperCase(),
+    w,
   );
 
   if (q_matches.status === "pending") {

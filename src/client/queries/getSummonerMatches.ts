@@ -14,6 +14,7 @@ export const getSummonerMatchesOptions = (
   { summoner, queue }: QueryParams,
   c: string,
   champions: ChampionsResponseType["data"],
+  w: boolean | undefined,
 ) =>
   queryOptions({
     queryKey: ["getSummonerMatchesOptions", summoner.puuid, queue, summoner.region],
@@ -26,13 +27,16 @@ export const getSummonerMatchesOptions = (
         },
       }),
     select: (data) => {
-      if (c) {
+      if (c || w !== undefined) {
         console.log({ c });
 
         return data.matches.filter((m) => {
           const championName = champions[m.match_summoner.championId]!.name.toUpperCase();
+          const cCheck = championName.startsWith(c);
 
-          return championName.startsWith(c);
+          const wCheck = w === undefined ? true : m.match_summoner.win === w;
+
+          return cCheck && wCheck;
         });
       }
 
@@ -40,10 +44,10 @@ export const getSummonerMatchesOptions = (
     },
   });
 
-export const useGetSummonerMatches = (params: QueryParams, c: string) => {
+export const useGetSummonerMatches = (params: QueryParams, c: string, w: boolean | undefined) => {
   const { champions } = useLoaderData({ from: "/lol" });
 
-  return useQuery(getSummonerMatchesOptions(params, c, champions));
+  return useQuery(getSummonerMatchesOptions(params, c, champions, w));
 };
 
 export type GetSummonerMatchesType = Awaited<ReturnType<typeof $getSummonerMatches>>;

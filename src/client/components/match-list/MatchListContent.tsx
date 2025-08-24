@@ -99,7 +99,7 @@ export const MatchListContent = ({ matches }: Props) => {
   });
 
   return (
-    <div ref={parentRef} className={cn("border border-dashed w-full rounded-md", "bg-background")}>
+    <div ref={parentRef} className={cn("w-full rounded-md", "bg-background")}>
       <div className="relative w-full" style={{ height: rowVirtualizer.getTotalSize() }}>
         {rowVirtualizer.getVirtualItems().map((vRow) => {
           const row = rows[vRow.index]!;
@@ -112,7 +112,7 @@ export const MatchListContent = ({ matches }: Props) => {
               style={{ transform: `translateY(${String(vRow.start)}px)` }}
             >
               {row.type === "header" ? (
-                <div className="px-3 py-2 border-b bg-main/5 border-dashed justify-between items-center flex">
+                <div className="px-3 py-2 border rounded-t-md bg-main/5 border-dashed justify-between items-center flex">
                   <div className={"flex gap-2.5"}>
                     <div>{row.label}</div>
                     {row.groupStats.loses + row.groupStats.wins > 1 ? (

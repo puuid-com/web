@@ -8,19 +8,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/client/components/ui/select";
-import type { LolQueueType } from "@/server/api-route/riot/league/LeagueDTO";
 import { useNavigate, useParams, useSearch } from "@tanstack/react-router";
 import { SlidersHorizontal } from "lucide-react";
 import { debounce } from "@tanstack/pacer";
 import React from "react";
+import type { FriendlyQueueType } from "@/client/lib/typeHelper";
 
 const QueueLables = ["Ranked Solo Duo", "Ranked Flex"] as const;
 type QueueLabelType = (typeof QueueLables)[number];
 
-const map: Record<QueueLabelType, LolQueueType> = {
-  "Ranked Flex": "RANKED_FLEX_SR",
-  "Ranked Solo Duo": "RANKED_SOLO_5x5",
+const map: Record<QueueLabelType, FriendlyQueueType> = {
+  "Ranked Flex": "flex",
+  "Ranked Solo Duo": "solo",
 };
+
+const WinsLabels = ["Wins", "Loses", "All"];
+type WinsLabelType = (typeof WinsLabels)[number];
 
 interface Props {}
 
@@ -56,6 +59,9 @@ export const SummonerSidebarFilters = ({}: Props) => {
     },
   );
 
+  const parsedWinsParam: WinsLabelType =
+    search.w === true ? "Wins" : search.w === false ? "Loses" : "All";
+
   const handleChampionSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.currentTarget.value;
 
@@ -72,14 +78,15 @@ export const SummonerSidebarFilters = ({}: Props) => {
             <label htmlFor="">Queue</label>
             <Select
               value={search.q}
-              onValueChange={(v: LolQueueType) => {
+              onValueChange={(v: FriendlyQueueType) => {
                 // eslint-disable-next-line @typescript-eslint/no-floating-promises
                 navigation({
-                  to: "/lol/summoner/$riotID",
+                  to: "/lol/summoner/$riotID/matches",
                   params: params,
-                  search: {
-                    queue: v,
-                  },
+                  search: (s) => ({
+                    ...s,
+                    q: v,
+                  }),
                 });
               }}
             >
@@ -98,6 +105,34 @@ export const SummonerSidebarFilters = ({}: Props) => {
           <div className={"flex items-center justify-between flex-1 gap-5"}>
             <label htmlFor="">Champion</label>
             <Input className={"w-3/5"} value={searchValue} onChange={handleChampionSearch} />
+          </div>
+          <div className={"flex items-center justify-between flex-1 gap-5"}>
+            <label htmlFor="">Result</label>
+            <Select
+              value={parsedWinsParam}
+              onValueChange={(v: WinsLabelType) => {
+                // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                navigation({
+                  to: "/lol/summoner/$riotID/matches",
+                  params: params,
+                  search: (s) => ({
+                    ...s,
+                    w: v === "All" ? undefined : v === "Wins" ? true : false,
+                  }),
+                });
+              }}
+            >
+              <SelectTrigger className="w-3/5">
+                <SelectValue placeholder="Theme" className={" "} />
+              </SelectTrigger>
+              <SelectContent>
+                {WinsLabels.map((q) => (
+                  <SelectItem key={q} value={q}>
+                    {q}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
         <div className={"leading-none text-end"}></div>

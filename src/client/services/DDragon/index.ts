@@ -9,11 +9,13 @@ import {
 import ky from "ky";
 import * as v from "valibot";
 import type { MatchSummonerRowType } from "@/server/db/match-schema";
+import { DDragonItemFileSchema, type DDragonItemsData } from "@/client/services/DDragon/items.dto";
 
 export type DDragonMetadata = {
   champions: ChampionsResponseType["data"];
   latest_version: string;
   summoner_spells: FormattedSummonerSpellsType;
+  items: DDragonItemsData;
 };
 
 export class DDragonService {
@@ -34,7 +36,7 @@ export class DDragonService {
     return v.parse(ChampionsResponseSchema, response).data;
   }
 
-  static async getSpells(version: string) {
+  static async getSpellsData(version: string) {
     const url = `https://ddragon.leagueoflegends.com/cdn/${version}/data/en_US/summoner.json`;
     const response = await ky.get(url).json();
     const parsed = v.parse(SummonerSpellsResponseSchema, response);
@@ -44,6 +46,12 @@ export class DDragonService {
       reshaped[value.key] = value;
     }
     return reshaped;
+  }
+
+  static async getItemsData(version: string) {
+    const url = `https://ddragon.leagueoflegends.com/cdn/${version}/data/en_US/item.json`;
+    const response = await ky.get(url).json();
+    return v.parse(DDragonItemFileSchema, response);
   }
 
   static getProfileIconUrl(version: string, id: SummonerType["profileIconId"]) {
@@ -98,16 +106,26 @@ export class DDragonService {
   static async getMetadata(): Promise<DDragonMetadata> {
     const version = await DDragonService.getLatestVersion();
 
-    const [spells, champions] = await Promise.all([
-      DDragonService.getSpells(version),
-      DDragonService.getChampionsData(version),
-    ]);
+    try {
+      const [spells, champions, items] = await Promise.all([
+        DDragonService.getSpellsData(version),
+        DDragonService.getChampionsData(version),
+        DDragonService.getItemsData(version),
+      ]);
 
-    return {
-      champions,
-      latest_version: version,
-      summoner_spells: spells,
-    };
+      return {
+        champions,
+        latest_version: version,
+        summoner_spells: spells,
+        items,
+      };
+    } catch (error) {
+      if (v.isValiError(error)) {
+        console.error(v.summarize(error.issues), error);
+      } else {
+        console.error("Error loading DDragon metadata:", error);
+      }
+    }
   }
 
   static async loadMetadata() {
