@@ -12,12 +12,14 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as LolRouteRouteImport } from './routes/lol/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as LolSummonerIndexRouteImport } from './routes/lol/summoner/index'
+import { Route as LolFeaturedGamesRegionRouteImport } from './routes/lol/featured-games/$region'
 import { Route as LolSummonerRiotIDRouteRouteImport } from './routes/lol/summoner/$riotID/route'
 import { Route as LolSummonerRiotIDIndexRouteImport } from './routes/lol/summoner/$riotID/index'
 import { Route as LolSummonerRiotIDStatsRouteImport } from './routes/lol/summoner/$riotID/stats'
 import { Route as LolSummonerRiotIDRefreshRouteImport } from './routes/lol/summoner/$riotID/refresh'
 import { Route as LolSummonerRiotIDMatchesRouteImport } from './routes/lol/summoner/$riotID/matches'
 import { Route as LolSummonerRiotIDMasteryRouteImport } from './routes/lol/summoner/$riotID/mastery'
+import { Route as LolSummonerRiotIDLiveRouteImport } from './routes/lol/summoner/$riotID/live'
 
 const LolRouteRoute = LolRouteRouteImport.update({
   id: '/lol',
@@ -32,6 +34,11 @@ const IndexRoute = IndexRouteImport.update({
 const LolSummonerIndexRoute = LolSummonerIndexRouteImport.update({
   id: '/summoner/',
   path: '/summoner/',
+  getParentRoute: () => LolRouteRoute,
+} as any)
+const LolFeaturedGamesRegionRoute = LolFeaturedGamesRegionRouteImport.update({
+  id: '/featured-games/$region',
+  path: '/featured-games/$region',
   getParentRoute: () => LolRouteRoute,
 } as any)
 const LolSummonerRiotIDRouteRoute = LolSummonerRiotIDRouteRouteImport.update({
@@ -67,12 +74,19 @@ const LolSummonerRiotIDMasteryRoute =
     path: '/mastery',
     getParentRoute: () => LolSummonerRiotIDRouteRoute,
   } as any)
+const LolSummonerRiotIDLiveRoute = LolSummonerRiotIDLiveRouteImport.update({
+  id: '/live',
+  path: '/live',
+  getParentRoute: () => LolSummonerRiotIDRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/lol': typeof LolRouteRouteWithChildren
   '/lol/summoner/$riotID': typeof LolSummonerRiotIDRouteRouteWithChildren
+  '/lol/featured-games/$region': typeof LolFeaturedGamesRegionRoute
   '/lol/summoner': typeof LolSummonerIndexRoute
+  '/lol/summoner/$riotID/live': typeof LolSummonerRiotIDLiveRoute
   '/lol/summoner/$riotID/mastery': typeof LolSummonerRiotIDMasteryRoute
   '/lol/summoner/$riotID/matches': typeof LolSummonerRiotIDMatchesRoute
   '/lol/summoner/$riotID/refresh': typeof LolSummonerRiotIDRefreshRoute
@@ -82,7 +96,9 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/lol': typeof LolRouteRouteWithChildren
+  '/lol/featured-games/$region': typeof LolFeaturedGamesRegionRoute
   '/lol/summoner': typeof LolSummonerIndexRoute
+  '/lol/summoner/$riotID/live': typeof LolSummonerRiotIDLiveRoute
   '/lol/summoner/$riotID/mastery': typeof LolSummonerRiotIDMasteryRoute
   '/lol/summoner/$riotID/matches': typeof LolSummonerRiotIDMatchesRoute
   '/lol/summoner/$riotID/refresh': typeof LolSummonerRiotIDRefreshRoute
@@ -94,7 +110,9 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/lol': typeof LolRouteRouteWithChildren
   '/lol/summoner/$riotID': typeof LolSummonerRiotIDRouteRouteWithChildren
+  '/lol/featured-games/$region': typeof LolFeaturedGamesRegionRoute
   '/lol/summoner/': typeof LolSummonerIndexRoute
+  '/lol/summoner/$riotID/live': typeof LolSummonerRiotIDLiveRoute
   '/lol/summoner/$riotID/mastery': typeof LolSummonerRiotIDMasteryRoute
   '/lol/summoner/$riotID/matches': typeof LolSummonerRiotIDMatchesRoute
   '/lol/summoner/$riotID/refresh': typeof LolSummonerRiotIDRefreshRoute
@@ -107,7 +125,9 @@ export interface FileRouteTypes {
     | '/'
     | '/lol'
     | '/lol/summoner/$riotID'
+    | '/lol/featured-games/$region'
     | '/lol/summoner'
+    | '/lol/summoner/$riotID/live'
     | '/lol/summoner/$riotID/mastery'
     | '/lol/summoner/$riotID/matches'
     | '/lol/summoner/$riotID/refresh'
@@ -117,7 +137,9 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/lol'
+    | '/lol/featured-games/$region'
     | '/lol/summoner'
+    | '/lol/summoner/$riotID/live'
     | '/lol/summoner/$riotID/mastery'
     | '/lol/summoner/$riotID/matches'
     | '/lol/summoner/$riotID/refresh'
@@ -128,7 +150,9 @@ export interface FileRouteTypes {
     | '/'
     | '/lol'
     | '/lol/summoner/$riotID'
+    | '/lol/featured-games/$region'
     | '/lol/summoner/'
+    | '/lol/summoner/$riotID/live'
     | '/lol/summoner/$riotID/mastery'
     | '/lol/summoner/$riotID/matches'
     | '/lol/summoner/$riotID/refresh'
@@ -162,6 +186,13 @@ declare module '@tanstack/react-router' {
       path: '/summoner'
       fullPath: '/lol/summoner'
       preLoaderRoute: typeof LolSummonerIndexRouteImport
+      parentRoute: typeof LolRouteRoute
+    }
+    '/lol/featured-games/$region': {
+      id: '/lol/featured-games/$region'
+      path: '/featured-games/$region'
+      fullPath: '/lol/featured-games/$region'
+      preLoaderRoute: typeof LolFeaturedGamesRegionRouteImport
       parentRoute: typeof LolRouteRoute
     }
     '/lol/summoner/$riotID': {
@@ -206,10 +237,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LolSummonerRiotIDMasteryRouteImport
       parentRoute: typeof LolSummonerRiotIDRouteRoute
     }
+    '/lol/summoner/$riotID/live': {
+      id: '/lol/summoner/$riotID/live'
+      path: '/live'
+      fullPath: '/lol/summoner/$riotID/live'
+      preLoaderRoute: typeof LolSummonerRiotIDLiveRouteImport
+      parentRoute: typeof LolSummonerRiotIDRouteRoute
+    }
   }
 }
 
 interface LolSummonerRiotIDRouteRouteChildren {
+  LolSummonerRiotIDLiveRoute: typeof LolSummonerRiotIDLiveRoute
   LolSummonerRiotIDMasteryRoute: typeof LolSummonerRiotIDMasteryRoute
   LolSummonerRiotIDMatchesRoute: typeof LolSummonerRiotIDMatchesRoute
   LolSummonerRiotIDRefreshRoute: typeof LolSummonerRiotIDRefreshRoute
@@ -219,6 +258,7 @@ interface LolSummonerRiotIDRouteRouteChildren {
 
 const LolSummonerRiotIDRouteRouteChildren: LolSummonerRiotIDRouteRouteChildren =
   {
+    LolSummonerRiotIDLiveRoute: LolSummonerRiotIDLiveRoute,
     LolSummonerRiotIDMasteryRoute: LolSummonerRiotIDMasteryRoute,
     LolSummonerRiotIDMatchesRoute: LolSummonerRiotIDMatchesRoute,
     LolSummonerRiotIDRefreshRoute: LolSummonerRiotIDRefreshRoute,
@@ -233,11 +273,13 @@ const LolSummonerRiotIDRouteRouteWithChildren =
 
 interface LolRouteRouteChildren {
   LolSummonerRiotIDRouteRoute: typeof LolSummonerRiotIDRouteRouteWithChildren
+  LolFeaturedGamesRegionRoute: typeof LolFeaturedGamesRegionRoute
   LolSummonerIndexRoute: typeof LolSummonerIndexRoute
 }
 
 const LolRouteRouteChildren: LolRouteRouteChildren = {
   LolSummonerRiotIDRouteRoute: LolSummonerRiotIDRouteRouteWithChildren,
+  LolFeaturedGamesRegionRoute: LolFeaturedGamesRegionRoute,
   LolSummonerIndexRoute: LolSummonerIndexRoute,
 }
 

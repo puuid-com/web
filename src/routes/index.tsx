@@ -3,7 +3,6 @@ import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 export const Route = createFileRoute("/")({
   component: Home,
   beforeLoad: () => {
-    // eslint-disable-next-line @typescript-eslint/only-throw-error
     throw redirect({
       to: "/lol/summoner",
     });

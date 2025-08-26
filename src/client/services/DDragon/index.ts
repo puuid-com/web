@@ -125,6 +125,8 @@ export class DDragonService {
       } else {
         console.error("Error loading DDragon metadata:", error);
       }
+
+      throw error;
     }
   }
 

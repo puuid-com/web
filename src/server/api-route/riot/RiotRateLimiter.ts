@@ -90,4 +90,15 @@ export const RiotAPIRateLimiter = new MultiRouteLimiter(globalLimits, {
     parseRateLime("20000 requests every 10 seconds"),
     parseRateLime("1200000 requests every 10 minutes"),
   ],
+  /**
+   * spectator-v5
+   */
+  "spectator_featured-games": [
+    parseRateLime("20000 requests every 10 seconds"),
+    parseRateLime("1200000 requests every 10 minutes"),
+  ],
+  "spectator_by-puuid": [
+    parseRateLime("20000 requests every 10 seconds"),
+    parseRateLime("1200000 requests every 10 minutes"),
+  ],
 });

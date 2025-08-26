@@ -48,6 +48,11 @@ const sortByMatches = (a: Stat, b: Stat) => {
 };
 
 export class StatisticService {
+  static getSummonerStatistics(puuid: SummonerType["puuid"]) {
+    return db.query.statisticTable.findMany({
+      where: eq(statisticTable.puuid, puuid),
+    });
+  }
   static MATCHES_COUNTED = 9999;
 
   static async getSummonerStatistic(puuid: SummonerType["puuid"], queueType: LolQueueType) {
@@ -109,7 +114,6 @@ export class StatisticService {
       acc.assists += mainSummoner.assists;
       acc.deaths += mainSummoner.deaths;
 
-      // statsByChampionId, incrémente ou crée
       {
         const s = acc.statsByChampionId.find((s) => s.championId === mainSummoner.championId);
         if (!s) {

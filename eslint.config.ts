@@ -76,6 +76,8 @@ export default tseslint.config(
       "@typescript-eslint/no-extraneous-class": "off",
       "@typescript-eslint/no-non-null-assertion": "off",
       "@typescript-eslint/restrict-template-expressions": "off",
+      "@typescript-eslint/only-throw-error": "off",
+      "@typescript-eslint/restrict-plus-operands": "off",
 
       "no-unused-vars": "off", // or "@typescript-eslint/no-unused-vars": "off",
       "unused-imports/no-unused-imports": "error",

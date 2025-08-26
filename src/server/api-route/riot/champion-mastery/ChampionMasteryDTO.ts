@@ -1,32 +1,33 @@
 import * as v from "valibot";
 
-export const MasteryDTOSchema = v.pipe(
-  v.array(
-    v.object({
-      puuid: v.string(),
-      championId: v.number(),
-      championLevel: v.number(),
-      championPoints: v.number(),
-      lastPlayTime: v.pipe(
-        v.union([v.string(), v.number()]),
-        v.transform((input) => new Date(input).toISOString()),
-      ),
-    }),
-  ),
-  v.transform((data) => ({
-    // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
-    puuid: data.pop()?.puuid!,
-    data: data.map((d) => ({
-      champion: {
-        id: d.championId,
-      },
-      puuid: d.puuid,
-      level: d.championLevel,
-      points: d.championPoints,
-      lastPlayTime: d.lastPlayTime,
-    })),
-    created_at: new Date().toISOString(),
-  })),
-);
-export type MasteryDTOType = v.InferInput<typeof MasteryDTOSchema>;
-export type MasteryType = v.InferOutput<typeof MasteryDTOSchema>;
+const NextSeasonMilestonesDTOSchema = v.object({
+  requireGradeCounts: v.record(v.string(), v.number()),
+  rewardMarks: v.number(),
+  bonus: v.boolean(),
+  totalGamesRequires: v.number(),
+});
+
+const ChampionMasteryDTOSchema = v.object({
+  puuid: v.string(),
+  championId: v.number(),
+  championLevel: v.number(),
+  championPoints: v.number(),
+  lastPlayTime: v.number(),
+  championPointsSinceLastLevel: v.number(),
+  championPointsUntilNextLevel: v.number(),
+  markRequiredForNextLevel: v.number(),
+  tokensEarned: v.number(),
+  championSeasonMilestone: v.number(),
+  nextSeasonMilestone: NextSeasonMilestonesDTOSchema,
+});
+
+const ChampionMasteryListDTOSchema = v.array(ChampionMasteryDTOSchema);
+
+/** Types */
+type NextSeasonMilestonesDTOType = v.InferOutput<typeof NextSeasonMilestonesDTOSchema>;
+type ChampionMasteryDTOType = v.InferOutput<typeof ChampionMasteryDTOSchema>;
+type ChampionMasteryListDTOType = v.InferOutput<typeof ChampionMasteryListDTOSchema>;
+
+export { NextSeasonMilestonesDTOSchema, ChampionMasteryDTOSchema, ChampionMasteryListDTOSchema };
+
+export type { NextSeasonMilestonesDTOType, ChampionMasteryDTOType, ChampionMasteryListDTOType };
