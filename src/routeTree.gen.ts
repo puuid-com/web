@@ -15,7 +15,7 @@ import { Route as LolSummonerIndexRouteImport } from './routes/lol/summoner/inde
 import { Route as LolFeaturedGamesRegionRouteImport } from './routes/lol/featured-games/$region'
 import { Route as LolSummonerRiotIDRouteRouteImport } from './routes/lol/summoner/$riotID/route'
 import { Route as LolSummonerRiotIDIndexRouteImport } from './routes/lol/summoner/$riotID/index'
-import { Route as LolSummonerRiotIDStatsRouteImport } from './routes/lol/summoner/$riotID/stats'
+import { Route as LolSummonerRiotIDStatisticsRouteImport } from './routes/lol/summoner/$riotID/statistics'
 import { Route as LolSummonerRiotIDRefreshRouteImport } from './routes/lol/summoner/$riotID/refresh'
 import { Route as LolSummonerRiotIDMatchesRouteImport } from './routes/lol/summoner/$riotID/matches'
 import { Route as LolSummonerRiotIDMasteryRouteImport } from './routes/lol/summoner/$riotID/mastery'
@@ -51,11 +51,12 @@ const LolSummonerRiotIDIndexRoute = LolSummonerRiotIDIndexRouteImport.update({
   path: '/',
   getParentRoute: () => LolSummonerRiotIDRouteRoute,
 } as any)
-const LolSummonerRiotIDStatsRoute = LolSummonerRiotIDStatsRouteImport.update({
-  id: '/stats',
-  path: '/stats',
-  getParentRoute: () => LolSummonerRiotIDRouteRoute,
-} as any)
+const LolSummonerRiotIDStatisticsRoute =
+  LolSummonerRiotIDStatisticsRouteImport.update({
+    id: '/statistics',
+    path: '/statistics',
+    getParentRoute: () => LolSummonerRiotIDRouteRoute,
+  } as any)
 const LolSummonerRiotIDRefreshRoute =
   LolSummonerRiotIDRefreshRouteImport.update({
     id: '/refresh',
@@ -90,7 +91,7 @@ export interface FileRoutesByFullPath {
   '/lol/summoner/$riotID/mastery': typeof LolSummonerRiotIDMasteryRoute
   '/lol/summoner/$riotID/matches': typeof LolSummonerRiotIDMatchesRoute
   '/lol/summoner/$riotID/refresh': typeof LolSummonerRiotIDRefreshRoute
-  '/lol/summoner/$riotID/stats': typeof LolSummonerRiotIDStatsRoute
+  '/lol/summoner/$riotID/statistics': typeof LolSummonerRiotIDStatisticsRoute
   '/lol/summoner/$riotID/': typeof LolSummonerRiotIDIndexRoute
 }
 export interface FileRoutesByTo {
@@ -102,7 +103,7 @@ export interface FileRoutesByTo {
   '/lol/summoner/$riotID/mastery': typeof LolSummonerRiotIDMasteryRoute
   '/lol/summoner/$riotID/matches': typeof LolSummonerRiotIDMatchesRoute
   '/lol/summoner/$riotID/refresh': typeof LolSummonerRiotIDRefreshRoute
-  '/lol/summoner/$riotID/stats': typeof LolSummonerRiotIDStatsRoute
+  '/lol/summoner/$riotID/statistics': typeof LolSummonerRiotIDStatisticsRoute
   '/lol/summoner/$riotID': typeof LolSummonerRiotIDIndexRoute
 }
 export interface FileRoutesById {
@@ -116,7 +117,7 @@ export interface FileRoutesById {
   '/lol/summoner/$riotID/mastery': typeof LolSummonerRiotIDMasteryRoute
   '/lol/summoner/$riotID/matches': typeof LolSummonerRiotIDMatchesRoute
   '/lol/summoner/$riotID/refresh': typeof LolSummonerRiotIDRefreshRoute
-  '/lol/summoner/$riotID/stats': typeof LolSummonerRiotIDStatsRoute
+  '/lol/summoner/$riotID/statistics': typeof LolSummonerRiotIDStatisticsRoute
   '/lol/summoner/$riotID/': typeof LolSummonerRiotIDIndexRoute
 }
 export interface FileRouteTypes {
@@ -131,7 +132,7 @@ export interface FileRouteTypes {
     | '/lol/summoner/$riotID/mastery'
     | '/lol/summoner/$riotID/matches'
     | '/lol/summoner/$riotID/refresh'
-    | '/lol/summoner/$riotID/stats'
+    | '/lol/summoner/$riotID/statistics'
     | '/lol/summoner/$riotID/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -143,7 +144,7 @@ export interface FileRouteTypes {
     | '/lol/summoner/$riotID/mastery'
     | '/lol/summoner/$riotID/matches'
     | '/lol/summoner/$riotID/refresh'
-    | '/lol/summoner/$riotID/stats'
+    | '/lol/summoner/$riotID/statistics'
     | '/lol/summoner/$riotID'
   id:
     | '__root__'
@@ -156,7 +157,7 @@ export interface FileRouteTypes {
     | '/lol/summoner/$riotID/mastery'
     | '/lol/summoner/$riotID/matches'
     | '/lol/summoner/$riotID/refresh'
-    | '/lol/summoner/$riotID/stats'
+    | '/lol/summoner/$riotID/statistics'
     | '/lol/summoner/$riotID/'
   fileRoutesById: FileRoutesById
 }
@@ -209,11 +210,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LolSummonerRiotIDIndexRouteImport
       parentRoute: typeof LolSummonerRiotIDRouteRoute
     }
-    '/lol/summoner/$riotID/stats': {
-      id: '/lol/summoner/$riotID/stats'
-      path: '/stats'
-      fullPath: '/lol/summoner/$riotID/stats'
-      preLoaderRoute: typeof LolSummonerRiotIDStatsRouteImport
+    '/lol/summoner/$riotID/statistics': {
+      id: '/lol/summoner/$riotID/statistics'
+      path: '/statistics'
+      fullPath: '/lol/summoner/$riotID/statistics'
+      preLoaderRoute: typeof LolSummonerRiotIDStatisticsRouteImport
       parentRoute: typeof LolSummonerRiotIDRouteRoute
     }
     '/lol/summoner/$riotID/refresh': {
@@ -252,7 +253,7 @@ interface LolSummonerRiotIDRouteRouteChildren {
   LolSummonerRiotIDMasteryRoute: typeof LolSummonerRiotIDMasteryRoute
   LolSummonerRiotIDMatchesRoute: typeof LolSummonerRiotIDMatchesRoute
   LolSummonerRiotIDRefreshRoute: typeof LolSummonerRiotIDRefreshRoute
-  LolSummonerRiotIDStatsRoute: typeof LolSummonerRiotIDStatsRoute
+  LolSummonerRiotIDStatisticsRoute: typeof LolSummonerRiotIDStatisticsRoute
   LolSummonerRiotIDIndexRoute: typeof LolSummonerRiotIDIndexRoute
 }
 
@@ -262,7 +263,7 @@ const LolSummonerRiotIDRouteRouteChildren: LolSummonerRiotIDRouteRouteChildren =
     LolSummonerRiotIDMasteryRoute: LolSummonerRiotIDMasteryRoute,
     LolSummonerRiotIDMatchesRoute: LolSummonerRiotIDMatchesRoute,
     LolSummonerRiotIDRefreshRoute: LolSummonerRiotIDRefreshRoute,
-    LolSummonerRiotIDStatsRoute: LolSummonerRiotIDStatsRoute,
+    LolSummonerRiotIDStatisticsRoute: LolSummonerRiotIDStatisticsRoute,
     LolSummonerRiotIDIndexRoute: LolSummonerRiotIDIndexRoute,
   }
 
