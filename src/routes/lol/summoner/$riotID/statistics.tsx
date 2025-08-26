@@ -7,9 +7,22 @@ import {
   SelectValue,
 } from "@/client/components/ui/select";
 import { useGetSummonerStatistics } from "@/client/queries/getSummonerStatistics";
-import { FriendlyQueueTypes, friendlyQueueTypeToRiot } from "@/client/lib/typeHelper";
-import { individualPositions } from "@/server/api-route/riot/match/MatchDTO";
-import { createFileRoute, useLoaderData, useNavigate, useParams, useSearch } from "@tanstack/react-router";
+import {
+  FriendlyQueueTypes,
+  friendlyQueueTypeToRiot,
+  type FriendlyQueueType,
+} from "@/client/lib/typeHelper";
+import {
+  individualPositions,
+  type IndividualPositionType,
+} from "@/server/api-route/riot/match/MatchDTO";
+import {
+  createFileRoute,
+  useLoaderData,
+  useNavigate,
+  useParams,
+  useSearch,
+} from "@tanstack/react-router";
 import React from "react";
 import * as v from "valibot";
 
@@ -42,9 +55,7 @@ function RouteComponent() {
 
   const queueStat = React.useMemo(() => {
     if (!data) return null;
-    return data.find(
-      (s) => s.queueType === friendlyQueueTypeToRiot(search.queue),
-    );
+    return data.find((s) => s.queueType === friendlyQueueTypeToRiot(search.queue));
   }, [data, search.queue]);
 
   const championStats = React.useMemo(() => {
@@ -78,13 +89,13 @@ function RouteComponent() {
           <label>Queue</label>
           <Select
             value={search.queue}
-            onValueChange={(v) =>
+            onValueChange={(v: FriendlyQueueType) => {
               navigate({
                 to: "/lol/summoner/$riotID/statistics",
                 params,
                 search: (s) => ({ ...s, queue: v }),
-              })
-            }
+              }).catch(console.error);
+            }}
           >
             <SelectTrigger className="w-40">
               <SelectValue />
@@ -100,7 +111,7 @@ function RouteComponent() {
           <Input
             className="w-40"
             value={search.champion ?? ""}
-            onChange={(e) =>
+            onChange={(e) => {
               navigate({
                 to: "/lol/summoner/$riotID/statistics",
                 params,
@@ -109,30 +120,30 @@ function RouteComponent() {
                   ...s,
                   champion: e.currentTarget.value || undefined,
                 }),
-              })
-            }
+              }).catch(console.error);
+            }}
           />
         </div>
         <div className="flex items-center gap-2">
           <label>Position</label>
           <Select
             value={search.position ?? ""}
-            onValueChange={(v) =>
+            onValueChange={(v: IndividualPositionType) => {
               navigate({
                 to: "/lol/summoner/$riotID/statistics",
                 params,
                 search: (s) => ({
                   ...s,
-                  position: v || undefined,
+                  position: v === "Invalid" ? undefined : v,
                 }),
-              })
-            }
+              }).catch(console.error);
+            }}
           >
             <SelectTrigger className="w-40">
               <SelectValue placeholder="All" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All</SelectItem>
+              <SelectItem value="Invalid">All</SelectItem>
               {individualPositions.map((p) => (
                 <SelectItem key={p} value={p}>
                   {p}
@@ -165,4 +176,3 @@ function RouteComponent() {
     </div>
   );
 }
-
