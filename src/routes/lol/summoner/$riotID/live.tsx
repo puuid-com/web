@@ -23,7 +23,6 @@ function RouteComponent() {
     queryFn: () =>
       $getActiveGames({
         data: {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           puuid: _puuid,
           region: "na1",
         },
