@@ -5,7 +5,7 @@ import { combineMasteryWithStatistic } from "@/client/lib/masteries";
 import { FriendlyQueueTypes, friendlyQueueTypeToRiot } from "@/client/lib/typeHelper";
 import { getSummonerMasteriesOptions } from "@/client/queries/getSummonerMasteries";
 import { getSummonerStatisticsOptions } from "@/client/queries/getSummonerStatistics";
-import CDragon from "@/client/services/CDragon";
+import { CDragonService } from "@/client/services/CDragon";
 import { individualPositions } from "@/server/api-route/riot/match/MatchDTO";
 import { useQueries } from "@tanstack/react-query";
 import { createFileRoute, useLoaderData, useSearch } from "@tanstack/react-router";
@@ -94,7 +94,7 @@ function RouteComponent() {
       return {
         ...c,
         name: champion.name,
-        avatar: CDragon.getChampionSquare(champion.id),
+        avatar: CDragonService.getChampionSquare(champion.id),
       };
     });
 
