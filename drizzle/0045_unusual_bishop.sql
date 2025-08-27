@@ -1,0 +1,1 @@
+ALTER TABLE "summoner" DROP COLUMN "profile_image_refreshed_at";

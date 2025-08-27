@@ -35,8 +35,6 @@ export const SummonerSidebarFilters = ({}: Props) => {
   const [searchValue, setSearchValue] = React.useState<string>(search.c ?? "");
 
   React.useEffect(() => {
-    console.log({ c: search.c });
-
     if (search.c) return;
 
     /**

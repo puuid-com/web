@@ -281,6 +281,55 @@
       "when": 1756284621159,
       "tag": "0039_gigantic_quasimodo",
       "breakpoints": true
+    },
+    {
+      "idx": 40,
+      "version": "7",
+      "when": 1756319460211,
+      "tag": "0040_fearless_pixie",
+      "breakpoints": true
+    },
+    {
+      "idx": 41,
+      "version": "7",
+      "when": 1756319621116,
+      "tag": "0041_tense_tyger_tiger",
+      "breakpoints": true
+    },
+    {
+      "idx": 42,
+      "version": "7",
+      "when": 1756319749030,
+      "tag": "0042_calm_kinsey_walden",
+      "breakpoints": true
+    },
+    {
+      "idx": 43,
+      "version": "7",
+      "when": 1756320094807,
+      "tag": "0043_colorful_titania",
+      "breakpoints": true
+    },
+    {
+      "idx": 44,
+      "version": "7",
+      "when": 1756320446163,
+      "tag": "0044_dark_vulture",
+      "breakpoints": true
+    },
+    {
+      "idx": 45,
+      "version": "7",
+      "when": 1756321363919,
+      "tag": "0045_unusual_bishop",
+      "breakpoints": true
+    },
+    {
+      "idx": 46,
+      "version": "7",
+      "when": 1756321519915,
+      "tag": "0046_ancient_fixer",
+      "breakpoints": true
     }
   ]
 }

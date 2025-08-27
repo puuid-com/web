@@ -12,6 +12,8 @@ import type { SummonerType } from "@/server/db/schema";
 import { progressQueryOptions } from "@/client/queries/refresh/progress-query";
 import type { RefreshProgressMsgType, StepsType } from "@/server/services/refresh";
 import type { LolQueueType } from "@/server/api-route/riot/league/LeagueDTO";
+import type { MatchWithSummonersType } from "@/server/db/match-schema";
+import { HiddenOnceSummonerProfileCapture } from "@/client/components/summoner/profile/HiddenOnceSummonerProfileCapture";
 
 export const Route = createFileRoute("/lol/summoner/$riotID/refresh")({
   component: RouteComponent,
@@ -40,6 +42,7 @@ function reduceProgress(events: RefreshProgressMsgType[]) {
   let currentStep: StepKey | null = null;
   let totalMatches: number | null = null;
   let fetchedMatches = 0;
+  const lastMatches: MatchWithSummonersType[] = [];
 
   for (const ev of events) {
     if (ev.status === "started") {
@@ -48,6 +51,7 @@ function reduceProgress(events: RefreshProgressMsgType[]) {
     }
     if (ev.status === "finished") {
       globalStatus = "finished";
+      lastMatches.push(...ev.lastMatches);
       continue;
     }
 
@@ -95,14 +99,17 @@ function reduceProgress(events: RefreshProgressMsgType[]) {
 
   const overallPercent = Math.min(100, Math.round(finishedSteps + partial));
 
-  return {
+  const state = {
     status: globalStatus,
     stepStatus,
     currentStep,
     totalMatches,
     fetchedMatches,
     overallPercent,
+    lastMatches,
   };
+
+  return state;
 }
 
 const stepLabel = (s: StepKey) =>
@@ -141,8 +148,15 @@ function RouteComponent() {
 
   const events = React.useMemo(() => q.data ?? [], [q.data]);
 
-  const { status, stepStatus, currentStep, totalMatches, fetchedMatches, overallPercent } =
-    React.useMemo(() => reduceProgress(events), [events]);
+  const {
+    status,
+    stepStatus,
+    currentStep,
+    totalMatches,
+    fetchedMatches,
+    overallPercent,
+    lastMatches,
+  } = React.useMemo(() => reduceProgress(events), [events]);
 
   const statusBadgeClass =
     status === "finished"
@@ -387,6 +401,7 @@ function RouteComponent() {
           </Card>
         </aside>
       </main>
+      <HiddenOnceSummonerProfileCapture matches={lastMatches.slice(0, 5)} summoner={summoner} />
     </div>
   );
 }

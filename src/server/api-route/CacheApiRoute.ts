@@ -1,12 +1,12 @@
 import { RiotApiRoute, type ApiRouteConfigs } from "@/server/api-route/ApiRoute";
-import { CacheService } from "@/server/services/cache/CacheService";
+import { CacheService, type CacheDir } from "@/server/services/cache/CacheService";
 import type { Options } from "ky";
 import * as v from "valibot";
 
 type Schema = v.BaseSchema<unknown, unknown, v.BaseIssue<unknown>>;
 
 export type CachedApiRouteConfigs<S extends Schema, P> = ApiRouteConfigs<S, P> & {
-  R2Dir: string;
+  R2Dir: CacheDir;
 };
 
 export type CachedApiRouteParams = {
@@ -17,7 +17,7 @@ export class CachedApiRoute<S extends Schema, P extends CachedApiRouteParams> ex
   S,
   P
 > {
-  readonly R2Dir: string;
+  readonly R2Dir: CacheDir;
 
   constructor(cfg: CachedApiRouteConfigs<S, P>) {
     super(cfg);

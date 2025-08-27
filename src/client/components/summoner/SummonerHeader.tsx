@@ -66,10 +66,11 @@ export const SummonerHeader = ({}: Props) => {
                     className={"text-muted-foreground"}
                   >
                     <RefreshCw />
-                    Refreshed <span className={"font-bold"}>
-                      {timeago(summoner.refreshedAt)}
-                    </span>{" "}
-                    ago
+                    {summoner.refresh?.refreshedAt ? (
+                      `Refreshed ${timeago(summoner.refresh.refreshedAt)} ago`
+                    ) : (
+                      <span className={"font-bold"}>Refresh</span>
+                    )}
                   </Link>
                 </Button>
               </div>

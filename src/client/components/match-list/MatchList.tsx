@@ -60,5 +60,9 @@ export const MatchList = ({}: Props) => {
     );
   }
 
-  return <MatchListContent matches={q_matches.data} summoner={summoner} />;
+  return (
+    <React.Fragment>
+      <MatchListContent matches={q_matches.data} summoner={summoner} />
+    </React.Fragment>
+  );
 };

@@ -1,0 +1,1 @@
+ALTER TABLE "summoner" ADD COLUMN "profile_image_refreshed_at" timestamp with time zone;

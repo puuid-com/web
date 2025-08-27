@@ -43,21 +43,35 @@ export const Route = createFileRoute("/lol/summoner/$riotID")({
     const title = summoner.riotId;
 
     const { CDragonService } = await import("@/client/services/CDragon");
-    const imageUrl = CDragonService.getProfileIcon(summoner.profileIconId);
+    const profileIconUrl = CDragonService.getProfileIcon(summoner.profileIconId);
+
+    let customProfileUrl;
+
+    /**
+     * If we refreshed, it means that we have a profile image saved to R2
+     */
+    if (summoner.refresh) {
+      const url = `https://cdn.puuid.com/summoner-profile/${summoner.puuid}.png`;
+
+      const lastRefreshToString = summoner.refresh.refreshedAt.toISOString();
+      customProfileUrl = `${url}?v=${encodeURIComponent(lastRefreshToString)}`;
+    } else {
+      customProfileUrl = profileIconUrl;
+    }
 
     const meta: Record<string, string>[] = [
       { title },
       { name: "description", content: description },
       { property: "og:title", content: title },
       { property: "og:description", content: description },
-      { name: "twitter:card", content: "summary" },
+      { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: title },
       { name: "twitter:description", content: description },
-      { name: "twitter:image", content: imageUrl },
-      { property: "og:image", content: imageUrl },
+      { name: "twitter:image", content: customProfileUrl },
+      { name: "og:image", content: customProfileUrl },
     ];
 
-    return { meta, links: [{ rel: "icon", href: imageUrl }] };
+    return { meta, links: [{ rel: "icon", href: profileIconUrl }] };
   },
   staleTime: 60_000,
   gcTime: 30 * 60_000,

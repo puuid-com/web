@@ -1,0 +1,1 @@
+ALTER TABLE "summoner" DROP COLUMN "refreshed_at";

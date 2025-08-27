@@ -32,7 +32,7 @@ export function timeago(
     const absNumStr = String(Math.abs(value));
     return absNumStr + "h";
   } else {
-    return new Intl.DateTimeFormat(locale).format(date);
+    return `${diffDays}d`;
   }
 }
 

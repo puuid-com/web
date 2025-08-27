@@ -28,8 +28,6 @@ export const getSummonerMatchesOptions = (
       }),
     select: (data) => {
       if (c || w !== undefined) {
-        console.log({ c });
-
         return data.matches.filter((m) => {
           const championName = champions[m.match_summoner.championId]!.name.toUpperCase();
           const cCheck = championName.startsWith(c);

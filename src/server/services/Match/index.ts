@@ -245,6 +245,7 @@ export class MatchService {
   public static async _getAllMatcheIdsDTOByPuuid(
     id: Pick<SummonerType, "region" | "puuid">,
     queueId: MatchRowType["queueId"],
+    startTimeEpoch = 1736380801, // Thursday, January 9, 2025 12:00:01 AM,
   ) {
     const ids: MatchRowType["matchId"][] = [];
 
@@ -252,7 +253,7 @@ export class MatchService {
       start: 0,
       count: 100,
       queue: queueId,
-      startTime: 1736380801, // Thursday, January 9, 2025 12:00:01 AM
+      startTime: startTimeEpoch,
     };
 
     let nextStart: number | null = _params.start;

@@ -44,6 +44,7 @@ export class SummonerService {
               },
             },
             leagues: true,
+            refresh: true,
           },
         });
 
@@ -101,7 +102,6 @@ export class SummonerService {
       createdAt: new Date(),
       verifiedUserId: userId,
       isMain: isMain,
-      refreshedAt: new Date(),
     };
 
     await tx.insert(summonerTable).values(data).onConflictDoUpdate({
@@ -113,6 +113,7 @@ export class SummonerService {
       ...data,
       statistics: [],
       leagues: [],
+      refresh: null,
     };
   }
 

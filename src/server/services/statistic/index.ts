@@ -4,7 +4,6 @@ import { db, type TransactionType } from "@/server/db";
 import type { MatchWithSummonersType } from "@/server/db/match-schema";
 import {
   statisticTable,
-  summonerTable,
   type InsertStatisticRowType,
   type LeagueRowType,
   type SummonerType,
@@ -67,7 +66,7 @@ export class StatisticService {
     queueType: LolQueueType,
     cachedLeagues?: LeagueRowType[],
     cachedMatches?: MatchWithSummonersType[],
-  ): Promise<void> {
+  ): Promise<{ matches: MatchWithSummonersType[] }> {
     const queue = LOL_QUEUES[queueType];
 
     const league =
@@ -245,11 +244,8 @@ export class StatisticService {
         set: upsert(statisticTable),
       });
 
-    await tx
-      .update(summonerTable)
-      .set({
-        refreshedAt: new Date(),
-      })
-      .where(eq(summonerTable.puuid, summoner.puuid));
+    return {
+      matches,
+    };
   }
 }

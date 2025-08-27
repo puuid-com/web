@@ -10,12 +10,13 @@ export const $getSummonerMatches = createServerFn({ method: "GET" })
       puuid: AccountRegionDTOSchema.entries.puuid,
       region: AccountRegionDTOSchema.entries.region,
       queue: v.picklist(LolQueues),
+      count: v.optional(v.number()),
     }),
   )
   .handler(async (ctx) => {
     await new Promise<void>((resolve) => setTimeout(resolve, 2000));
 
-    const { region, puuid, queue } = ctx.data;
+    const { region, puuid, queue, count } = ctx.data;
 
     const { MatchService } = await import("@/server/services/match");
     const matches = await MatchService.getMatchesDBByPuuidSmall(
@@ -25,6 +26,7 @@ export const $getSummonerMatches = createServerFn({ method: "GET" })
       },
       {
         queue: LOL_QUEUES[queue].queueId,
+        count: count,
       },
     );
 

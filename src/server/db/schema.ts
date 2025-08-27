@@ -70,19 +70,30 @@ export const summonerTable = pgTable(
       onDelete: "cascade",
     }),
     isMain: boolean("is_main").notNull().default(false),
-
-    refreshedAt: timestamp("refreshed_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [uniqueIndex("uq_ids_riot_id").on(t.riotId)],
 );
 
-export const summonerTableRelations = relations(summonerTable, ({ many }) => ({
+export const summonerTableRelations = relations(summonerTable, ({ many, one }) => ({
   statistics: many(statisticTable),
   leagues: many(leagueEntryTable),
+  refresh: one(summonerRefresh, {
+    fields: [summonerTable.puuid],
+    references: [summonerRefresh.puuid],
+  }),
 }));
 
 export type SummonerType = typeof summonerTable.$inferSelect;
 export type InsertSummonerType = typeof summonerTable.$inferInsert;
+
+export const summonerRefresh = pgTable("summoner_refresh", {
+  puuid: text("puuid")
+    .primaryKey()
+    .references(() => summonerTable.puuid, { onDelete: "cascade" })
+    .notNull(),
+  lastGameAt: timestamp("last_game_at", { withTimezone: true }),
+  refreshedAt: timestamp("refreshed_at", { withTimezone: true }).notNull().defaultNow(),
+});
 
 export type StatItemType = {
   wins: number;
@@ -161,6 +172,7 @@ export type StatisticWithLeagueType = StatisticRowType & {
 export type SummonerWithRelationsType = SummonerType & {
   statistics: StatisticWithLeagueType[];
   leagues: LeagueRowType[];
+  refresh: typeof summonerRefresh.$inferSelect | null;
 };
 
 export type LeagueRowType = typeof leagueEntryTable.$inferSelect;

@@ -1,0 +1,1 @@
+ALTER TABLE "summoner_refresh" ALTER COLUMN "last_match_id" DROP NOT NULL;

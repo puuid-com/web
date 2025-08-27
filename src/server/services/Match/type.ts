@@ -1,7 +1,7 @@
 import * as v from "valibot";
 
 const optionalStringToNumberWithDefault = (optionalValue: number) =>
-  v.pipe(v.optional(v.string(), String(optionalValue)), v.transform(Number));
+  v.optional(v.number(), optionalValue);
 
 export const MatchIDsQueryParamsSchema = v.object({
   queue: v.number(),

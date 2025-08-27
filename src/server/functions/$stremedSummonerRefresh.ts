@@ -3,7 +3,7 @@ import { LolRegions } from "@/server/types/riot/common";
 import { createServerFn } from "@tanstack/react-start";
 import * as v from "valibot";
 
-export const $streamSimpleProgress = createServerFn({
+export const $stremedSummonerRefresh = createServerFn({
   method: "POST",
   response: "raw",
 })
@@ -18,6 +18,13 @@ export const $streamSimpleProgress = createServerFn({
     const { RefreshService } = await import("@/server/services/refresh");
 
     const { puuid, queue } = data;
+
+    const canRefresh = await RefreshService.canRefresh(puuid);
+
+    if (!canRefresh) {
+      return new Response("Not allowed", { status: 403 });
+    }
+
     const encoder = new TextEncoder();
 
     const stream = new ReadableStream<Uint8Array>({

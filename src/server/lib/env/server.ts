@@ -14,6 +14,7 @@ export const serverEnv = createEnv({
     R2_ACCESS_KEY: v.string(),
     R2_SECRET_KEY: v.string(),
     R2_TOKEN: v.string(),
+    R2_CDN_URL: v.string(),
 
     DATABASE_URL: v.string(),
 
