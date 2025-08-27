@@ -33,6 +33,34 @@ export const Route = createFileRoute("/lol/summoner/$riotID")({
       queueStats: mainQueue ? summoner.statistics.find((s) => s.queueType === mainQueue) : null,
     };
   },
+  head: async ({ loaderData, params }) => {
+    const summoner = loaderData?.summoner;
+
+    if (!summoner)
+      return {
+        meta: [{ title: `${params.riotID.replace("-", "#")} - puuid.com` }],
+      };
+
+    const description = `League of Legends profile for ${summoner.riotId}`;
+    const title = summoner.riotId;
+
+    const { CDragonService } = await import("@/client/services/CDragon");
+    const imageUrl = CDragonService.getProfileIcon(summoner.profileIconId);
+
+    const meta: Record<string, string>[] = [
+      { title },
+      { name: "description", content: description },
+      { property: "og:title", content: title },
+      { property: "og:description", content: description },
+      { name: "twitter:card", content: "summary" },
+      { name: "twitter:title", content: title },
+      { name: "twitter:description", content: description },
+      { name: "twitter:image", content: imageUrl },
+      { property: "og:image", content: imageUrl },
+    ];
+
+    return { meta, links: [{ rel: "icon", href: imageUrl }] };
+  },
   staleTime: 60_000,
   gcTime: 30 * 60_000,
 

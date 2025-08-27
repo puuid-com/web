@@ -1,4 +1,4 @@
-export default class CDragon {
+export class CDragonService {
   private static LATEST_PATCH = "latest";
 
   private static base(patch = this.LATEST_PATCH) {

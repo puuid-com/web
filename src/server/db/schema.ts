@@ -63,7 +63,7 @@ export const summonerTable = pgTable(
     puuid: text("puuid").primaryKey(),
     riotId: text("riot_id").notNull(),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-    profileIconId: integer("profile_icon_id"),
+    profileIconId: integer("profile_icon_id").notNull(),
     summonerLevel: integer("summoner_level").notNull(),
     region: text("region").$type<LolRegionType>().notNull(),
     verifiedUserId: text("user_id").references(() => user.id, {
