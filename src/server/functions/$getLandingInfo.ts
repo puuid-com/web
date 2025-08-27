@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 
 export const $getLandingInfo = createServerFn({ method: "GET" })
   .type("static")
-  .handler(async () => {
+  .handler(() => {
     return {
       features: [
         {

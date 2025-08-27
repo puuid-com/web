@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/client/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/client/components/ui/card";
-import { $getLandingInfo, type $GetLandingInfoType } from "@/server/functions/$getLandingInfo";
+import { $getLandingInfo } from "@/server/functions/$getLandingInfo";
 import { Search, Activity, Star, BarChart3, type LucideIcon } from "lucide-react";
 
 const icons: Record<string, LucideIcon> = {
@@ -12,12 +12,13 @@ const icons: Record<string, LucideIcon> = {
 };
 
 export const Route = createFileRoute("/")({
-  loader: () => $getLandingInfo(),
+  loader: async () => await $getLandingInfo(),
   component: Landing,
 });
 
 function Landing() {
-  const { features } = Route.useLoaderData() as $GetLandingInfoType;
+  const { features } = Route.useLoaderData();
+
   return (
     <div className="container mx-auto flex flex-col items-center gap-16 py-24 text-center">
       <section className="flex max-w-2xl flex-col items-center gap-6">

@@ -1,5 +1,3 @@
-"use client";
-
 import { $getSummonerByRiotID } from "@/server/functions/$getSummonerByRiotID";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 
@@ -33,7 +31,7 @@ export const Route = createFileRoute("/lol/summoner/$riotID")({
       queueStats: mainQueue ? summoner.statistics.find((s) => s.queueType === mainQueue) : null,
     };
   },
-  head: async ({ loaderData, params }) => {
+  /* head: async ({ loaderData, params }) => {
     const summoner = loaderData?.summoner;
 
     if (!summoner)
@@ -60,7 +58,7 @@ export const Route = createFileRoute("/lol/summoner/$riotID")({
     ];
 
     return { meta, links: [{ rel: "icon", href: imageUrl }] };
-  },
+  }, */
   staleTime: 60_000,
   gcTime: 30 * 60_000,
 
