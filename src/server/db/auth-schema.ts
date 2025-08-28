@@ -14,7 +14,6 @@ export const user = pgTable("user", {
   updatedAt: timestamp("updated_at")
     .$defaultFn(() => new Date())
     .notNull(),
-  riot_ids: text("riot_ids").array().default([]).notNull(),
 });
 
 export const session = pgTable("session", {

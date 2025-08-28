@@ -6,6 +6,7 @@ import appCss from "@/client/styles/app.css?url";
 import { Toaster } from "sonner";
 import { Navbar } from "@/client/components/Navbar";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { Footer } from "@/client/components/footer/Footer";
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
@@ -53,9 +54,10 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
           style={{
             height: `calc(100vh - 60px)`,
           }}
-          className={"flex flex-col w-full overflow-auto relative isolate"}
+          className={"flex flex-col w-full overflow-y-auto relative isolate"}
         >
           {children}
+          <Footer />
         </div>
         <Scripts />
       </body>

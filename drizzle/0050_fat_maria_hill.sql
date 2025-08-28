@@ -1,0 +1,1 @@
+ALTER TABLE "summoner" RENAME COLUMN "normalized_riot_id" TO "trimmed_riot_id";

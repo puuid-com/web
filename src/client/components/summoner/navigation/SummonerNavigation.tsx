@@ -1,6 +1,6 @@
 import { SummonerNavigationItem } from "@/client/components/summoner/navigation/SummonerNavigationItem";
 import { useParams } from "@tanstack/react-router";
-import { CrownIcon, DatabaseBackupIcon, RadioIcon, ScrollTextIcon } from "lucide-react";
+import { CrownIcon, RadioIcon, ScrollTextIcon } from "lucide-react";
 
 type Props = {};
 
@@ -31,18 +31,22 @@ export const SummonerNavigation = ({}: Props) => {
         Masteries
       </SummonerNavigationItem>
       <SummonerNavigationItem
+        to={"/lol/summoner/$riotID/stats"}
+        params={params}
+        iconNode={CrownIcon}
+        search={{
+          queue: "solo",
+        }}
+        activeOptions={{ includeSearch: false }}
+      >
+        Stats
+      </SummonerNavigationItem>
+      <SummonerNavigationItem
         to={"/lol/summoner/$riotID/live"}
         params={params}
         iconNode={RadioIcon}
       >
         Live
-      </SummonerNavigationItem>
-      <SummonerNavigationItem
-        to={"/lol/summoner/$riotID/refresh"}
-        params={params}
-        iconNode={DatabaseBackupIcon}
-      >
-        Refresh
       </SummonerNavigationItem>
     </div>
   );

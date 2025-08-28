@@ -2,8 +2,9 @@ import { $getSummonerByRiotID } from "@/server/functions/$getSummonerByRiotID";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 
 import type React from "react";
-import { SummonerHeader } from "@/client/components/summoner/SummonerHeader";
 import { SummonerNavigation } from "@/client/components/summoner/navigation/SummonerNavigation";
+import { trimRiotID } from "@/lib/riotID";
+import { SummonerHeader } from "@/client/components/summoner/header/SummonerHeader";
 
 export const Route = createFileRoute("/lol/summoner/$riotID")({
   component: RouteComponent,
@@ -16,8 +17,10 @@ export const Route = createFileRoute("/lol/summoner/$riotID")({
     }),
   },
   loader: async (ctx) => {
+    const _riotID = trimRiotID(ctx.params.riotID);
+
     const { summoner } = await $getSummonerByRiotID({
-      data: ctx.params.riotID,
+      data: _riotID,
     });
 
     const mainQueue = summoner.statistics
@@ -76,7 +79,7 @@ export const Route = createFileRoute("/lol/summoner/$riotID")({
   staleTime: 60_000,
   gcTime: 30 * 60_000,
 
-  shouldReload: false,
+  shouldReload: true,
 });
 
 function RouteComponent() {

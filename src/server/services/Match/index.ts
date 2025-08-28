@@ -66,11 +66,15 @@ export class MatchService {
     return id.split("_")[0]!.toLowerCase() as LolRegionType;
   }
 
-  static async getMatchDTOById(id: string): Promise<MatchDTOType> {
-    return MatchV5ByID.call({
-      id: id,
-      routingValue: routingValueFromRegion(this.getRegionFromMatchId(id)),
-    });
+  static async getMatchDTOById(id: string, checkCache = true): Promise<MatchDTOType> {
+    return MatchV5ByID.call(
+      {
+        id: id,
+        routingValue: routingValueFromRegion(this.getRegionFromMatchId(id)),
+      },
+      undefined,
+      checkCache,
+    );
   }
 
   private static matchDTOtoDB(matchDTO: MatchDTOType): {

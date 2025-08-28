@@ -1,8 +1,16 @@
+import { normalizeRiotID, trimRiotID } from "@/lib/riotID";
+
 export const getPartsFromRiotID = (riotID: string) => {
   const [gameName, tagLine] = riotID.split("#");
 
   if (!gameName || !tagLine) {
-    throw new Error("Invalid Summoner Name : " + riotID);
+    throw new Error("Invalid Summoner Name : " + trimRiotID);
   }
-  return { gameName, tagLine, riotID: riotID };
+
+  return {
+    nornalizedRiotId: normalizeRiotID(riotID),
+    riotId: trimRiotID(riotID),
+    gameName,
+    tagLine,
+  };
 };

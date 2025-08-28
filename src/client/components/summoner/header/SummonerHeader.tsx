@@ -1,5 +1,6 @@
+import { RefreshSummoner } from "@/client/components/refresh/RefreshSummoner";
+import { SummonerHeaderInfo } from "@/client/components/summoner/header/SummonerHeaderInfo";
 import { Badge } from "@/client/components/ui/badge";
-import { Button } from "@/client/components/ui/button";
 import { cn, timeago } from "@/client/lib/utils";
 import { DDragonService } from "@/client/services/DDragon";
 import { Link, useParams, useLoaderData, useSearch } from "@tanstack/react-router";
@@ -14,8 +15,7 @@ export const SummonerHeader = ({}: Props) => {
   const { summoner, queueStats: stats } = useLoaderData({
     from: "/lol/summoner/$riotID",
   });
-
-  const [gameName, tagLine] = summoner.riotId.split("#");
+  const [gameName, tagLine] = summoner.displayRiotId.split("#");
 
   return (
     <div className={"rounded-b-3xl flex bg-main/30 relative overflow-hidden justify-between"}>
@@ -28,6 +28,7 @@ export const SummonerHeader = ({}: Props) => {
             )}
             className="absolute right-0 mask-l-from-0% opacity-30"
           />
+          <SummonerHeaderInfo />
         </>
       ) : null}
       <div className={cn("flex flex-col h-full justify-start")}>
@@ -58,21 +59,16 @@ export const SummonerHeader = ({}: Props) => {
                 </Link>
               </div>
               <div className="">
-                <Button size={"xs"} variant={"ghost"} asChild>
-                  <Link
-                    to={"/lol/summoner/$riotID/refresh"}
-                    params={params}
-                    search={search}
-                    className={"text-muted-foreground"}
-                  >
+                <RefreshSummoner>
+                  <>
                     <RefreshCw />
                     {summoner.refresh?.refreshedAt ? (
                       `Refreshed ${timeago(summoner.refresh.refreshedAt)} ago`
                     ) : (
                       <span className={"font-bold"}>Refresh</span>
                     )}
-                  </Link>
-                </Button>
+                  </>
+                </RefreshSummoner>
               </div>
             </div>
             {stats ? (

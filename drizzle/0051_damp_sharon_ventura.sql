@@ -1,0 +1,1 @@
+ALTER TABLE "summoner" ADD COLUMN "normalized_riot_id" text NOT NULL;

@@ -61,7 +61,10 @@ export const summonerTable = pgTable(
   "summoner",
   {
     puuid: text("puuid").primaryKey(),
+
+    displayRiotId: text("display_riot_id").notNull(),
     riotId: text("riot_id").notNull(),
+    normalizedRiotId: text("normalized_riot_id").notNull(),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     profileIconId: integer("profile_icon_id").notNull(),
     summonerLevel: integer("summoner_level").notNull(),
@@ -71,7 +74,10 @@ export const summonerTable = pgTable(
     }),
     isMain: boolean("is_main").notNull().default(false),
   },
-  (t) => [uniqueIndex("uq_ids_riot_id").on(t.riotId)],
+  (t) => [
+    uniqueIndex("uq_ids_riot_id").on(t.riotId),
+    index("idx_normalized_riot_id").on(t.normalizedRiotId),
+  ],
 );
 
 export const summonerTableRelations = relations(summonerTable, ({ many, one }) => ({
@@ -91,7 +97,7 @@ export const summonerRefresh = pgTable("summoner_refresh", {
     .primaryKey()
     .references(() => summonerTable.puuid, { onDelete: "cascade" })
     .notNull(),
-  lastGameAt: timestamp("last_game_at", { withTimezone: true }),
+  lastGameCreationEpochSec: integer("last_game_creation_epoch_sec"),
   refreshedAt: timestamp("refreshed_at", { withTimezone: true }).notNull().defaultNow(),
 });
 

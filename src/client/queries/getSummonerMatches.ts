@@ -10,6 +10,14 @@ type QueryParams = {
   queue: FriendlyQueueType;
 };
 
+export const getSummonerMatchesKey = (params: QueryParams) =>
+  [
+    "getSummonerMatchesOptions",
+    params.summoner.puuid,
+    params.queue,
+    params.summoner.region,
+  ] as const;
+
 export const getSummonerMatchesOptions = (
   { summoner, queue }: QueryParams,
   c: string,
@@ -17,7 +25,7 @@ export const getSummonerMatchesOptions = (
   w: boolean | undefined,
 ) =>
   queryOptions({
-    queryKey: ["getSummonerMatchesOptions", summoner.puuid, queue, summoner.region],
+    queryKey: getSummonerMatchesKey({ summoner, queue }),
     queryFn: () =>
       $getSummonerMatches({
         data: {

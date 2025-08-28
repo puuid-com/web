@@ -69,15 +69,17 @@ export class RefreshService {
     puuid: SummonerType["puuid"],
     lastMatchCreationMs: MatchRowType["gameCreationMs"] | null,
   ) {
-    const lastGameAt = lastMatchCreationMs ? new Date(lastMatchCreationMs) : null;
+    const lastGameCreationEpochSec = lastMatchCreationMs
+      ? Math.floor(lastMatchCreationMs / 1000)
+      : null;
 
     return db
       .insert(summonerRefresh)
-      .values({ puuid, lastGameAt: lastGameAt })
+      .values({ puuid, lastGameCreationEpochSec })
       .onConflictDoUpdate({
         target: [summonerRefresh.puuid],
         set: {
-          lastGameAt: lastGameAt,
+          lastGameCreationEpochSec,
           refreshedAt: new Date(),
         },
       });
@@ -88,8 +90,6 @@ export class RefreshService {
     queueType: LolQueueType,
   ): AsyncGenerator<RefreshProgressMsgType, void, void> {
     const lastRefresh = await this.getLastRefresh(puuid);
-    const lastGameAt = lastRefresh?.lastGameAt ?? null;
-    const lastGameEpoch = lastGameAt?.getTime() ?? 0;
 
     const queueId = LOL_QUEUES[queueType].queueId;
 
@@ -104,7 +104,11 @@ export class RefreshService {
 
     // progressFetchMatches()
     const { stream: $matchesStream /* , result: $matchesResult */ } = pipeStep(
-      this.progressFetchMatches(summoner, queueId, lastGameEpoch),
+      this.progressFetchMatches(
+        summoner,
+        queueId,
+        lastRefresh?.lastGameCreationEpochSec ?? undefined,
+      ),
     );
     for await (const msg of $matchesStream) yield msg;
     /* const matches = await $matchesResult;
@@ -133,7 +137,7 @@ export class RefreshService {
   ): AsyncGenerator<RefreshProgressMsgType, SummonerType, void> {
     yield { status: "step_started", step: "fetching_summoner" };
 
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 500));
 
     yield { status: "step_in_progress", step: "fetching_summoner" };
 
@@ -149,7 +153,7 @@ export class RefreshService {
   private static async *progressFetchMatches(
     id: Pick<SummonerType, "region" | "puuid">,
     queueId: MatchRowType["queueId"],
-    startTimeEpoch: number,
+    startTimeEpoch: number | undefined,
   ): AsyncGenerator<RefreshProgressMsgType, MatchWithSummonersType[], void> {
     const { MatchService } = await import("@/server/services/match");
 
@@ -177,7 +181,7 @@ export class RefreshService {
       };
     }
 
-    const batchSize = 200;
+    const batchSize = 25;
     const totalBatches = Math.ceil(notSavedIds.length / batchSize);
     const allNewMatches: MatchWithSummonersType[] = alreadySaved;
 
@@ -186,7 +190,7 @@ export class RefreshService {
       const end = Math.min(notSavedIds.length, start + batchSize);
       const slice = notSavedIds.slice(start, end);
 
-      const tasks = slice.map((mid) => MatchService.getMatchDTOById(mid));
+      const tasks = slice.map((mid) => MatchService.getMatchDTOById(mid, false));
 
       const newMatches = await Promise.all(tasks);
 
@@ -203,7 +207,13 @@ export class RefreshService {
       });
 
       allNewMatches.push(..._newMatches);
+
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      console.log(`Fetched batch ${b + 1}/${totalBatches}`);
     }
+
+    yield { status: "step_finished", step: "fetching_matches", matchesFetched: 0 };
 
     return allNewMatches;
   }
@@ -213,7 +223,7 @@ export class RefreshService {
   ): AsyncGenerator<RefreshProgressMsgType, LeagueRowType[], void> {
     yield { status: "step_started", step: "fetching_leagues" };
 
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 500));
 
     yield { status: "step_in_progress", step: "fetching_leagues" };
 
@@ -232,7 +242,7 @@ export class RefreshService {
   ): AsyncGenerator<RefreshProgressMsgType, { matches: MatchWithSummonersType[] }, void> {
     yield { status: "step_started", step: "fetching_stats" };
 
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 500));
 
     yield { status: "step_in_progress", step: "fetching_stats" };
 

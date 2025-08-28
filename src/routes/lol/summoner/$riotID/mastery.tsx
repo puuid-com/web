@@ -99,7 +99,7 @@ function RouteComponent() {
     });
 
   return (
-    <div className={"flex flex-col gap-5"}>
+    <div className={"flex flex-col gap-5 w-full"}>
       <div className="flex items-center justify-center gap-8">
         {/* Second Place - Left (Medium Circle) */}
         {top3Champions[1] && (

@@ -6,17 +6,17 @@ import { $postSummonerProfile } from "@/server/functions/$postSummonerProfile";
 import { SummonerProfileCard } from "@/client/components/summoner/profile/SummonerProfileCard";
 import type { SummonerType } from "@/server/db/schema";
 import type { MatchWithSummonersType } from "@/server/db/match-schema";
-import { toast } from "sonner";
+import { useServerFn } from "@tanstack/react-start";
 
 function runWhenIdle(fn: () => Promise<void>): () => void {
-  if (typeof window !== "undefined" && typeof window.requestIdleCallback === "function") {
+  /* if (typeof window !== "undefined" && typeof window.requestIdleCallback === "function") {
     const handle = window.requestIdleCallback(() => {
       void fn();
     });
     return () => {
       window.cancelIdleCallback(handle);
     };
-  }
+  } */
   const t = window.setTimeout(() => void fn(), 0);
   return () => {
     window.clearTimeout(t);
@@ -27,16 +27,24 @@ function runWhenIdle(fn: () => Promise<void>): () => void {
 type Props = {
   summoner: SummonerType;
   matches: MatchWithSummonersType[];
+  onSuccessCallback?: () => void;
+  onStartCallback?: () => void;
 };
 
-export function HiddenOnceSummonerProfileCapture({ summoner, matches }: Props) {
+function HiddenOnceSummonerProfileCapture({
+  summoner,
+  matches,
+  onSuccessCallback,
+  onStartCallback,
+}: Props) {
   const [container, setContainer] = React.useState<HTMLDivElement | null>(null);
   const uploadedKey = React.useMemo(() => `spc-uploaded:${summoner.puuid}`, [summoner.puuid]);
+  const _$postSummonerProfile = useServerFn($postSummonerProfile);
 
   const mutation = useMutation({
     mutationKey: ["summoner-profile", summoner.puuid],
     mutationFn: (data: { imageSrc: string }) =>
-      $postSummonerProfile({ data: { puuid: summoner.puuid, imageSrc: data.imageSrc } }),
+      _$postSummonerProfile({ data: { puuid: summoner.puuid, imageSrc: data.imageSrc } }),
   });
 
   // create the off-screen container only if we have not uploaded yet
@@ -59,7 +67,9 @@ export function HiddenOnceSummonerProfileCapture({ summoner, matches }: Props) {
     };
   }, [uploadedKey]);
 
-  const shouldRender = container && matches.length;
+  const shouldRender = React.useMemo(() => {
+    return container && matches.length;
+  }, [container, matches.length]);
 
   // after the hidden clone mounts, capture and upload once
   React.useEffect(() => {
@@ -72,8 +82,12 @@ export function HiddenOnceSummonerProfileCapture({ summoner, matches }: Props) {
         // wait a tick for images/fonts
         await new Promise((r) => setTimeout(r, 300));
 
-        const node = container.querySelector<HTMLElement>("[data-capture-root]");
+        const node = container!.querySelector<HTMLElement>("[data-capture-root]");
         if (!node) return;
+
+        onStartCallback?.();
+
+        if (cancelled) return;
 
         const dataUrl = await htmlToImage.toPng(node, {
           backgroundColor: "transparent",
@@ -81,14 +95,13 @@ export function HiddenOnceSummonerProfileCapture({ summoner, matches }: Props) {
           pixelRatio: 2,
         });
 
-        if (cancelled) return;
-
         await mutation.mutateAsync({ imageSrc: dataUrl });
-        toast.success(`Profil ${summoner.riotId} mis à jour`);
+
+        onSuccessCallback?.();
       } catch (err) {
         console.error(err instanceof Error ? err : new Error(String(err)));
       } finally {
-        container.remove();
+        container!.remove();
         setContainer(null);
       }
     };
@@ -99,13 +112,37 @@ export function HiddenOnceSummonerProfileCapture({ summoner, matches }: Props) {
       cancelled = true;
       cancel();
     };
-  }, [container, uploadedKey, mutation, shouldRender, summoner.riotId]);
+  }, [
+    container,
+    uploadedKey,
+    mutation,
+    shouldRender,
+    summoner.riotId,
+    onSuccessCallback,
+    onStartCallback,
+  ]);
 
   if (!shouldRender) return null;
 
   // render the hidden clone with the effect disabled
   return createPortal(
     <SummonerProfileCard summoner={summoner} matches={matches} disableAutoUpload />,
-    container,
+    container!,
   );
 }
+
+export const SummonerProfileCapture = React.memo(HiddenOnceSummonerProfileCapture, (prev, next) => {
+  const a = prev.matches;
+  const b = next.matches;
+
+  const aIds = a
+    .map((m) => m.matchId)
+    .sort()
+    .join();
+  const bIds = b
+    .map((m) => m.matchId)
+    .sort()
+    .join();
+
+  return aIds === bIds;
+});

@@ -25,13 +25,9 @@ export class CachedApiRoute<S extends Schema, P extends CachedApiRouteParams> ex
     this.R2Dir = cfg.R2Dir;
   }
 
-  override async call(
-    param: P,
-    options?: Options,
-    refreshCache = false,
-  ): Promise<v.InferOutput<S>> {
+  override async call(param: P, options?: Options, checkCache = true): Promise<v.InferOutput<S>> {
     try {
-      const r2Cache = refreshCache ? null : await this.tryGetCachedDataById(param.id);
+      const r2Cache = checkCache ? await this.tryGetCachedDataById(param.id) : null;
 
       if (r2Cache) return this.parseData(r2Cache);
 

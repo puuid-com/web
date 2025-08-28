@@ -13,6 +13,7 @@ import { AccountService } from "@/server/services/account";
 import { getPartsFromRiotID } from "@/server/services/summoner/utils";
 import { SummonerDTOService } from "@/server/services/summoner-dto";
 import { and, desc, eq } from "drizzle-orm";
+import { normalizeRiotID, trimRiotID } from "@/lib/riotID";
 
 export class SummonerService {
   static async getSummoners() {
@@ -28,15 +29,15 @@ export class SummonerService {
 
   static async getSummonerByRiotIDTx(
     tx: TransactionType,
-    riotID: SummonerType["riotId"],
+    clientRiotID: SummonerType["riotId"],
     refresh = false,
   ): Promise<SummonerWithRelationsType> {
-    const identifications = getPartsFromRiotID(riotID);
+    const { riotId, gameName, tagLine } = getPartsFromRiotID(clientRiotID);
 
     const cachedData = refresh
       ? undefined
       : await tx.query.summonerTable.findFirst({
-          where: eq(summonerTable.riotId, identifications.riotID),
+          where: eq(summonerTable.riotId, riotId),
           with: {
             statistics: {
               with: {
@@ -52,7 +53,7 @@ export class SummonerService {
       return cachedData;
     }
 
-    const account = await AccountService.getAccountByRiotID(identifications);
+    const account = await AccountService.getAccountByRiotID({ gameName, tagLine });
     const accountRegion = await AccountService.getAccountRegion(account.puuid);
 
     return this.handleSummonerCreationFromAccountTx(tx, account, accountRegion);
@@ -95,7 +96,11 @@ export class SummonerService {
 
     const data: SummonerType = {
       puuid: account.puuid,
-      riotId: `${account.gameName}#${account.tagLine}`,
+
+      displayRiotId: `${account.gameName}#${account.tagLine}`,
+      riotId: trimRiotID(`${account.gameName}#${account.tagLine}`),
+      normalizedRiotId: normalizeRiotID(`${account.gameName}#${account.tagLine}`),
+
       summonerLevel: summoner.summonerLevel,
       profileIconId: summoner.profileIconId,
       region: accountRegion.region,

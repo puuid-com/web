@@ -24,6 +24,11 @@ export const lolClient = serverOnly(() =>
           await new Promise((r) => setTimeout(r, wait));
         },
       ],
+      beforeRequest: [
+        (req) => {
+          console.log(`🔴🔴 Fetching >> ${req.url}`);
+        },
+      ],
     },
   }),
 );

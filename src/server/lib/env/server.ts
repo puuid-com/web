@@ -8,8 +8,6 @@ export const serverEnv = createEnv({
     RIOT_CLIENT_ID: v.string(),
     RIOT_CLIENT_SECRET: v.string(),
 
-    CLIENT_ORIGIN: v.string(),
-
     R2_END_POINT: v.string(),
     R2_ACCESS_KEY: v.string(),
     R2_SECRET_KEY: v.string(),
@@ -21,11 +19,7 @@ export const serverEnv = createEnv({
     GITHUB_CLIENT_ID: v.string(),
     GITHUB_CLIENT_SECRET: v.string(),
 
-    DISCORD_CLIENT_ID: v.string(),
-    DISCORD_CLIENT_SECRET: v.string(),
-
-    TWITCH_CLIENT_ID: v.string(),
-    TWITCH_CLIENT_SECRET: v.string(),
+    BETTER_AUTH_URL: v.string(),
   },
   extends: [],
   runtimeEnv: process.env,

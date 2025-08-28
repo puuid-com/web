@@ -37,6 +37,8 @@ export class CacheService {
       "Cache-Control": "public, max-age=60, immutable",
     });
 
+    console.log("Saved image to cache:", { id, dir, objectKey, etag: putRes.etag });
+
     return { etag: putRes.etag, key: objectKey };
   }
 
