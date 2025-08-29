@@ -75,7 +75,7 @@ export class StatisticService {
       ) ?? null;
 
     if (!league) {
-      throw new Error("League not found");
+      return { matches: [] };
     }
 
     const matches =

@@ -7,6 +7,10 @@ import { genericOAuth } from "better-auth/plugins";
 import ky from "ky";
 import type { AccountDTOType } from "@/server/api-route/riot/account/AccountDTO";
 import type { SummonerDTOType } from "@/server/api-route/riot/summoner/SummonerDTO";
+import { summonerTable } from "@/server/db/schema";
+import { eq, sql } from "drizzle-orm";
+import { SummonerService } from "@/server/services/summoner";
+import { CDragonService } from "@/client/services/CDragon";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -18,6 +22,42 @@ export const auth = betterAuth({
     /*  additionalFields: {
       puuid: { type: "string", input: false, required: true, unique: true },
     }, */
+  },
+  databaseHooks: {
+    user: {},
+    account: {
+      create: {
+        after: async (account) => {
+          const { accountId, userId } = account;
+
+          const [data] = await db
+            .select({
+              count: sql<string>`count(*)`,
+            })
+            .from(summonerTable)
+            .where(eq(summonerTable.verifiedUserId, userId));
+
+          const isMain = !data || data.count === "0";
+
+          console.log({
+            isMain,
+            data,
+          });
+
+          await db.transaction(async (tx) => {
+            // Ensure that the summoner is created
+            await SummonerService.getOrCreateSummonerByPuuidTx(tx, accountId, false);
+            await tx
+              .update(summonerTable)
+              .set({
+                verifiedUserId: userId,
+                isMain,
+              })
+              .where(eq(summonerTable.puuid, accountId));
+          });
+        },
+      },
+    },
   },
   plugins: [
     genericOAuth({
@@ -46,8 +86,6 @@ export const auth = betterAuth({
                 jti: string;
               }>();
 
-            console.log({ response });
-
             // Choix d’un cluster pour /accounts/me, les données sont identiques sur americas, europe, asia
             const accountResponse = await ky
               .get(`https://europe.api.riotgames.com/riot/account/v1/accounts/me`, {
@@ -65,7 +103,7 @@ export const auth = betterAuth({
               id: accountResponse.puuid,
               name: `${accountResponse.gameName}#${accountResponse.tagLine}`,
               email: `${accountResponse.puuid}@puuid.com`,
-              image: `https://cdn.communitydragon.org/latest/profile-icon/${summonerResponse.profileIconId}.png`,
+              image: CDragonService.getProfileIcon(summonerResponse.profileIconId),
               createdAt: new Date(),
               updatedAt: new Date(),
               emailVerified: true,

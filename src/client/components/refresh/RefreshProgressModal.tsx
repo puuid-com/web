@@ -122,7 +122,21 @@ export function RefreshProgressModal({
       setMatchProgress(null);
     } else if (latestMessage.status === "finished") {
       setCurrentStep(null);
-      setMatches(latestMessage.lastMatches.slice(0, 5));
+
+      const last5Matches = latestMessage.lastMatches.slice(0, 5);
+
+      setMatches(last5Matches);
+
+      /**
+       * No matches, so the profil will not actually renders, so we mock the refresh.
+       */
+      if (!last5Matches.length) {
+        handleOnStartProfileCapture();
+
+        setTimeout(() => {
+          handleOnSuccessProfileCapture();
+        }, 1500);
+      }
     } else if ("step" in latestMessage) {
       const { step, status } = latestMessage;
 
@@ -168,6 +182,10 @@ export function RefreshProgressModal({
       };
     });
   }, [matchProgress, progressMessages]);
+
+  React.useEffect(() => {
+    console.log(progressMessages);
+  }, [progressMessages]);
 
   const isComplete = React.useMemo(() => {
     const _isComplete = steps.every((s) => s.status === "completed");

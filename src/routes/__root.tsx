@@ -4,9 +4,9 @@ import { Outlet, HeadContent, Scripts, createRootRouteWithContext } from "@tanst
 import { QueryClient } from "@tanstack/react-query";
 import appCss from "@/client/styles/app.css?url";
 import { Toaster } from "sonner";
-import { Navbar } from "@/client/components/Navbar";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Footer } from "@/client/components/footer/Footer";
+import { Navbar } from "@/client/components/navbar/Navbar";
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;

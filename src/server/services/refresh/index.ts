@@ -111,8 +111,7 @@ export class RefreshService {
       ),
     );
     for await (const msg of $matchesStream) yield msg;
-    /* const matches = await $matchesResult;
-     */
+
     // progressFetchLeagues()
     const { stream: $leaguesStream, result: $leaguesResult } = pipeStep(
       this.progressFetchLeagues(summoner),
@@ -142,7 +141,7 @@ export class RefreshService {
     yield { status: "step_in_progress", step: "fetching_summoner" };
 
     const summoner = await db.transaction((tx) =>
-      SummonerService.getSummonerByPuuidTx(tx, puuid, true),
+      SummonerService.getOrCreateSummonerByPuuidTx(tx, puuid, true),
     );
 
     yield { status: "step_finished", step: "fetching_summoner" };
@@ -166,6 +165,8 @@ export class RefreshService {
     };
 
     if (ids.length === 0) {
+      yield { status: "step_finished", step: "fetching_matches", matchesFetched: 0 };
+
       return [];
     }
 

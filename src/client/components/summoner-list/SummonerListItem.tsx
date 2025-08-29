@@ -52,7 +52,7 @@ export const SummonerListItem = ({ s }: Props) => {
         </div>
         <div className={"flex flex-col gap-0.5"}>
           <div className={"flex gap-1 items-center"}>
-            <div>{s.riotId}</div>
+            <div>{s.displayRiotId}</div>
             <Badge
               className={
                 "px-1 h-5 text-xs font-mono tabular-nums bg-main/80 font-bold text-main-foreground"

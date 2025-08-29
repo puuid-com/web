@@ -35,6 +35,7 @@ export const RefreshSummoner = ({ children }: React.PropsWithChildren<Props>) =>
   };
 
   const handleOnComplete = async () => {
+    window.speechSynthesis.speak(new SpeechSynthesisUtterance("done"));
     await router.invalidate().catch(console.error);
     await queryClient.invalidateQueries({
       queryKey: getSummonerMatchesKey({

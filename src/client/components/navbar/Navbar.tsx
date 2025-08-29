@@ -1,13 +1,11 @@
+import { UserAccountButton } from "@/client/components/navbar/UserButton";
 import { RiotIdForm } from "@/client/components/riot-id-form/RiotIdForm";
-import { Button } from "@/client/components/ui/button";
-import { authClient } from "@/lib/auth-client";
 import { Link, useNavigate } from "@tanstack/react-router";
 
 type Props = {};
 
 export const Navbar = ({}: Props) => {
   const navigate = useNavigate();
-  const user = authClient.useSession();
 
   const handleSummonerSearch = (riotID: string) => {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -16,16 +14,6 @@ export const Navbar = ({}: Props) => {
       params: { riotID },
       search: { queue: "RANKED_SOLO_5x5" },
     });
-  };
-
-  const signInWithRiot = async () => {
-    await authClient.signIn.oauth2({
-      providerId: "riot-games",
-    });
-  };
-
-  const signOutWithRiot = async () => {
-    await authClient.signOut();
   };
 
   return (
@@ -42,9 +30,7 @@ export const Navbar = ({}: Props) => {
             <div className="relative">
               <RiotIdForm onSuccess={handleSummonerSearch} />
             </div>
-            <Button onClick={() => (user.data ? void signOutWithRiot() : void signInWithRiot())}>
-              {user.data ? user.data.user.name : "Sign In"}
-            </Button>
+            <UserAccountButton />
           </div>
         </div>
       </div>

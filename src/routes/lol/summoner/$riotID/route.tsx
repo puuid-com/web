@@ -42,8 +42,10 @@ export const Route = createFileRoute("/lol/summoner/$riotID")({
         meta: [{ title: `${params.riotID.replace("-", "#")} - puuid.com` }],
       };
 
-    const description = `League of Legends profile for ${summoner.riotId}`;
-    const title = summoner.riotId;
+    const displayRiodId = summoner.displayRiotId;
+
+    const description = `League of Legends profile for ${displayRiodId}`;
+    const title = displayRiodId;
 
     const { CDragonService } = await import("@/client/services/CDragon");
     const profileIconUrl = CDragonService.getProfileIcon(summoner.profileIconId);

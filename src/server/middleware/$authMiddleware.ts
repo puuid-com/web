@@ -4,10 +4,10 @@ import { createMiddleware } from "@tanstack/react-start";
 import { getHeaders } from "@tanstack/react-start/server";
 
 export const $authMiddleware = createMiddleware({ type: "function" }).server(async ({ next }) => {
-  const headers = getHeaders();
+  const headers = getHeaders() as unknown as Headers;
 
   const session = await auth.api.getSession({
-    headers: headers as unknown as Headers,
+    headers: headers,
   });
 
   const user = session?.user;

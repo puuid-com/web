@@ -60,7 +60,6 @@ export const SummonerList = ({ summoners }: Props) => {
     );
   }
 
-  // padding haut et bas pour caler le bloc visible dans la grande hauteur virtuelle
   const padTop = items[0]?.start ?? 0;
   const padBot = items.length > 0 ? virtualizer.getTotalSize() - items[items.length - 1]!.end : 0;
 

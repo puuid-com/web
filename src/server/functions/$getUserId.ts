@@ -4,7 +4,7 @@ import { createServerFn } from "@tanstack/react-start";
 export const $getAuthUser = createServerFn({ method: "GET" })
   .middleware([$authMiddleware])
   .handler((ctx) => {
-    return ctx.context.user;
+    return ctx.context;
   });
 
 export type $GetUserIdType = Awaited<ReturnType<typeof $getAuthUser>>;

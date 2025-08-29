@@ -27,7 +27,31 @@ export class SummonerService {
     });
   }
 
-  static async getSummonerByRiotIDTx(
+  static async getSummonerByPuuidTx(
+    tx: TransactionType,
+    puuid: SummonerType["puuid"],
+  ): Promise<SummonerWithRelationsType | undefined> {
+    return tx.query.summonerTable.findFirst({
+      where: eq(summonerTable.puuid, puuid),
+      with: {
+        statistics: {
+          with: {
+            league: true,
+          },
+        },
+        leagues: true,
+        refresh: true,
+        verifiedUser: {
+          columns: {
+            name: true,
+            image: true,
+          },
+        },
+      },
+    });
+  }
+
+  static async getOrCreateSummonerByRiotIDTx(
     tx: TransactionType,
     clientRiotID: SummonerType["riotId"],
     refresh = false,
@@ -46,6 +70,12 @@ export class SummonerService {
             },
             leagues: true,
             refresh: true,
+            verifiedUser: {
+              columns: {
+                name: true,
+                image: true,
+              },
+            },
           },
         });
 
@@ -59,7 +89,7 @@ export class SummonerService {
     return this.handleSummonerCreationFromAccountTx(tx, account, accountRegion);
   }
 
-  static async getSummonerByPuuidTx(
+  static async getOrCreateSummonerByPuuidTx(
     tx: TransactionType,
     puuid: SummonerType["puuid"],
     refresh = false,
@@ -109,21 +139,51 @@ export class SummonerService {
       isMain: isMain,
     };
 
-    await tx.insert(summonerTable).values(data).onConflictDoUpdate({
-      target: summonerTable.puuid,
-      set: data,
-    });
+    await tx
+      .insert(summonerTable)
+      .values(data)
+      .onConflictDoUpdate({
+        target: summonerTable.puuid,
+        set: {
+          displayRiotId: data.displayRiotId,
+          riotId: data.riotId,
+          normalizedRiotId: data.normalizedRiotId,
+          summonerLevel: data.summonerLevel,
+          profileIconId: data.profileIconId,
+          region: data.region,
+        },
+      });
 
-    return {
-      ...data,
-      statistics: [],
-      leagues: [],
-      refresh: null,
-    };
+    const newSummoner = await this.getSummonerByPuuidTx(tx, data.puuid);
+
+    if (!newSummoner) {
+      throw new Error("Failed to create summoner");
+    }
+
+    return newSummoner;
   }
 
-  static async getVerifiedSummoners(userID: typeof user.$inferSelect.id) {
-    return db.select().from(summonerTable).where(eq(summonerTable.verifiedUserId, userID));
+  static async getVerifiedSummoners(
+    userID: typeof user.$inferSelect.id,
+  ): Promise<SummonerWithRelationsType[]> {
+    return db.query.summonerTable.findMany({
+      where: eq(summonerTable.verifiedUserId, userID),
+      with: {
+        statistics: {
+          with: {
+            league: true,
+          },
+        },
+        leagues: true,
+        refresh: true,
+        verifiedUser: {
+          columns: {
+            name: true,
+            image: true,
+          },
+        },
+      },
+    });
   }
 
   static async unverifySummoner(userID: typeof user.$inferSelect.id, puuid: SummonerType["puuid"]) {

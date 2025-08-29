@@ -69,7 +69,7 @@ export const summonerTable = pgTable(
     profileIconId: integer("profile_icon_id").notNull(),
     summonerLevel: integer("summoner_level").notNull(),
     region: text("region").$type<LolRegionType>().notNull(),
-    verifiedUserId: text("user_id").references(() => user.id, {
+    verifiedUserId: text("verified_user_id").references(() => user.id, {
       onDelete: "cascade",
     }),
     isMain: boolean("is_main").notNull().default(false),
@@ -86,6 +86,10 @@ export const summonerTableRelations = relations(summonerTable, ({ many, one }) =
   refresh: one(summonerRefresh, {
     fields: [summonerTable.puuid],
     references: [summonerRefresh.puuid],
+  }),
+  verifiedUser: one(user, {
+    fields: [summonerTable.verifiedUserId],
+    references: [user.id],
   }),
 }));
 
@@ -179,6 +183,7 @@ export type SummonerWithRelationsType = SummonerType & {
   statistics: StatisticWithLeagueType[];
   leagues: LeagueRowType[];
   refresh: typeof summonerRefresh.$inferSelect | null;
+  verifiedUser: Pick<typeof user.$inferSelect, "name" | "image"> | null;
 };
 
 export type LeagueRowType = typeof leagueEntryTable.$inferSelect;
