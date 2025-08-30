@@ -182,7 +182,7 @@ export class RefreshService {
       };
     }
 
-    const batchSize = 25;
+    const batchSize = 50;
     const totalBatches = Math.ceil(notSavedIds.length / batchSize);
     const allNewMatches: MatchWithSummonersType[] = alreadySaved;
 
@@ -208,8 +208,6 @@ export class RefreshService {
       });
 
       allNewMatches.push(..._newMatches);
-
-      await new Promise((resolve) => setTimeout(resolve, 500));
 
       console.log(`Fetched batch ${b + 1}/${totalBatches}`);
     }

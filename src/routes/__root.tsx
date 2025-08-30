@@ -7,6 +7,7 @@ import { Toaster } from "sonner";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Footer } from "@/client/components/footer/Footer";
 import { Navbar } from "@/client/components/navbar/Navbar";
+import { $getUserSession } from "@/server/functions/$getUserSession";
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
@@ -27,6 +28,15 @@ export const Route = createRootRouteWithContext<{
     links: [{ rel: "stylesheet", href: appCss }],
   }),
   component: RootComponent,
+  beforeLoad: async () => {
+    const session = await $getUserSession();
+
+    return session;
+  },
+  staleTime: 60_000,
+  gcTime: 30 * 60_000,
+
+  shouldReload: true,
 });
 
 function RootComponent() {

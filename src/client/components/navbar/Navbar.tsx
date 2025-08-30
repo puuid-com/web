@@ -8,12 +8,11 @@ export const Navbar = ({}: Props) => {
   const navigate = useNavigate();
 
   const handleSummonerSearch = (riotID: string) => {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate({
       to: "/lol/summoner/$riotID",
       params: { riotID },
       search: { queue: "RANKED_SOLO_5x5" },
-    });
+    }).catch(console.error);
   };
 
   return (

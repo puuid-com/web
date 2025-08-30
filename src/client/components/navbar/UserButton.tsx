@@ -1,23 +1,24 @@
 "use client";
 
 import { useState } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/client/components/ui/avatar";
 import { Button } from "@/client/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/client/components/ui/dropdown-menu";
-import { User, LogOut } from "lucide-react";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { User, LogOut, BrainIcon, RatIcon } from "lucide-react";
+import { Link, useNavigate, useRouteContext } from "@tanstack/react-router";
 import { authClient } from "@/lib/auth-client";
+import React from "react";
 
 type Props = {};
 
 export function UserAccountButton({}: Props) {
-  const session = authClient.useSession();
+  const session = useRouteContext({ from: "__root__" });
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -37,42 +38,60 @@ export function UserAccountButton({}: Props) {
     setIsOpen(false);
   };
 
-  const currentUser = session.data?.user;
-
-  if (!currentUser) {
+  if (!session.user) {
     return <Button onClick={() => void signInWithRiot()}>Sign In</Button>;
   }
+
+  const { user, summoners } = session;
 
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
       <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          className="h-10 px-3 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-white"
-        >
-          <Avatar className="h-6 w-6 mr-2">
-            <AvatarImage src={currentUser.image ?? "/placeholder.svg"} alt={currentUser.name} />
-            <AvatarFallback className="bg-zinc-700 text-white text-xs">
-              {currentUser.name.charAt(0).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
-          <span className="text-sm font-medium">{currentUser.name}</span>
+        <Button variant={"ghost"} className={"px-1"}>
+          <img src={user.image!} alt="" className={"rounded-md w-8 aspect-square"} />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56 bg-zinc-900 border-zinc-800 text-white">
-        <div className="px-3 py-2">
-          <Link
-            to={"/lol/summoner/$riotID/matches"}
-            params={{
-              riotID: currentUser.name,
-            }}
-            search={{
-              q: "solo",
-            }}
-          >
-            <p className="text-sm font-medium">{currentUser.name}</p>
-          </Link>
-        </div>
+        <DropdownMenuLabel>Your summoners</DropdownMenuLabel>
+        {summoners.map((s) => {
+          const [gameName, tagLine] = s.displayRiotId.split("#");
+
+          const stats = s.statistics.find((s) => s.queueType === "RANKED_SOLO_5x5");
+          const bgColor = stats?.mainChampionBackgroundColor;
+          const textColor = stats?.mainChampionForegroundColor;
+
+          return (
+            <DropdownMenuItem key={s.puuid} asChild>
+              <Link
+                to={"/lol/summoner/$riotID/matches"}
+                params={{
+                  riotID: s.displayRiotId,
+                }}
+                search={{
+                  q: "solo",
+                }}
+                style={
+                  {
+                    "--color-main": bgColor ?? "var(--color-neutral-500)",
+                    "--color-main-foreground": textColor ?? undefined,
+                  } as React.CSSProperties
+                }
+              >
+                {s.isMain ? (
+                  <React.Fragment>
+                    <BrainIcon className={"text-main"} />
+                  </React.Fragment>
+                ) : (
+                  <React.Fragment>
+                    <RatIcon className={"text-main"} />
+                  </React.Fragment>
+                )}
+                <span>{gameName}</span>
+                <span className="text-muted-foreground tabular-nums">#{tagLine}</span>
+              </Link>
+            </DropdownMenuItem>
+          );
+        })}
         <DropdownMenuSeparator className="bg-zinc-800" />
         <DropdownMenuItem
           onClick={() => void handleNavigateToUsers()}

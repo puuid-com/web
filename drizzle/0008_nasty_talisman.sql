@@ -1,1 +1,0 @@
-ALTER TABLE "league_entries" RENAME COLUMN "fetched_at" TO "created_at";

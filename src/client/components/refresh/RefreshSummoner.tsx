@@ -30,7 +30,8 @@ export const RefreshSummoner = ({ children }: React.PropsWithChildren<Props>) =>
 
   const events = React.useMemo(() => q.data ?? [], [q.data]);
 
-  const handleOnClose = () => {
+  const handleOnClose = async () => {
+    await q.refetch();
     setPopoverOpen(false);
   };
 
@@ -59,7 +60,7 @@ export const RefreshSummoner = ({ children }: React.PropsWithChildren<Props>) =>
       <RefreshProgressModal
         isOpen={popoverOpen}
         onClose={() => {
-          handleOnClose();
+          void handleOnClose();
         }}
         onComplete={() => void handleOnComplete()}
         events={events}

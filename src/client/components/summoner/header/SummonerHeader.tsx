@@ -63,7 +63,7 @@ export const SummonerHeader = ({}: Props) => {
                 </div>
               </div>
               <div className="">
-                <RefreshSummoner>
+                <RefreshSummoner key={summoner.puuid}>
                   <>
                     <RefreshCw />
                     {summoner.refresh?.refreshedAt ? (

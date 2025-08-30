@@ -1,1 +1,0 @@
-ALTER TABLE "summoner_refresh" DROP COLUMN "last_game_at";

@@ -17,14 +17,7 @@ export const auth = betterAuth({
     provider: "pg", // or "mysql", "sqlite"
   }),
   trustedOrigins: [serverEnv.BETTER_AUTH_URL],
-  user: {
-    // on stocke les métadonnées Riot sur l’utilisateur
-    /*  additionalFields: {
-      puuid: { type: "string", input: false, required: true, unique: true },
-    }, */
-  },
   databaseHooks: {
-    user: {},
     account: {
       create: {
         after: async (account) => {

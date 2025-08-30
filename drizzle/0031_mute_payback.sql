@@ -1,1 +1,0 @@
-ALTER TABLE "summoner" ADD COLUMN "refreshed_at" timestamp with time zone DEFAULT now() NOT NULL;

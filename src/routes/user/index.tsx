@@ -1,16 +1,10 @@
-import { Avatar, AvatarFallback } from "@/client/components/ui/avatar";
 import { Badge } from "@/client/components/ui/badge";
 import { Button } from "@/client/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/client/components/ui/card";
-import { Input } from "@/client/components/ui/input";
-import { Label } from "@/client/components/ui/label";
-import { Separator } from "@/client/components/ui/separator";
 import { cn, timeago } from "@/client/lib/utils";
 import { CDragonService } from "@/client/services/CDragon";
 import { authClient } from "@/lib/auth-client";
-import { $getAuthUser } from "@/server/functions/$getUserId";
-import { $getVerifiedSummoners } from "@/server/functions/$getVerifiedSummoners";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import {
   BrainIcon,
   ExternalLink,
@@ -22,43 +16,31 @@ import {
 } from "lucide-react";
 import React from "react";
 import riotGamesIcon from "./riot-games-red-round.png";
+import { UserUpdateForm } from "@/client/components/user/UserUpdateForm";
 
 export const Route = createFileRoute("/user/")({
   component: RouteComponent,
-  beforeLoad: async () => {
-    const { user } = await $getAuthUser();
+  beforeLoad: (ctx) => {
+    const context = ctx.context;
+
+    if (!context.user) {
+      throw redirect({
+        to: "/",
+      });
+    }
 
     return {
-      user,
-    };
-  },
-  loader: async (ctx) => {
-    const summoners = await $getVerifiedSummoners({ data: ctx.context.user.id });
-
-    const mainAccount = summoners.find((s) => s.isMain);
-    const otherAccounts = summoners.filter((s) => !s.isMain);
-
-    return {
-      user: ctx.context.user,
-      mainSummoner: mainAccount,
-      otherSummoners: otherAccounts,
-      summoners: summoners.sort((a, b) => {
-        // First, sort by isMain (main accounts first)
-        if (a.isMain !== b.isMain) {
-          return a.isMain ? -1 : 1;
-        }
-        // Then sort by summonerLevel in descending order
-        return b.summonerLevel - a.summonerLevel;
-      }),
+      user: context.user,
+      summoners: context.summoners,
+      mainSummoner: context.mainSummoner,
+      otherSummoners: context.otherSummoners,
     };
   },
 });
 
 function RouteComponent() {
-  const { user, summoners } = Route.useLoaderData();
+  const { summoners } = Route.useRouteContext();
   const route = Route.useMatch();
-
-  const [userName, setUserName] = React.useState(user.name);
 
   const handleLinkAccount = async () => {
     await authClient.oauth2.link({
@@ -71,47 +53,7 @@ function RouteComponent() {
     <main className="container mx-auto px-6 py-8">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-1">
-          <Card className="bg-card border-border">
-            <CardHeader className="pb-4">
-              <CardTitle className="text-lg font-semibold text-card-foreground">Profile</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="flex flex-col items-center text-center space-y-4">
-                <Avatar className="w-20 h-20">
-                  <AvatarFallback className="bg-primary text-primary-foreground text-xl font-bold">
-                    {userName.slice(0, 2).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="space-y-1">
-                  <h2 className="text-xl font-bold text-card-foreground">{userName}</h2>
-                  <p className="text-sm text-muted-foreground">Member since Aug 2025</p>
-                </div>
-              </div>
-
-              <Separator />
-
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="username" className="text-sm font-medium text-card-foreground">
-                    Display Name
-                  </Label>
-                  <Input
-                    id="username"
-                    value={userName}
-                    onChange={(e) => {
-                      setUserName(e.target.value);
-                    }}
-                    className="mt-1"
-                  />
-                </div>
-
-                <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
-                  Save Changes
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
+          <UserUpdateForm />
           <Card className="bg-card border-border mt-6">
             <CardHeader className="pb-4">
               <CardTitle className="text-lg font-semibold text-card-foreground flex items-center">

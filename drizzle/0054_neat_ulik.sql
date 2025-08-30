@@ -1,1 +1,0 @@
-CREATE INDEX "idx_normalized_riot_id" ON "summoner" USING btree ("normalized_riot_id");

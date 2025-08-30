@@ -183,20 +183,27 @@ export function RefreshProgressModal({
     });
   }, [matchProgress, progressMessages]);
 
-  React.useEffect(() => {
-    console.log(progressMessages);
-  }, [progressMessages]);
+  const handleOnComplete = React.useCallback(() => {
+    onComplete();
+
+    /*  // resets state
+    setProgressMessages([]);
+    setCustomEvents([]);
+    setCurrentStep(null);
+    setMatchProgress(null);
+    setMatches([]); */
+  }, [onComplete]);
 
   const isComplete = React.useMemo(() => {
     const _isComplete = steps.every((s) => s.status === "completed");
 
     if (_isComplete && !isCompletedRef.current) {
       isCompletedRef.current = true;
-      onComplete();
+      handleOnComplete();
     }
 
     return _isComplete;
-  }, [onComplete, steps]);
+  }, [handleOnComplete, steps]);
 
   const getOverallProgress = () => {
     if (isComplete) return 100;

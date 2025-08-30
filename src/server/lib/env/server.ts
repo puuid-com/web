@@ -14,7 +14,11 @@ export const serverEnv = createEnv({
     R2_TOKEN: v.string(),
     R2_CDN_URL: v.string(),
 
-    DATABASE_URL: v.string(),
+    DATABASE_HOST: v.string(),
+    DATABASE_PORT: v.pipe(v.string(), v.transform(Number)),
+    DATABASE_USER: v.string(),
+    DATABASE_PASSWORD: v.string(),
+    DATABASE_NAME: v.string(),
 
     GITHUB_CLIENT_ID: v.string(),
     GITHUB_CLIENT_SECRET: v.string(),

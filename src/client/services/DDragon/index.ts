@@ -10,6 +10,7 @@ import ky from "ky";
 import * as v from "valibot";
 import type { MatchSummonerRowType } from "@/server/db/match-schema";
 import { DDragonItemFileSchema, type DDragonItemsData } from "@/client/services/DDragon/items.dto";
+import type { ProfileIconType } from "@/client/services/DDragon/profile-icons.dto";
 
 export type DDragonMetadata = {
   champions: ChampionsResponseType["data"];
@@ -101,6 +102,19 @@ export class DDragonService {
     id: MatchSummonerRowType["spellIds"][number],
   ) {
     return `https://ddragon.leagueoflegends.com/cdn/${version}/img/spell/${summoner_spells[id]!.image.full}`;
+  }
+
+  static async getProfileIcons(version: string) {
+    const data = await ky
+      .get(`https://ddragon.leagueoflegends.com/cdn/${version}/data/en_US/profileicon.json`, {})
+      .json<ProfileIconType>();
+
+    return Object.entries(data.data).map(([, value]) => {
+      return {
+        id: value.id,
+        image: value.image.full,
+      };
+    });
   }
 
   static async getMetadata(): Promise<DDragonMetadata> {
