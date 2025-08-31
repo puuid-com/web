@@ -50,3 +50,17 @@ export function routingValueFromRegion(region: LolRegionType): LolRoutingValueTy
 
   return platformToRegionMap[region];
 }
+
+export const LolTiers = [
+  "IRON",
+  "BRONZE",
+  "SILVER",
+  "GOLD",
+  "PLATINUM",
+  "EMERALD",
+  "DIAMOND",
+  "MASTER",
+  "GRANDMASTER",
+  "CHALLENGER",
+] as const;
+export type LolTierType = (typeof LolTiers)[number];

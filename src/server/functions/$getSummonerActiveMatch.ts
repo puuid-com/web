@@ -11,7 +11,7 @@ export const $getSummonerActiveMatch = createServerFn({ method: "GET" })
   )
   .handler(async (ctx) => {
     const { SpectatorService } = await import("@/server/services/SpectatorService");
-    const data = await SpectatorService.getActiveGame(ctx.data);
+    const data = await SpectatorService.getActiveGameData(ctx.data);
 
     return data;
   });

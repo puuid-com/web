@@ -16,10 +16,8 @@ export class SpectatorService {
   }
 
   static async getActiveGame(summoner: Pick<SummonerType, "puuid" | "region">) {
-    let data;
-
     try {
-      data = await SpectatorActiveGameRoute.call({
+      return await SpectatorActiveGameRoute.call({
         region: summoner.region,
         puuid: summoner.puuid,
       });
@@ -34,6 +32,14 @@ export class SpectatorService {
       }
 
       throw error;
+    }
+  }
+
+  static async getActiveGameData(summoner: Pick<SummonerType, "puuid" | "region">) {
+    const data = await this.getActiveGame(summoner);
+
+    if (!data) {
+      return null;
     }
 
     const summoners = await SummonerService.getOrCreateSummonersByPuuids(

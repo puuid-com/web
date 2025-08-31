@@ -6,7 +6,7 @@ import { FriendlyQueueTypes, friendlyQueueTypeToRiot } from "@/client/lib/typeHe
 import { getSummonerMasteriesOptions } from "@/client/queries/getSummonerMasteries";
 import { getSummonerStatisticsOptions } from "@/client/queries/getSummonerStatistics";
 import { CDragonService } from "@/shared/services/CDragon/CDragonService";
-import { individualPositions } from "@/server/api-route/riot/match/MatchDTO";
+import { LolIndividualPositions } from "@/server/api-route/riot/match/MatchDTO";
 import { useQueries } from "@tanstack/react-query";
 import { createFileRoute, useLoaderData, useSearch } from "@tanstack/react-router";
 import React from "react";
@@ -20,7 +20,7 @@ export const Route = createFileRoute("/lol/summoner/$riotID/mastery")({
         queue: v.exactOptional(v.picklist(FriendlyQueueTypes), "solo"),
         champion: v.exactOptional(v.string()),
         onlyPlayed: v.exactOptional(v.boolean()),
-        positions: v.exactOptional(v.array(v.picklist(individualPositions))),
+        positions: v.exactOptional(v.array(v.picklist(LolIndividualPositions))),
       }),
       raw,
     ),

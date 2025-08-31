@@ -1,5 +1,7 @@
 import { RefreshSummoner } from "@/client/components/refresh/RefreshSummoner";
+import { SummonerFollowButton } from "@/client/components/summoner/header/SummonerFollowButton";
 import { SummonerHeaderInfo } from "@/client/components/summoner/header/SummonerHeaderInfo";
+import { SummonerNotesDialog } from "@/client/components/summoner/header/SummonerNotesDialog";
 import { VerifiedTooltips } from "@/client/components/tooltips/VerifiedTooltips";
 import { Badge } from "@/client/components/ui/badge";
 import { cn, timeago } from "@/client/lib/utils";
@@ -14,6 +16,7 @@ type Props = {
 
 export const SummonerHeader = ({ className }: Props) => {
   const metadata = useLoaderData({ from: "/lol" });
+
   const params = useParams({ from: "/lol/summoner/$riotID" });
   const search = useSearch({ from: "/lol/summoner/$riotID" });
   const { summoner, queueStats: stats } = useLoaderData({
@@ -68,6 +71,8 @@ export const SummonerHeader = ({ className }: Props) => {
                 </Link>
                 <div className={"flex gap-1.5 items-center"}>
                   <VerifiedTooltips summoner={summoner} />
+                  <SummonerNotesDialog />
+                  <SummonerFollowButton />
                 </div>
               </div>
               <div className="">

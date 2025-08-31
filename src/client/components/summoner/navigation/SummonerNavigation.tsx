@@ -1,7 +1,8 @@
+import { LiveMatchIcon } from "@/client/components/icons/LiveMatchIcon";
 import { SummonerNavigationItem } from "@/client/components/summoner/navigation/SummonerNavigationItem";
 import { cn } from "@/client/lib/utils";
 import { useParams } from "@tanstack/react-router";
-import { ChartScatterIcon, CrownIcon, RadioIcon, ScrollTextIcon } from "lucide-react";
+import { ChartScatterIcon, CrownIcon, ScrollTextIcon } from "lucide-react";
 
 type Props = {
   className?: React.ComponentProps<"div">["className"];
@@ -44,7 +45,7 @@ export const SummonerNavigation = ({ className }: Props) => {
       <SummonerNavigationItem
         to={"/lol/summoner/$riotID/live"}
         params={params}
-        iconNode={RadioIcon}
+        iconNode={LiveMatchIcon}
       >
         Live
       </SummonerNavigationItem>

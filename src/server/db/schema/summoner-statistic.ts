@@ -1,5 +1,5 @@
 import type { LolQueueType } from "@/server/api-route/riot/league/LeagueDTO";
-import type { IndividualPositionType } from "@/server/api-route/riot/match/MatchDTO";
+import type { LolIndividualPositionType } from "@/server/api-route/riot/match/MatchDTO";
 import { leagueTable, type LeagueRowType } from "@/server/db/schema/league";
 import { summonerTable } from "@/server/db/schema/summoner";
 import { relations } from "drizzle-orm";
@@ -24,7 +24,7 @@ export type StatItemType = {
 
 export type StatsByChampionId = (StatItemType & { championId: number })[];
 export type StatsByIndividualPosition = (StatItemType & {
-  individualPosition: IndividualPositionType;
+  individualPosition: LolIndividualPositionType;
 })[];
 export type StatsByTeamId = (StatItemType & { teamId: number })[];
 
@@ -41,7 +41,9 @@ export const statisticTable = pgTable(
     latestLeagueEntryId: uuid("latest_league_entry_id").references(() => leagueTable.id, {
       onDelete: "set null",
     }),
-    mainIndividualPosition: text("main_individual_position").$type<IndividualPositionType | null>(),
+    mainIndividualPosition: text(
+      "main_individual_position",
+    ).$type<LolIndividualPositionType | null>(),
 
     mainChampionId: integer("main_champion_id").notNull(),
     mainChampionBackgroundColor: text("main_champion_background_color"),

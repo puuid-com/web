@@ -11,6 +11,7 @@ import * as refreshSchema from "@/server/db/schema/refresh";
 import * as summonerSchema from "@/server/db/schema/summoner";
 import * as summonerStatisticSchema from "@/server/db/schema/summoner-statistic";
 import * as noteSchema from "@/server/db/schema/note";
+import * as viewsSchema from "@/server/db/schema/views";
 
 // charge le CA une seule fois
 const ca = readFileSync(resolve(process.cwd(), "ca-certificate.crt"), "utf8");
@@ -35,6 +36,7 @@ export const db = drizzle({
     ...summonerStatisticSchema,
     ...noteSchema,
     ...matchSchema,
+    ...viewsSchema,
   },
   logger: false,
 });

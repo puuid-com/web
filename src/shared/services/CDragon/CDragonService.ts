@@ -1,3 +1,5 @@
+import type { LolTierType } from "@/server/types/riot/common";
+
 export class CDragonService {
   private static LATEST_PATCH = "latest";
 
@@ -189,5 +191,9 @@ export class CDragonService {
   // /:patch/profile-icon/:profileIconId
   static getProfileIcon(profileIconId: number, patch = this.LATEST_PATCH): string {
     return `${this.base(patch)}/profile-icon/${profileIconId}`;
+  }
+
+  static getRankMiniIcon(rank: LolTierType, patch = this.LATEST_PATCH): string {
+    return `${this.base(patch)}/plugins/rcp-fe-lol-static-assets/global/default/images/ranked-mini-crests/${rank.toLowerCase()}.svg`;
   }
 }

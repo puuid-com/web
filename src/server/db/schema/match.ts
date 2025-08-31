@@ -1,6 +1,6 @@
 import { pgTable, text, integer, boolean, bigint, index } from "drizzle-orm/pg-core";
 import { relations, type InferSelectModel } from "drizzle-orm";
-import type { IndividualPositionType } from "@/server/api-route/riot/match/MatchDTO";
+import type { LolIndividualPositionType } from "@/server/api-route/riot/match/MatchDTO";
 
 export const matchTable = pgTable(
   "match",
@@ -35,7 +35,7 @@ export const matchSummonerTable = pgTable(
     tagLine: text("tag_line").notNull(),
     profileIconId: integer("profile_icon_id").notNull(),
 
-    individualPosition: text("individual_position").$type<IndividualPositionType>().notNull(),
+    individualPosition: text("individual_position").$type<LolIndividualPositionType>().notNull(),
     teamId: integer("team_id").notNull(),
     win: boolean("win").notNull(),
 

@@ -24,7 +24,7 @@ const PerksSchema = v.object({
   styles: v.array(PerkStyleSchema),
 });
 
-export const individualPositions = [
+export const LolIndividualPositions = [
   "BOTTOM",
   "JUNGLE",
   "MIDDLE",
@@ -32,7 +32,7 @@ export const individualPositions = [
   "UTILITY",
   "Invalid",
 ] as const;
-export type IndividualPositionType = (typeof individualPositions)[number];
+export type LolIndividualPositionType = (typeof LolIndividualPositions)[number];
 
 export const ParticipantDTOSchema = v.object({
   assists: v.number(),
@@ -53,7 +53,7 @@ export const ParticipantDTOSchema = v.object({
   dragonKills: v.number(),
   goldEarned: v.number(),
   goldSpent: v.number(),
-  individualPosition: v.picklist(individualPositions),
+  individualPosition: v.picklist(LolIndividualPositions),
   inhibitorKills: v.number(),
   item0: v.number(),
   item1: v.number(),

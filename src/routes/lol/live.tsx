@@ -9,11 +9,19 @@ export const Route = createFileRoute("/lol/live")({
       data: "euw1",
     });
 
-    const _puuid = featuredGames.gameList[0]?.participants[0]?.puuid;
+    console.log({ queue: featuredGames.gameList.map((g) => g.gameQueueConfigId) });
+
+    const _puuid = featuredGames.gameList
+      .find((g) => g.gameQueueConfigId === 420)
+      ?.participants.at(0)?.puuid;
+
+    if (!_puuid) {
+      throw new Error("No puuid");
+    }
 
     const liveGame = await $getSummonerActiveMatch({
       data: {
-        puuid: _puuid!,
+        puuid: _puuid,
         region: "euw1",
       },
     });
