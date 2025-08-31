@@ -12,7 +12,7 @@ export const $getSummonerMasteries = createServerFn({ method: "GET" })
   .handler(async (ctx) => {
     const { region, puuid } = ctx.data;
 
-    const { MasteryService } = await import("@/server/services/mastery");
+    const { MasteryService } = await import("@/server/services/MasteryService");
     const masteries = await MasteryService.getMasteryBySummoner({
       puuid,
       region,

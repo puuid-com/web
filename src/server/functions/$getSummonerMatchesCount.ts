@@ -15,7 +15,7 @@ export const $getSummonerMatchesCount = createServerFn({ method: "GET" })
   .handler(async (ctx) => {
     const { region, puuid, queue } = ctx.data;
 
-    const { MatchService } = await import("@/server/services/match");
+    const { MatchService } = await import("@/server/services/match/MatchService");
     const data = await MatchService.getMatchesDBCountByPuuid(
       {
         puuid,

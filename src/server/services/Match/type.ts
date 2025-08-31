@@ -1,15 +1,12 @@
 import * as v from "valibot";
 
-const optionalStringToNumberWithDefault = (optionalValue: number) =>
-  v.optional(v.number(), optionalValue);
-
 export const MatchIDsQueryParamsSchema = v.object({
   queue: v.number(),
   type: v.optional(v.string()),
   startTime: v.optional(v.number()),
   endTime: v.optional(v.number()),
-  count: optionalStringToNumberWithDefault(9999),
-  start: optionalStringToNumberWithDefault(0),
+  count: v.optional(v.number(), 9999),
+  start: v.optional(v.number(), 0),
 });
 
 export type InputPagedMatchIDsQueryParams = v.InferInput<typeof MatchIDsQueryParamsSchema>;

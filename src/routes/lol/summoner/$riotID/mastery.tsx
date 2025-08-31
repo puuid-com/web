@@ -5,7 +5,7 @@ import { combineMasteryWithStatistic } from "@/client/lib/masteries";
 import { FriendlyQueueTypes, friendlyQueueTypeToRiot } from "@/client/lib/typeHelper";
 import { getSummonerMasteriesOptions } from "@/client/queries/getSummonerMasteries";
 import { getSummonerStatisticsOptions } from "@/client/queries/getSummonerStatistics";
-import { CDragonService } from "@/client/services/CDragon";
+import { CDragonService } from "@/shared/services/CDragon/CDragonService";
 import { individualPositions } from "@/server/api-route/riot/match/MatchDTO";
 import { useQueries } from "@tanstack/react-query";
 import { createFileRoute, useLoaderData, useSearch } from "@tanstack/react-router";

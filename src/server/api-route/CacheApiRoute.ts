@@ -1,5 +1,5 @@
 import { RiotApiRoute, type ApiRouteConfigs } from "@/server/api-route/ApiRoute";
-import { CacheService, type CacheDir } from "@/server/services/cache/CacheService";
+import { CacheService, type CacheDir } from "@/server/services/CacheService";
 import type { Options } from "ky";
 import * as v from "valibot";
 
@@ -42,8 +42,6 @@ export class CachedApiRoute<S extends Schema, P extends CachedApiRouteParams> ex
       return parsedData;
     } catch (e) {
       console.error(e);
-
-      process.exit(0);
 
       throw e;
     }

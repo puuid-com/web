@@ -7,7 +7,7 @@ import { Toaster } from "sonner";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Footer } from "@/client/components/footer/Footer";
 import { Navbar } from "@/client/components/navbar/Navbar";
-import { $getUserSession } from "@/server/functions/$getUserSession";
+import { getUserSessionOptions } from "@/client/queries/getUserSession";
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
@@ -28,11 +28,7 @@ export const Route = createRootRouteWithContext<{
     links: [{ rel: "stylesheet", href: appCss }],
   }),
   component: RootComponent,
-  beforeLoad: async () => {
-    const session = await $getUserSession();
-
-    return session;
-  },
+  beforeLoad: async (ctx) => ctx.context.queryClient.ensureQueryData(getUserSessionOptions()),
   staleTime: 60_000,
   gcTime: 30 * 60_000,
 
@@ -57,17 +53,31 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
       </head>
       <body
         className={"flex flex-col dark bg-neutral-950 text-neutral-300 overflow-hidden scrollbar"}
+        style={
+          {
+            "--footer-height": "calc(60px)",
+            "--navbar-height": "calc(60px)",
+            "--default-gap-height": "calc(20px)",
+            "--body-height": "calc(100vh - var(--navbar-height))",
+            "--body-content-height":
+              "calc(var(--body-height) - var(--footer-height) - var(--default-gap-height))",
+          } as React.CSSProperties
+        }
       >
-        <Navbar />
+        <Navbar className={"h-[var(--navbar-height)]"} />
         <div
           id={"body-content"}
-          style={{
-            height: `calc(100vh - 60px)`,
-          }}
-          className={"flex flex-col w-full overflow-y-auto relative isolate"}
+          style={
+            {
+              height: `var(--body-height)`,
+            } as React.CSSProperties
+          }
+          className={
+            "flex flex-col w-full overflow-y-auto relative isolate gap-[var(-default-gap-height)]"
+          }
         >
           {children}
-          <Footer />
+          <Footer className={"h-[var(--footer-height)]"} />
         </div>
         <Scripts />
       </body>

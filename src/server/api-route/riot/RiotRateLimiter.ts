@@ -1,4 +1,4 @@
-import { MultiRouteLimiter } from "@/server/services/rate-limiter";
+import { MultiRouteLimiter } from "@/server/services/rate-limiter/RateLimiterService";
 import { parseRateLime } from "@/server/services/rate-limiter/utils";
 import type { IRateLimiterOptions } from "rate-limiter-flexible";
 

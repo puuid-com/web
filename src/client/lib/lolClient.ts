@@ -25,9 +25,9 @@ export const lolClient = serverOnly(() =>
         },
       ],
       beforeRequest: [
-        (req) => {
+        /* (req) => {
           console.log(`🔴🔴 Fetching >> ${req.url}`);
-        },
+        }, */
       ],
     },
   }),

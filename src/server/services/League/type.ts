@@ -1,5 +1,5 @@
 import type { LolQueueType } from "@/server/api-route/riot/league/LeagueDTO";
-import type { LeagueRowType } from "@/server/db/schema";
+import type { LeagueRowType } from "@/server/db/schema/league";
 
 export type LeagueHistoryType = {
   lastest: LeagueRowType;

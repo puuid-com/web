@@ -5,7 +5,7 @@ import * as v from "valibot";
 export const $getFeaturedMatches = createServerFn({ method: "GET" })
   .validator(v.picklist(LolRegions))
   .handler(async (ctx) => {
-    const { SpectatorService } = await import("@/server/services/spectator");
+    const { SpectatorService } = await import("@/server/services/SpectatorService");
     const data = await SpectatorService.getFeaturedGames(ctx.data);
 
     return data;

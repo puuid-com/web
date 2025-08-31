@@ -1,5 +1,5 @@
 import type { ChampionMasteryDTOType } from "@/server/api-route/riot/champion-mastery/ChampionMasteryDTO";
-import type { StatsByChampionId } from "@/server/db/schema";
+import type { StatsByChampionId } from "@/server/db/schema/summoner-statistic";
 import type { $GetSummonerStatisticType } from "@/server/functions/$getSummonerStatistic";
 
 export type MasteryWithStatistic = {

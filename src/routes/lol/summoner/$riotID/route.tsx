@@ -1,10 +1,10 @@
-import { $getSummonerByRiotID } from "@/server/functions/$getSummonerByRiotID";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 
 import type React from "react";
 import { SummonerNavigation } from "@/client/components/summoner/navigation/SummonerNavigation";
 import { trimRiotID } from "@/lib/riotID";
 import { SummonerHeader } from "@/client/components/summoner/header/SummonerHeader";
+import { getSummonerByRiotIDOptions } from "@/client/queries/getSummonerByRiotID";
 
 export const Route = createFileRoute("/lol/summoner/$riotID")({
   component: RouteComponent,
@@ -16,16 +16,25 @@ export const Route = createFileRoute("/lol/summoner/$riotID")({
       riotID: encodeURIComponent(v.riotID.normalize("NFC")),
     }),
   },
-  loader: async (ctx) => {
+  beforeLoad: (ctx) => {
     const _riotID = trimRiotID(ctx.params.riotID);
 
-    const { summoner } = await $getSummonerByRiotID({
-      data: _riotID,
-    });
+    return ctx.context.queryClient.ensureQueryData(
+      getSummonerByRiotIDOptions({
+        riotID: _riotID,
+      }),
+    );
+  },
+  loader: (ctx) => {
+    const summoner = ctx.context.summoner;
 
     const mainQueue = summoner.statistics
+      .filter((s) => s.league)
       .sort((a, b) => {
-        return a.league.losses + a.league.wins - b.league.losses + b.league.wins;
+        const aLeague = a.league!;
+        const bLeague = b.league!;
+
+        return aLeague.losses + aLeague.wins - bLeague.losses + bLeague.wins;
       })
       .at(0)?.queueType;
 
@@ -47,33 +56,19 @@ export const Route = createFileRoute("/lol/summoner/$riotID")({
     const description = `League of Legends profile for ${displayRiodId}`;
     const title = displayRiodId;
 
-    const { CDragonService } = await import("@/client/services/CDragon");
+    const { CDragonService } = await import("@/shared/services/CDragon/CDragonService");
     const profileIconUrl = CDragonService.getProfileIcon(summoner.profileIconId);
-
-    let customProfileUrl;
-
-    /**
-     * If we refreshed, it means that we have a profile image saved to R2
-     */
-    if (summoner.refresh) {
-      const url = `https://cdn.puuid.com/summoner-profile/${summoner.puuid}.png`;
-
-      const lastRefreshToString = summoner.refresh.refreshedAt.toISOString();
-      customProfileUrl = `${url}?v=${encodeURIComponent(lastRefreshToString)}`;
-    } else {
-      customProfileUrl = profileIconUrl;
-    }
 
     const meta: Record<string, string>[] = [
       { title },
       { name: "description", content: description },
       { property: "og:title", content: title },
       { property: "og:description", content: description },
-      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:card", content: "summary" },
       { name: "twitter:title", content: title },
       { name: "twitter:description", content: description },
-      { name: "twitter:image", content: customProfileUrl },
-      { name: "og:image", content: customProfileUrl },
+      { name: "twitter:image", content: profileIconUrl },
+      { name: "og:image", content: profileIconUrl },
     ];
 
     return { meta, links: [{ rel: "icon", href: profileIconUrl }] };
@@ -92,17 +87,22 @@ function RouteComponent() {
 
   return (
     <div
-      className={"flex flex-col container mx-auto gap-5"}
+      className={"flex flex-col container mx-auto gap-[var(--summoner-gap-height)]"}
       style={
         {
           "--color-main": bgColor ?? undefined,
           "--color-main-foreground": textColor ?? undefined,
+          "--summoner-header-height": "calc(96px + (20px * 2))",
+          "--summoner-navigation-height": "calc(45px)",
+          "--summoner-gap-height": "calc(20px)",
+          "--summoner-outlet-height":
+            "calc(var(--body-content-height) - (var(--summoner-header-height) + var(--summoner-navigation-height) + var(--summoner-gap-height) * 2)",
         } as React.CSSProperties
       }
     >
-      <SummonerHeader />
-      <SummonerNavigation />
-      <div className={"flex flex-1"}>
+      <SummonerHeader className={"h-[var(--summoner-header-height)]"} />
+      <SummonerNavigation className={"h-[var(--summoner-navigation-height)]"} />
+      <div className={"flex min-h-[var(--summoner-outlet-height)] w-full"}>
         <Outlet />
       </div>
     </div>

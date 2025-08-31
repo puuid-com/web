@@ -1,6 +1,6 @@
 import { Badge } from "@/client/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/client/components/ui/tooltip";
-import type { SummonerWithRelationsType } from "@/server/db/schema";
+import type { SummonerWithRelationsType } from "@/server/db/schema/summoner";
 import { BadgeCheckIcon } from "lucide-react";
 
 type Props = {

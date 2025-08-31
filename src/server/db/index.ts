@@ -1,11 +1,16 @@
 import { drizzle } from "drizzle-orm/node-postgres";
-import * as authSchema from "@/server/db/auth-schema";
-import * as schemas from "@/server/db/schema";
-import * as matchSchema from "@/server/db/match-schema";
+import * as authSchema from "@/server/db/schema/auth";
+import * as matchSchema from "@/server/db/schema/match";
 import { serverEnv } from "@/server/lib/env/server";
 import { Pool } from "pg";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
+import * as followingSchema from "@/server/db/schema/following";
+import * as leagueSchema from "@/server/db/schema/league";
+import * as refreshSchema from "@/server/db/schema/refresh";
+import * as summonerSchema from "@/server/db/schema/summoner";
+import * as summonerStatisticSchema from "@/server/db/schema/summoner-statistic";
+import * as noteSchema from "@/server/db/schema/note";
 
 // charge le CA une seule fois
 const ca = readFileSync(resolve(process.cwd(), "ca-certificate.crt"), "utf8");
@@ -21,7 +26,16 @@ const pool = new Pool({
 
 export const db = drizzle({
   client: pool,
-  schema: { ...authSchema, ...schemas, ...matchSchema },
+  schema: {
+    ...authSchema,
+    ...followingSchema,
+    ...leagueSchema,
+    ...refreshSchema,
+    ...summonerSchema,
+    ...summonerStatisticSchema,
+    ...noteSchema,
+    ...matchSchema,
+  },
   logger: false,
 });
 

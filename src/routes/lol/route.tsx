@@ -1,4 +1,4 @@
-import { DDragonService } from "@/client/services/DDragon";
+import { DDragonService } from "@/shared/services/DDragon/DDragonService";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/lol")({

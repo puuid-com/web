@@ -10,7 +10,7 @@ export const $getCanRefreshSummoner = createServerFn({
     }),
   )
   .handler(async ({ data }) => {
-    const { RefreshService } = await import("@/server/services/refresh");
+    const { RefreshService } = await import("@/server/services/RefreshService");
 
     const canRefresh = await RefreshService.canRefresh(data.puuid);
 

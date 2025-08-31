@@ -1,6 +1,6 @@
 import type { LolQueueType } from "@/server/api-route/riot/league/LeagueDTO";
 import { $stremedSummonerRefresh } from "@/server/functions/$stremedSummonerRefresh";
-import type { RefreshProgressMsgType } from "@/server/services/refresh";
+import type { RefreshProgressMsgType } from "@/server/services/RefreshService";
 import type { LolRegionType } from "@/server/types/riot/common";
 
 type Args = { puuid: string; region: LolRegionType; queue: LolQueueType };

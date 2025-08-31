@@ -7,10 +7,10 @@ import { genericOAuth } from "better-auth/plugins";
 import ky from "ky";
 import type { AccountDTOType } from "@/server/api-route/riot/account/AccountDTO";
 import type { SummonerDTOType } from "@/server/api-route/riot/summoner/SummonerDTO";
-import { summonerTable } from "@/server/db/schema";
 import { eq, sql } from "drizzle-orm";
-import { SummonerService } from "@/server/services/summoner";
-import { CDragonService } from "@/client/services/CDragon";
+import { SummonerService } from "@/server/services/summoner/SummonerService";
+import { CDragonService } from "@/shared/services/CDragon/CDragonService";
+import { summonerTable } from "@/server/db/schema/summoner";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -31,11 +31,6 @@ export const auth = betterAuth({
             .where(eq(summonerTable.verifiedUserId, userId));
 
           const isMain = !data || data.count === "0";
-
-          console.log({
-            isMain,
-            data,
-          });
 
           await db.transaction(async (tx) => {
             // Ensure that the summoner is created

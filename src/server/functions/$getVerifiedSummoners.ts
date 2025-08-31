@@ -6,7 +6,7 @@ export const $getVerifiedSummoners = createServerFn({ method: "GET" })
   .handler(async (ctx) => {
     const userId = ctx.data;
 
-    const { SummonerService } = await import("@/server/services/summoner");
+    const { SummonerService } = await import("@/server/services/summoner/SummonerService");
     const summoners = await SummonerService.getVerifiedSummoners(userId);
 
     const mainAccount = summoners.find((s) => s.isMain);

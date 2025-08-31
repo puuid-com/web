@@ -4,9 +4,9 @@ import * as htmlToImage from "html-to-image";
 import { useMutation } from "@tanstack/react-query";
 import { $postSummonerProfile } from "@/server/functions/$postSummonerProfile";
 import { SummonerProfileCard } from "@/client/components/summoner/profile/SummonerProfileCard";
-import type { SummonerType } from "@/server/db/schema";
-import type { MatchWithSummonersType } from "@/server/db/match-schema";
+import type { MatchWithSummonersType } from "@/server/db/schema/match";
 import { useServerFn } from "@tanstack/react-start";
+import type { SummonerType } from "@/server/db/schema/summoner";
 
 function runWhenIdle(fn: () => Promise<void>): () => void {
   /* if (typeof window !== "undefined" && typeof window.requestIdleCallback === "function") {

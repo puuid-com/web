@@ -15,7 +15,7 @@ export const $stremedSummonerRefresh = createServerFn({
     }),
   )
   .handler(async ({ data, signal }) => {
-    const { RefreshService } = await import("@/server/services/refresh");
+    const { RefreshService } = await import("@/server/services/RefreshService");
 
     const { puuid, queue } = data;
 

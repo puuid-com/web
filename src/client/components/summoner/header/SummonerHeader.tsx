@@ -3,13 +3,16 @@ import { SummonerHeaderInfo } from "@/client/components/summoner/header/Summoner
 import { VerifiedTooltips } from "@/client/components/tooltips/VerifiedTooltips";
 import { Badge } from "@/client/components/ui/badge";
 import { cn, timeago } from "@/client/lib/utils";
-import { DDragonService } from "@/client/services/DDragon";
+import { DDragonService } from "@/shared/services/DDragon/DDragonService";
 import { Link, useParams, useLoaderData, useSearch } from "@tanstack/react-router";
 import { RefreshCw } from "lucide-react";
+import type React from "react";
 
-type Props = {};
+type Props = {
+  className?: React.ComponentProps<"div">["className"];
+};
 
-export const SummonerHeader = ({}: Props) => {
+export const SummonerHeader = ({ className }: Props) => {
   const metadata = useLoaderData({ from: "/lol" });
   const params = useParams({ from: "/lol/summoner/$riotID" });
   const search = useSearch({ from: "/lol/summoner/$riotID" });
@@ -19,7 +22,12 @@ export const SummonerHeader = ({}: Props) => {
   const [gameName, tagLine] = summoner.displayRiotId.split("#");
 
   return (
-    <div className={"rounded-b-3xl flex bg-main/30 relative overflow-hidden justify-between"}>
+    <div
+      className={cn(
+        "rounded-b-3xl flex bg-main/30 relative overflow-hidden justify-between",
+        className,
+      )}
+    >
       {stats?.mainChampionId ? (
         <>
           <img

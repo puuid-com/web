@@ -4,27 +4,16 @@ import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/client/components/ui/dialog";
 import { Progress } from "@/client/components/ui/progress";
 import { Badge } from "@/client/components/ui/badge";
-import {
-  CheckCircle,
-  Loader2,
-  User,
-  Trophy,
-  BarChart3,
-  GamepadIcon,
-  ContactIcon,
-} from "lucide-react";
-import type { RefreshProgressMsgType } from "@/server/services/refresh";
+import { CheckCircle, Loader2, User, Trophy, BarChart3, GamepadIcon } from "lucide-react";
+import type { RefreshProgressMsgType } from "@/server/services/RefreshService";
 import React from "react";
 import { DialogDescription } from "@radix-ui/react-dialog";
-import { useLoaderData } from "@tanstack/react-router";
-import { SummonerProfileCapture } from "@/client/components/summoner/profile/HiddenOnceSummonerProfileCapture";
-import type { MatchWithSummonersType } from "@/server/db/match-schema";
 
 interface RefreshProgressModalProps {
   isOpen: boolean;
   onClose: () => void;
   onComplete: () => void;
-  events: _RefreshProgressMsgType[];
+  events: RefreshProgressMsgType[];
 }
 
 type UIStepStatus = "completed" | "active" | "pending";
@@ -62,25 +51,11 @@ const STEPS = [
     icon: BarChart3,
     status: "pending" as UIStepStatus,
   },
-  {
-    key: "fetching_profile",
-    label: "Saving Profile",
-    description: "Updating profile image",
-    icon: ContactIcon,
-    status: "pending" as UIStepStatus,
-  },
 ] as const;
-
-type _RefreshProgressMsgType =
-  | RefreshProgressMsgType
-  | {
-      step: "fetching_profile";
-      status: "step_started" | "step_finished" | "step_in_progress";
-    };
 
 function getStepStatus(
   stepKey: string,
-  progressMessages: _RefreshProgressMsgType[],
+  progressMessages: RefreshProgressMsgType[],
 ): "completed" | "active" | null {
   const stepMessages = progressMessages.filter((p) => "step" in p && p.step === stepKey);
 
@@ -93,21 +68,12 @@ function getStepStatus(
 export function RefreshProgressModal({
   isOpen,
   onClose,
-  events,
+  events: progressMessages,
   onComplete,
 }: RefreshProgressModalProps) {
   const isCompletedRef = React.useRef(false);
-  const [progressMessages, setProgressMessages] = useState<_RefreshProgressMsgType[]>([]);
-  const [customEvents, setCustomEvents] = useState<_RefreshProgressMsgType[]>([]);
-
-  React.useEffect(() => {
-    setProgressMessages([...events, ...customEvents]);
-  }, [customEvents, events]);
-
-  const { summoner } = useLoaderData({ from: "/lol/summoner/$riotID" });
 
   const [currentStep, setCurrentStep] = useState<string | null>(null);
-  const [matches, setMatches] = useState<MatchWithSummonersType[]>([]);
   const [matchProgress, setMatchProgress] = useState<{
     fetched: number;
     total: number;
@@ -122,21 +88,6 @@ export function RefreshProgressModal({
       setMatchProgress(null);
     } else if (latestMessage.status === "finished") {
       setCurrentStep(null);
-
-      const last5Matches = latestMessage.lastMatches.slice(0, 5);
-
-      setMatches(last5Matches);
-
-      /**
-       * No matches, so the profil will not actually renders, so we mock the refresh.
-       */
-      if (!last5Matches.length) {
-        handleOnStartProfileCapture();
-
-        setTimeout(() => {
-          handleOnSuccessProfileCapture();
-        }, 1500);
-      }
     } else if ("step" in latestMessage) {
       const { step, status } = latestMessage;
 
@@ -185,13 +136,6 @@ export function RefreshProgressModal({
 
   const handleOnComplete = React.useCallback(() => {
     onComplete();
-
-    /*  // resets state
-    setProgressMessages([]);
-    setCustomEvents([]);
-    setCurrentStep(null);
-    setMatchProgress(null);
-    setMatches([]); */
   }, [onComplete]);
 
   const isComplete = React.useMemo(() => {
@@ -211,26 +155,6 @@ export function RefreshProgressModal({
     const completed = steps.filter((s) => s.status === "completed").length;
     const current = currentStep ? 1 : 0;
     return Math.round(((completed + current * 0.5) / totalSteps) * 100);
-  };
-
-  const handleOnSuccessProfileCapture = () => {
-    setCustomEvents((e) => [
-      ...e,
-      {
-        step: "fetching_profile",
-        status: "step_finished",
-      },
-    ]);
-  };
-
-  const handleOnStartProfileCapture = () => {
-    setCustomEvents((e) => [
-      ...e,
-      {
-        step: "fetching_profile",
-        status: "step_started",
-      },
-    ]);
   };
 
   return (
@@ -342,12 +266,6 @@ export function RefreshProgressModal({
           </div>
         </DialogContent>
       </Dialog>
-      <SummonerProfileCapture
-        summoner={summoner}
-        matches={matches}
-        onSuccessCallback={handleOnSuccessProfileCapture}
-        onStartCallback={handleOnStartProfileCapture}
-      />
     </React.Fragment>
   );
 }

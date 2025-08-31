@@ -1,7 +1,7 @@
 import { RiotApiRoute } from "@/server/api-route/ApiRoute";
 import { CurrentGameInfoDTOSchema } from "@/server/api-route/riot/spectator/ActiveGameDTO";
 import { FeaturedGamesDTOSchema } from "@/server/api-route/riot/spectator/FeaturedGamesDTO";
-import type { SummonerType } from "@/server/db/schema";
+import type { SummonerType } from "@/server/db/schema/summoner";
 import type { LolRegionType } from "@/server/types/riot/common";
 
 export const SpectatorFeaturedGamesRoute = new RiotApiRoute({

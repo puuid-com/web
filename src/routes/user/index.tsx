@@ -2,7 +2,7 @@ import { Badge } from "@/client/components/ui/badge";
 import { Button } from "@/client/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/client/components/ui/card";
 import { cn, timeago } from "@/client/lib/utils";
-import { CDragonService } from "@/client/services/CDragon";
+import { CDragonService } from "@/shared/services/CDragon/CDragonService";
 import { authClient } from "@/lib/auth-client";
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import {

@@ -1,7 +1,7 @@
 import { MatchListItem } from "@/client/components/match-list/MatchListItem";
 import { cn } from "@/client/lib/utils";
 import type { GetSummonerMatchesType } from "@/client/queries/getSummonerMatches";
-import type { SummonerType } from "@/server/db/schema";
+import type { SummonerType } from "@/server/db/schema/summoner";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import React from "react";
 

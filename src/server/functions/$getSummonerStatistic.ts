@@ -13,7 +13,7 @@ export const $getSummonerStatistic = createServerFn({ method: "GET" })
   .handler(async (ctx) => {
     const params = ctx.data;
 
-    const { StatisticService } = await import("@/server/services/statistic");
+    const { StatisticService } = await import("@/server/services/StatisticService");
     const data = await StatisticService.getSummonerStatistic(params.puuid, params.queue);
 
     return data ?? null;

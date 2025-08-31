@@ -1,8 +1,8 @@
 import { MatchItemChampionName } from "@/client/components/match-list/MatchItemChampionName";
 import { SummonerSidebarStats } from "@/client/components/summoner/sidebar/SummonerSidebarStats";
 import { SummonerSidebarStatsHeader } from "@/client/components/summoner/sidebar/SummonerSidebarStatsHeader";
-import { DDragonService } from "@/client/services/DDragon";
-import type { StatsByChampionId } from "@/server/db/schema";
+import type { StatsByChampionId } from "@/server/db/schema/summoner-statistic";
+import { DDragonService } from "@/shared/services/DDragon/DDragonService";
 import { useLoaderData, useSearch } from "@tanstack/react-router";
 import { type LucideIcon } from "lucide-react";
 import React from "react";

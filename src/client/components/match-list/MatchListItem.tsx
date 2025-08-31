@@ -2,7 +2,7 @@ import { MatchItemChampionName } from "@/client/components/match-list/MatchItemC
 import { ChampionTooltip } from "@/client/components/tooltips/ChampionTooltip";
 import { ItemTooltip } from "@/client/components/tooltips/ItemTooltip";
 import { cn, formatSeconds } from "@/client/lib/utils";
-import { DDragonService } from "@/client/services/DDragon";
+import { DDragonService } from "@/shared/services/DDragon/DDragonService";
 import type { $GetSummonerMatchesType } from "@/server/functions/$getSummonerMatches";
 import { useLoaderData } from "@tanstack/react-router";
 

@@ -1,18 +1,14 @@
 import { RefreshProgressModal } from "@/client/components/refresh/RefreshProgressModal";
 import { Button } from "@/client/components/ui/button";
 import { friendlyQueueTypeToRiot } from "@/client/lib/typeHelper";
-import { getSummonerMatchesKey } from "@/client/queries/getSummonerMatches";
 import { progressQueryOptions } from "@/client/queries/refresh/progress-query";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useLoaderData, useRouter } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { useLoaderData } from "@tanstack/react-router";
 import React from "react";
 
 type Props = {};
 
 export const RefreshSummoner = ({ children }: React.PropsWithChildren<Props>) => {
-  const router = useRouter();
-  const queryClient = useQueryClient();
-
   const [popoverOpen, setPopoverOpen] = React.useState(false);
   const { summoner } = useLoaderData({ from: "/lol/summoner/$riotID" });
 
@@ -30,20 +26,12 @@ export const RefreshSummoner = ({ children }: React.PropsWithChildren<Props>) =>
 
   const events = React.useMemo(() => q.data ?? [], [q.data]);
 
-  const handleOnClose = async () => {
-    await q.refetch();
+  const handleOnClose = () => {
     setPopoverOpen(false);
   };
 
-  const handleOnComplete = async () => {
-    window.speechSynthesis.speak(new SpeechSynthesisUtterance("done"));
-    await router.invalidate().catch(console.error);
-    await queryClient.invalidateQueries({
-      queryKey: getSummonerMatchesKey({
-        queue: "solo",
-        summoner: summoner,
-      }),
-    });
+  const handleOnComplete = () => {
+    window.location.reload();
   };
 
   return (
@@ -60,9 +48,11 @@ export const RefreshSummoner = ({ children }: React.PropsWithChildren<Props>) =>
       <RefreshProgressModal
         isOpen={popoverOpen}
         onClose={() => {
-          void handleOnClose();
+          handleOnClose();
         }}
-        onComplete={() => void handleOnComplete()}
+        onComplete={() => {
+          handleOnComplete();
+        }}
         events={events}
       />
     </React.Fragment>

@@ -1,13 +1,13 @@
 import { Badge } from "@/client/components/ui/badge";
 import { Card } from "@/client/components/ui/card";
-import { CDragonService } from "@/client/services/CDragon";
-import type { SummonerType } from "@/server/db/schema";
+import { CDragonService } from "@/shared/services/CDragon/CDragonService";
 import { useLoaderData } from "@tanstack/react-router";
 import React from "react";
 import * as htmlToImage from "html-to-image";
 import { useMutation } from "@tanstack/react-query";
 import { $postSummonerProfile } from "@/server/functions/$postSummonerProfile";
-import type { MatchWithSummonersType } from "@/server/db/match-schema";
+import type { MatchWithSummonersType } from "@/server/db/schema/match";
+import type { SummonerType } from "@/server/db/schema/summoner";
 
 interface SummonerProfileCardProps {
   summoner: SummonerType;

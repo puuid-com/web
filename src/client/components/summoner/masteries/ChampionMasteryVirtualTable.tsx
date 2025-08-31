@@ -11,7 +11,7 @@ import {
 import { useVirtualizer } from "@tanstack/react-virtual";
 
 import { useLoaderData } from "@tanstack/react-router";
-import { DDragonService } from "@/client/services/DDragon";
+import { DDragonService } from "@/shared/services/DDragon/DDragonService";
 import type { MasteryWithStatistic } from "@/client/lib/masteries";
 import { DiamondPercent, Flame, RatIcon } from "lucide-react";
 

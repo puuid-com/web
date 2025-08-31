@@ -10,7 +10,7 @@ export const $getActiveGames = createServerFn({ method: "GET" })
     }),
   )
   .handler(async (ctx) => {
-    const { SpectatorService } = await import("@/server/services/spectator");
+    const { SpectatorService } = await import("@/server/services/SpectatorService");
     const data = await SpectatorService.getActiveGame({
       region: ctx.data.region,
       puuid: ctx.data.puuid,

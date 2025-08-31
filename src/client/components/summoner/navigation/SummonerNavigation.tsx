@@ -1,14 +1,17 @@
 import { SummonerNavigationItem } from "@/client/components/summoner/navigation/SummonerNavigationItem";
+import { cn } from "@/client/lib/utils";
 import { useParams } from "@tanstack/react-router";
-import { CrownIcon, RadioIcon, ScrollTextIcon } from "lucide-react";
+import { ChartScatterIcon, CrownIcon, RadioIcon, ScrollTextIcon } from "lucide-react";
 
-type Props = {};
+type Props = {
+  className?: React.ComponentProps<"div">["className"];
+};
 
-export const SummonerNavigation = ({}: Props) => {
+export const SummonerNavigation = ({ className }: Props) => {
   const params = useParams({ from: "/lol/summoner/$riotID" });
 
   return (
-    <div className={"flex gap-2.5"}>
+    <div className={cn("flex gap-2.5", className)}>
       <SummonerNavigationItem
         to={"/lol/summoner/$riotID/matches"}
         params={params}
@@ -31,15 +34,12 @@ export const SummonerNavigation = ({}: Props) => {
         Masteries
       </SummonerNavigationItem>
       <SummonerNavigationItem
-        to={"/lol/summoner/$riotID/stats"}
+        to={"/lol/summoner/$riotID/charts"}
         params={params}
-        iconNode={CrownIcon}
-        search={{
-          queue: "solo",
-        }}
+        iconNode={ChartScatterIcon}
         activeOptions={{ includeSearch: false }}
       >
-        Stats
+        Charts
       </SummonerNavigationItem>
       <SummonerNavigationItem
         to={"/lol/summoner/$riotID/live"}

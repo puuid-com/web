@@ -7,11 +7,9 @@ import { resolve } from "node:path";
 const caPath = resolve(process.cwd(), "ca-certificate.crt");
 const ca = readFileSync(caPath, "utf8");
 
-console.log(ca);
-
 export default defineConfig({
   out: "./drizzle",
-  schema: ["./src/server/db"],
+  schema: ["./src/server/db/schema"],
   dialect: "postgresql",
   dbCredentials: {
     host: serverEnv.DATABASE_HOST,

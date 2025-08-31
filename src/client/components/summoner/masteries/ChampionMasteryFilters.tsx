@@ -17,7 +17,6 @@ export const ChampionMasteryFilters = ({ dataCount }: Props) => {
   const navigate = useNavigate({ from: "/lol/summoner/$riotID/mastery" });
 
   const [searchValue, setSearchValue] = React.useState<string>(search.champion ?? "");
-  /* const [positionsOpen, setPositionsOpen] = React.useState(false); */
 
   const handleChampionFilter = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.currentTarget.value;

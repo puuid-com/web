@@ -17,7 +17,7 @@ export const $getUserSession = createServerFn({ method: "GET" }).handler(async (
     };
   }
 
-  const { SummonerService } = await import("@/server/services/summoner");
+  const { SummonerService } = await import("@/server/services/summoner/SummonerService");
 
   const summoners = await SummonerService.getVerifiedSummoners(user.id);
 

@@ -55,8 +55,6 @@ export class RiotApiRoute<S extends Schema, P> {
     } catch (e) {
       console.error(e);
 
-      process.exit(1);
-
       throw e;
     }
   }

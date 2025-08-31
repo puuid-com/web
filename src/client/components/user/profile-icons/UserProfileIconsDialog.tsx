@@ -8,7 +8,7 @@ import {
   DialogDescription,
 } from "@/client/components/ui/dialog";
 import { UserProfileIconsList } from "@/client/components/user/profile-icons/UserProfileIconsList";
-import { DDragonService } from "@/client/services/DDragon";
+import { DDragonService } from "@/shared/services/DDragon/DDragonService";
 import { useQuery } from "@tanstack/react-query";
 import React from "react";
 

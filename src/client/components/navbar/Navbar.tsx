@@ -1,10 +1,13 @@
 import { UserAccountButton } from "@/client/components/navbar/UserButton";
 import { RiotIdForm } from "@/client/components/riot-id-form/RiotIdForm";
+import { cn } from "@/client/lib/utils";
 import { Link, useNavigate } from "@tanstack/react-router";
 
-type Props = {};
+type Props = {
+  className?: React.ComponentProps<"div">["className"];
+};
 
-export const Navbar = ({}: Props) => {
+export const Navbar = ({ className }: Props) => {
   const navigate = useNavigate();
 
   const handleSummonerSearch = (riotID: string) => {
@@ -16,7 +19,7 @@ export const Navbar = ({}: Props) => {
   };
 
   return (
-    <header className="border-b h-[60px] flex items-center">
+    <header className={cn("border-b flex items-center", className)}>
       <div className="container mx-auto">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">

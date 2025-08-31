@@ -6,7 +6,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/client/components/ui/dialog";
-import { DDragonService } from "@/client/services/DDragon";
+import { DDragonService } from "@/shared/services/DDragon/DDragonService";
 import { useLoaderData } from "@tanstack/react-router";
 import { InfoIcon } from "lucide-react";
 

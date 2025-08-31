@@ -1,10 +1,13 @@
+import { cn } from "@/client/lib/utils";
 import { Link } from "@tanstack/react-router";
 
-type Props = {};
+type Props = {
+  className?: React.ComponentProps<"div">["className"];
+};
 
-export const Footer = ({}: Props) => {
+export const Footer = ({ className }: Props) => {
   return (
-    <div className={"h-[60px] flex w-full border-t justify-center items-center mt-auto"}>
+    <div className={cn("flex w-full border-t justify-center items-center mt-auto", className)}>
       <div className={"container flex justify-between items-center"}>
         <ul className={"flex gap-2.5 text-sm"}>
           <Link to={"/privacy"}>
@@ -12,6 +15,9 @@ export const Footer = ({}: Props) => {
           </Link>
           <Link to={"/terms"}>
             <li>Terms</li>
+          </Link>
+          <Link to={"/lol/live"}>
+            <li>Live</li>
           </Link>
         </ul>
         <div className={"text-tiny text-muted-foreground text-balance text-end"}>

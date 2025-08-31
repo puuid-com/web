@@ -1,9 +1,9 @@
 import { friendlyQueueTypeToRiot, type FriendlyQueueType } from "@/client/lib/typeHelper";
-import type { ChampionsResponseType } from "@/client/services/DDragon/types";
-import type { SummonerType } from "@/server/db/schema";
+import type { ChampionsResponseType } from "@/shared/services/DDragon/types";
 import { $getSummonerMatches } from "@/server/functions/$getSummonerMatches";
 import { queryOptions, useQuery } from "@tanstack/react-query";
 import { useLoaderData } from "@tanstack/react-router";
+import type { SummonerType } from "@/server/db/schema/summoner";
 
 type QueryParams = {
   summoner: Pick<SummonerType, "puuid" | "region">;

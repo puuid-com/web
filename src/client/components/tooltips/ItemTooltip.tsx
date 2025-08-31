@@ -1,6 +1,6 @@
 import { RiotTextParser } from "@/client/components/tooltips/RiotTextParser";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/client/components/ui/tooltip";
-import { DDragonService } from "@/client/services/DDragon";
+import { DDragonService } from "@/shared/services/DDragon/DDragonService";
 import { useLoaderData } from "@tanstack/react-router";
 import React from "react";
 
