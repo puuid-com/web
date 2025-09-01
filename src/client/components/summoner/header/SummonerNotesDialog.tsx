@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { NotebookPen, Loader2 } from "lucide-react";
 import { Button } from "@/client/components/ui/button";
 import {
@@ -9,15 +9,15 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogFooter,
 } from "@/client/components/ui/dialog";
-import { useLoaderData } from "@tanstack/react-router";
+import { useLoaderData, useRouteContext } from "@tanstack/react-router";
 import * as v from "valibot";
 import { useAppForm } from "@/client/components/form/useAppForm";
 import { toast } from "sonner";
-import { $getSummonerNotes } from "@/server/functions/$getSummonerNotes";
 import { $upsertSummonerNotes } from "@/server/functions/$upsertSummonerNotes";
 import { useServerFn } from "@tanstack/react-start";
+import { useSummonerNotes } from "@/client/hooks/useSummonerNotes";
+import { Badge } from "@/client/components/ui/badge";
 
 type Props = {};
 
@@ -26,19 +26,17 @@ const validationSchema = v.object({
 });
 
 export function SummonerNotesDialog({}: Props) {
+  const { user } = useRouteContext({ from: "__root__" });
   const { summoner } = useLoaderData({ from: "/lol/summoner/$riotID" });
   const summonerName = summoner.displayRiotId;
 
   const [isOpen, setIsOpen] = useState(false);
   const queryClient = useQueryClient();
 
-  const _$getSummonerNotes = useServerFn($getSummonerNotes);
   const _$upsertSummonerNotes = useServerFn($upsertSummonerNotes);
 
-  const { data: initialNotes = "", isLoading } = useQuery({
-    queryKey: ["summoner-notes", summonerName, summoner.puuid],
-    queryFn: () => _$getSummonerNotes({ data: { puuid: summoner.puuid } }),
-  });
+  const { data, isLoading } = useSummonerNotes();
+  const initialNotes = data?.note ?? "";
 
   const q_updateNotes = useMutation({
     mutationFn: (notes: string) =>
@@ -73,12 +71,18 @@ export function SummonerNotesDialog({}: Props) {
     setIsOpen(false);
   };
 
+  if (!user) {
+    return null;
+  }
+
+  const truncateNotes = initialNotes.length > 50 ? initialNotes.slice(0, 47) + "..." : initialNotes;
+
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="gap-2 bg-transparent">
+        <Button variant="main" size="sm" className="relative inline-flex items-center">
           <NotebookPen className="h-4 w-4" />
-          {initialNotes ? "Edit Notes" : "Add Notes"}
+          {truncateNotes || "Add Notes"}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[525px]">
@@ -118,14 +122,20 @@ export function SummonerNotesDialog({}: Props) {
                 />
               </div>
             </div>
-            <DialogFooter>
-              <Button type="button" variant="outline" onClick={handleCancel}>
-                Cancel
-              </Button>
-              <form.AppForm>
-                <form.SubmitButton label="Submit" />
-              </form.AppForm>
-            </DialogFooter>
+            <div className={"flex items-center justify-between"}>
+              <div className={"flex gap-1.5"}>
+                Last update
+                <Badge variant={"outline"}>{data?.createdAt.toLocaleDateString()}</Badge>
+              </div>
+              <div className={"flex gap-2.5"}>
+                <Button type="button" variant="outline" onClick={handleCancel}>
+                  Cancel
+                </Button>
+                <form.AppForm>
+                  <form.SubmitButton label="Submit" />
+                </form.AppForm>
+              </div>
+            </div>
           </form>
         )}
       </DialogContent>

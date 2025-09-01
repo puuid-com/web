@@ -263,6 +263,17 @@ export class SummonerService {
     });
   }
 
+  static async getVerifiedPuuids(userID: typeof user.$inferSelect.id) {
+    const data = await db
+      .select({
+        puuid: summonerTable.puuid,
+      })
+      .from(summonerTable)
+      .where(eq(summonerTable.verifiedUserId, userID));
+
+    return data.map((d) => d.puuid);
+  }
+
   static async unverifySummoner(userID: typeof user.$inferSelect.id, puuid: SummonerType["puuid"]) {
     const whereClause = and(
       eq(summonerTable.verifiedUserId, userID),

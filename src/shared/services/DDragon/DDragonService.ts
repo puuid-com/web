@@ -11,6 +11,7 @@ import type { MatchSummonerRowType } from "@/server/db/schema/match";
 import { DDragonItemFileSchema, type DDragonItemsData } from "@/shared/services/DDragon/items.dto";
 import type { ProfileIconType } from "@/shared/services/DDragon/profile-icons.dto";
 import type { SummonerType } from "@/server/db/schema/summoner";
+import { DDragonChampionFileSchema } from "@/shared/services/DDragon/champion.dto";
 
 export type DDragonMetadata = {
   champions: ChampionsResponseType["data"];
@@ -115,6 +116,20 @@ export class DDragonService {
         image: value.image.full,
       };
     });
+  }
+
+  static async getChampionData(
+    champions: ChampionsResponseType["data"],
+    version: string,
+    championId: number,
+  ) {
+    const data = await ky
+      .get(
+        `https://ddragon.leagueoflegends.com/cdn/${version}/data/en_US/champion/${champions[championId]!.name}.json`,
+      )
+      .json();
+
+    return v.parse(DDragonChampionFileSchema, data);
   }
 
   static async getMetadata(): Promise<DDragonMetadata> {

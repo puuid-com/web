@@ -2,7 +2,7 @@ import { RefreshProgressModal } from "@/client/components/refresh/RefreshProgres
 import { Button } from "@/client/components/ui/button";
 import { friendlyQueueTypeToRiot } from "@/client/lib/typeHelper";
 import { progressQueryOptions } from "@/client/queries/refresh/progress-query";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLoaderData } from "@tanstack/react-router";
 import React from "react";
 
@@ -11,6 +11,7 @@ type Props = {};
 export const RefreshSummoner = ({ children }: React.PropsWithChildren<Props>) => {
   const [popoverOpen, setPopoverOpen] = React.useState(false);
   const { summoner } = useLoaderData({ from: "/lol/summoner/$riotID" });
+  const queryClient = useQueryClient();
 
   const baseOpts = progressQueryOptions({
     puuid: summoner.puuid,
@@ -26,7 +27,10 @@ export const RefreshSummoner = ({ children }: React.PropsWithChildren<Props>) =>
 
   const events = React.useMemo(() => q.data ?? [], [q.data]);
 
-  const handleOnClose = () => {
+  const handleOnClose = async () => {
+    await queryClient.cancelQueries({
+      queryKey: baseOpts.queryKey,
+    });
     setPopoverOpen(false);
   };
 
@@ -48,7 +52,7 @@ export const RefreshSummoner = ({ children }: React.PropsWithChildren<Props>) =>
       <RefreshProgressModal
         isOpen={popoverOpen}
         onClose={() => {
-          handleOnClose();
+          void handleOnClose();
         }}
         onComplete={() => {
           handleOnComplete();

@@ -57,6 +57,27 @@
       "when": 1756637762618,
       "tag": "0007_foamy_ironclad",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1756721703084,
+      "tag": "0008_graceful_champions",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1756722425686,
+      "tag": "0009_omniscient_kabuki",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1756764939301,
+      "tag": "0010_nebulous_hammerhead",
+      "breakpoints": true
     }
   ]
 }

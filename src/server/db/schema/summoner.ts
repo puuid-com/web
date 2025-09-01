@@ -1,6 +1,6 @@
 import { user } from "@/server/db/schema/auth";
 import { leagueTable, type LeagueRowType } from "@/server/db/schema/league";
-import { summonerRefresh } from "@/server/db/schema/refresh";
+import { summonerRefresh } from "@/server/db/schema/summoner-refresh";
 import {
   statisticTable,
   type StatisticWithLeagueType,

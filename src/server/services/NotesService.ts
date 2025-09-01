@@ -8,6 +8,7 @@ export class NotesService {
       where: and(eq(noteTable.puuid, puuid), eq(noteTable.userId, userId)),
       columns: {
         note: true,
+        createdAt: true,
       },
     });
   }

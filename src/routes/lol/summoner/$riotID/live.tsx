@@ -34,7 +34,7 @@ function RouteComponent() {
 
   React.useEffect(() => {
     if (isInActiveMatch !== !!liveGame) {
-      queryClient
+    queryClient
         .invalidateQueries({
           queryKey: getIsInActiveMatchKey({ puuid: summoner.puuid, region: summoner.region }),
         })

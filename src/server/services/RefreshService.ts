@@ -8,7 +8,10 @@ import { LOL_QUEUES } from "@/server/services/match/queues.type";
 import { StatisticService } from "@/server/services/StatisticService";
 import { eq, sql } from "drizzle-orm";
 import type { LeagueRowType } from "@/server/db/schema/league";
-import { summonerRefresh, type InsertSummonerRefreshType } from "@/server/db/schema/refresh";
+import {
+  summonerRefresh,
+  type InsertSummonerRefreshType,
+} from "@/server/db/schema/summoner-refresh";
 import type { SummonerType } from "@/server/db/schema/summoner";
 import type { StatisticWithLeagueType } from "@/server/db/schema/summoner-statistic";
 
@@ -69,6 +72,7 @@ export class RefreshService {
 
   static async updateLastRefresh(
     puuid: SummonerType["puuid"],
+    isFullRefresh: boolean,
     lastMatchCreationMs: MatchRowType["gameCreationMs"] | null,
   ) {
     const lastGameCreationEpochSec = lastMatchCreationMs
@@ -77,7 +81,7 @@ export class RefreshService {
 
     return db
       .insert(summonerRefresh)
-      .values({ puuid, lastGameCreationEpochSec })
+      .values({ puuid, lastGameCreationEpochSec, isFullRefresh })
       .onConflictDoUpdate({
         target: [summonerRefresh.puuid],
         set: {
@@ -90,18 +94,18 @@ export class RefreshService {
   static async batchUpdateLastRefreshTx(
     tx: TransactionType,
     dataBySummoner: { summoner: SummonerType; lastMatch: MatchWithSummonersType | undefined }[],
-    setLastGameCreationEpochSec = true,
+    isFullRefresh: boolean,
   ) {
     const updades: InsertSummonerRefreshType[] = dataBySummoner.map((d) => {
-      const lastGameCreationEpochSec =
-        setLastGameCreationEpochSec && d.lastMatch?.gameCreationMs
-          ? Math.floor(d.lastMatch.gameCreationMs / 1000)
-          : null;
+      const lastGameCreationEpochSec = d.lastMatch?.gameCreationMs
+        ? Math.floor(d.lastMatch.gameCreationMs / 1000)
+        : null;
 
       return {
         puuid: d.summoner.puuid,
         lastGameCreationEpochSec,
         refreshedAt: new Date(),
+        isFullRefresh,
       };
     });
 
@@ -134,12 +138,15 @@ export class RefreshService {
     for await (const msg of $summonerStream) yield msg;
     const summoner = await $summonerResult;
 
+    const lastGameCreationEpochSec = lastRefresh?.lastGameCreationEpochSec ?? null;
+    const shouldUseEpochSec = lastGameCreationEpochSec !== null && !!lastRefresh?.isFullRefresh;
+
     // progressFetchMatches()
     const { stream: $matchesStream /* , result: $matchesResult */ } = pipeStep(
       this.progressFetchMatches(
         summoner,
         queueId,
-        lastRefresh?.lastGameCreationEpochSec ?? undefined,
+        shouldUseEpochSec ? lastGameCreationEpochSec : undefined,
       ),
     );
     for await (const msg of $matchesStream) yield msg;
@@ -158,7 +165,7 @@ export class RefreshService {
     for await (const msg of $statsStream) yield msg;
     const { lastMatch } = await $statsResult;
 
-    await this.updateLastRefresh(puuid, lastMatch?.gameCreationMs ?? null);
+    await this.updateLastRefresh(puuid, true, lastMatch?.gameCreationMs ?? null);
 
     yield { status: "finished" };
   }
@@ -306,7 +313,7 @@ export class RefreshService {
           { region: s.region, puuid: s.puuid },
           {
             queue: queueId,
-            count: 20,
+            count: 10,
             start: 0,
           },
         );

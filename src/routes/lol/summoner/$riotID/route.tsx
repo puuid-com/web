@@ -1,10 +1,10 @@
-import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 
 import type React from "react";
-import { SummonerNavigation } from "@/client/components/summoner/navigation/SummonerNavigation";
 import { trimRiotID } from "@/lib/riotID";
-import { SummonerHeader } from "@/client/components/summoner/header/SummonerHeader";
 import { getSummonerByRiotIDOptions } from "@/client/queries/getSummonerByRiotID";
+import { ChampionProvider } from "@/client/context/MainChampionContext";
+import { SummonerPage } from "@/client/components/summoner/SummonerPage";
 
 export const Route = createFileRoute("/lol/summoner/$riotID")({
   component: RouteComponent,
@@ -82,29 +82,13 @@ export const Route = createFileRoute("/lol/summoner/$riotID")({
 function RouteComponent() {
   const { queueStats: stats } = Route.useLoaderData();
 
-  const bgColor = stats?.mainChampionBackgroundColor;
-  const textColor = stats?.mainChampionForegroundColor;
+  const bgColor = stats?.mainChampionBackgroundColor ?? undefined;
+  const textColor = stats?.mainChampionForegroundColor ?? undefined;
+  const skinId = stats?.mainChampionSkinId ?? undefined;
 
   return (
-    <div
-      className={"flex flex-col container mx-auto gap-[var(--summoner-gap-height)]"}
-      style={
-        {
-          "--color-main": bgColor ?? undefined,
-          "--color-main-foreground": textColor ?? undefined,
-          "--summoner-header-height": "calc(96px + (20px * 2))",
-          "--summoner-navigation-height": "calc(45px)",
-          "--summoner-gap-height": "calc(20px)",
-          "--summoner-outlet-height":
-            "calc(var(--body-content-height) - (var(--summoner-header-height) + var(--summoner-navigation-height) + var(--summoner-gap-height) * 2)",
-        } as React.CSSProperties
-      }
-    >
-      <SummonerHeader className={"h-[var(--summoner-header-height)]"} />
-      <SummonerNavigation className={"h-[var(--summoner-navigation-height)]"} />
-      <div className={"flex min-h-[var(--summoner-outlet-height)] w-full"}>
-        <Outlet />
-      </div>
-    </div>
+    <ChampionProvider backgroundColor={bgColor} foregroundColor={textColor} skinId={skinId}>
+      <SummonerPage />
+    </ChampionProvider>
   );
 }

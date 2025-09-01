@@ -7,7 +7,7 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import * as followingSchema from "@/server/db/schema/following";
 import * as leagueSchema from "@/server/db/schema/league";
-import * as refreshSchema from "@/server/db/schema/refresh";
+import * as refreshSchema from "@/server/db/schema/summoner-refresh";
 import * as summonerSchema from "@/server/db/schema/summoner";
 import * as summonerStatisticSchema from "@/server/db/schema/summoner-statistic";
 import * as noteSchema from "@/server/db/schema/note";

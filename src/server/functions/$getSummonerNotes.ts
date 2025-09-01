@@ -19,7 +19,7 @@ export const $getSummonerNotes = createServerFn({ method: "GET" })
       userId: user.id,
     });
 
-    return data?.note ?? "";
+    return data ?? null;
   });
 
 export type $getSummonerNotesType = Awaited<ReturnType<typeof $getSummonerNotes>>;

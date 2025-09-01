@@ -22,16 +22,17 @@ export const SummonerHeaderInfo = ({}: Props) => {
 
   return (
     <Dialog>
-      <DialogTrigger asChild>
-        <button
-          className={
-            "opacity-75 hover:opacity-100 transition-opacity m-1.5 px-1.5 rounded flex items-center  gap-1 absolute top-0 right-0 text-[10px] cursor-pointer bg-main/20 "
-          }
-        >
-          <InfoIcon className={"w-2"} />
-          Why do I see{" "}
-          {DDragonService.getChampionName(metadata.champions, queueStats.mainChampionId)} ?
-        </button>
+      <DialogTrigger
+        className={
+          "opacity-75 hover:opacity-100 transition-opacity px-1.5 rounded flex items-center  gap-1 text-[10px] cursor-pointer bg-main/20 "
+        }
+      >
+        <InfoIcon className={"w-2"} />
+        Why do I see {DDragonService.getChampionName(
+          metadata.champions,
+          queueStats.mainChampionId,
+        )}{" "}
+        ?
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

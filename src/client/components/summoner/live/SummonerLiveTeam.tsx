@@ -1,4 +1,4 @@
-import { SummonerLiveSummoner } from "@/client/components/summoner/live/SummonerLiveSummoner";
+import { SummonerLiveSummoner } from "@/client/components/summoner/live/summoner/SummonerLiveSummoner";
 import { assignAndSortParticipantsByRole } from "@/client/components/summoner/live/utils";
 import { cn } from "@/client/lib/utils";
 import type { $GetSummonerActiveMatchType } from "@/server/functions/$getSummonerActiveMatch";

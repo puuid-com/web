@@ -18,9 +18,13 @@ export const $authMiddleware = createMiddleware({ type: "function" }).server(asy
     });
   }
 
+  const { SummonerService } = await import("@/server/services/summoner/SummonerService");
+  const puuids = await SummonerService.getVerifiedPuuids(user.id);
+
   return await next({
     context: {
       user: session.user,
+      verifiedPuuids: puuids,
     },
   });
 });

@@ -3,7 +3,7 @@ import { LolRegions } from "@/server/types/riot/common";
 import { createServerFn } from "@tanstack/react-start";
 import * as v from "valibot";
 
-export const $stremedSummonerRefresh = createServerFn({
+export const $streamedSummonerRefresh = createServerFn({
   method: "POST",
   response: "raw",
 })

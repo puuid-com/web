@@ -46,6 +46,7 @@ export const statisticTable = pgTable(
     ).$type<LolIndividualPositionType | null>(),
 
     mainChampionId: integer("main_champion_id").notNull(),
+    mainChampionSkinId: integer("main_champion_skin_id").notNull().default(0),
     mainChampionBackgroundColor: text("main_champion_background_color"),
     mainChampionForegroundColor: text("main_champion_foreground_color"),
 
@@ -71,11 +72,13 @@ export const statisticTable = pgTable(
       .$type<StatsByChampionId>()
       .notNull(),
 
+    wins: integer("wins").notNull(),
+    losses: integer("losses").notNull(),
+
     refreshedAt: timestamp("refreshed_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [primaryKey({ columns: [t.puuid, t.queueType] })],
 );
-
 export const statisticTableRelations = relations(statisticTable, ({ one }) => ({
   summoner: one(summonerTable, {
     fields: [statisticTable.puuid],

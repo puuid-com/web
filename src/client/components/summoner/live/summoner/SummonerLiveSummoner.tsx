@@ -1,3 +1,4 @@
+import { LiveSummonerStats } from "@/client/components/summoner/live/summoner/LiveSummonerStats";
 import { cn } from "@/client/lib/utils";
 import type { LeagueRowType } from "@/server/db/schema/league";
 import type { $GetSummonerActiveMatchType } from "@/server/functions/$getSummonerActiveMatch";
@@ -24,6 +25,8 @@ export function SummonerLiveSummoner({ /* side, */ isSelf, league, participant }
     league && league.wins + league.losses > 0
       ? Math.round((league.wins / (league.wins + league.losses)) * 100)
       : undefined;
+
+  const stats = participant.stats;
 
   return (
     <div
@@ -94,33 +97,37 @@ export function SummonerLiveSummoner({ /* side, */ isSelf, league, participant }
             loading="lazy"
             decoding="async"
           />
-          <span className="truncate max-w-[20ch]">{displayRiotId}</span>
+          <span className="truncate text-tiny">{displayRiotId}</span>
         </Link>
+        {league ? (
+          <div className={"flex gap-1 items-center group-last:flex-row-reverse"}>
+            <div className="text-sm text-muted-foreground">
+              {winrate !== undefined ? `${winrate}%` : "—"}
+            </div>
+            <div className="text-tiny text-muted-foreground">
+              {`${(league.wins + league.losses).toLocaleString()} matches`}
+            </div>
+          </div>
+        ) : null}
       </div>
+
+      {stats ? <LiveSummonerStats stats={stats} /> : null}
 
       {/* bloc rang, toujours dernier dans le DOM, donc au bord externe */}
       <div className="flex items-center gap-3">
         {league ? (
           <div className={cn("flex items-center gap-3", "group-last:flex-row-reverse")}>
-            <div className={cn("group-last:text-left group-first:text-right")}>
-              <div className="text-sm font-medium">
-                {winrate !== undefined ? `${winrate}%` : "—"}
-              </div>
-              <div className="text-tiny text-muted-foreground">
-                {`${(league.wins + league.losses).toLocaleString()} matches`}
-              </div>
-            </div>
+            <div className={cn("group-last:text-left group-first:text-right")}></div>
             <div className="text-center">
               <img
-                src={`/image/tier/${league.tier.toLowerCase()}.png`}
+                src={`https://cdn.puuid.com/public/image/tier/${league.tier.toLowerCase()}.png`}
                 alt={`${league.tier} badge`}
                 className="w-10 sm:w-12 h-auto mx-auto drop-shadow"
                 loading="eager"
                 decoding="async"
               />
-              <div className="text-xs sm:text-sm mt-1">
-                {`${league.tier} ${league.rank} ${league.leaguePoints}LP`}
-              </div>
+              <div className="text-xs sm:text-sm mt-1">{league.tier}</div>
+              <div className="text-xs sm:text-sm mt-1">{`${league.rank} ${league.leaguePoints}LP`}</div>
             </div>
           </div>
         ) : (

@@ -1,10 +1,11 @@
 import { RefreshSummoner } from "@/client/components/refresh/RefreshSummoner";
-import { SummonerFollowButton } from "@/client/components/summoner/header/SummonerFollowButton";
 import { SummonerHeaderInfo } from "@/client/components/summoner/header/SummonerHeaderInfo";
-import { SummonerNotesDialog } from "@/client/components/summoner/header/SummonerNotesDialog";
+import { SummonerSkinDialog } from "@/client/components/summoner/header/SummonerSkinDialog";
 import { VerifiedTooltips } from "@/client/components/tooltips/VerifiedTooltips";
 import { Badge } from "@/client/components/ui/badge";
+import { useChampionContext } from "@/client/context/MainChampionContext";
 import { cn, timeago } from "@/client/lib/utils";
+import { CDragonService } from "@/shared/services/CDragon/CDragonService";
 import { DDragonService } from "@/shared/services/DDragon/DDragonService";
 import { Link, useParams, useLoaderData, useSearch } from "@tanstack/react-router";
 import { RefreshCw } from "lucide-react";
@@ -16,6 +17,7 @@ type Props = {
 
 export const SummonerHeader = ({ className }: Props) => {
   const metadata = useLoaderData({ from: "/lol" });
+  const { skinId } = useChampionContext();
 
   const params = useParams({ from: "/lol/summoner/$riotID" });
   const search = useSearch({ from: "/lol/summoner/$riotID" });
@@ -27,20 +29,25 @@ export const SummonerHeader = ({ className }: Props) => {
   return (
     <div
       className={cn(
-        "rounded-b-3xl flex bg-main/30 relative overflow-hidden justify-between",
+        "rounded-b-3xl flex bg-main/30 relative justify-between bg-cover bg-blend-exclusion bg-no-repeat bg-[position:50%_-200px]",
         className,
       )}
+      style={{
+        backgroundImage: stats
+          ? `url(${CDragonService.getChampionSplashArtCenteredSkin(stats.mainChampionId, skinId!)})`
+          : undefined,
+      }}
     >
       {stats?.mainChampionId ? (
         <>
-          <img
-            src={DDragonService.getChampionLoadingScreenImage(
-              metadata.champions,
-              stats.mainChampionId,
-            )}
+          {/* <img
+            src={CDragonService.getChampionSplashArtCenteredSkin(stats.mainChampionId, skinId!)}
             className="absolute right-0 mask-l-from-0% opacity-30"
-          />
-          <SummonerHeaderInfo />
+          /> */}
+          <div className={"absolute top-0 right-0 m-1.5 flex gap-1.5"}>
+            <SummonerSkinDialog />
+            <SummonerHeaderInfo />
+          </div>
         </>
       ) : null}
       <div className={cn("flex flex-col h-full justify-start")}>
@@ -71,8 +78,6 @@ export const SummonerHeader = ({ className }: Props) => {
                 </Link>
                 <div className={"flex gap-1.5 items-center"}>
                   <VerifiedTooltips summoner={summoner} />
-                  <SummonerNotesDialog />
-                  <SummonerFollowButton />
                 </div>
               </div>
               <div className="">

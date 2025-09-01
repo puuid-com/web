@@ -1,4 +1,3 @@
-import { DDragonService } from "@/shared/services/DDragon/DDragonService";
 import type { LolQueueType } from "@/server/api-route/riot/league/LeagueDTO";
 import { db, type TransactionType } from "@/server/db";
 import type { MatchWithSummonersType } from "@/server/db/schema/match";
@@ -8,7 +7,6 @@ import { LeagueService } from "@/server/services/league/LeagueService";
 import { MatchService } from "@/server/services/match/MatchService";
 import { LOL_QUEUES } from "@/server/services/match/queues.type";
 import { and, eq } from "drizzle-orm";
-import { Vibrant } from "node-vibrant/node";
 import type { LeagueRowType } from "@/server/db/schema/league";
 import type { SummonerType } from "@/server/db/schema/summoner";
 import {
@@ -16,6 +14,7 @@ import {
   type InsertStatisticRowType,
   type StatisticWithLeagueType,
 } from "@/server/db/schema/summoner-statistic";
+import { ServerColorsService } from "@/server/services/ServerColorsService";
 
 export type Stat = {
   wins: number;
@@ -39,6 +38,8 @@ type StatsToRefresh = Pick<
   averageDeathPerGame: number[];
   averageKda: number[];
   averageKillPerGame: number[];
+  wins: number;
+  losses: number;
 };
 
 const sortByMatches = (a: Stat, b: Stat) => {
@@ -115,6 +116,8 @@ export class StatisticService {
       averageKda: [],
       averageKillPerGame: [],
       statsByTeammates: [],
+      wins: 0,
+      losses: 0,
     };
 
     const stats = matches.reduce((acc, curr) => {
@@ -130,6 +133,9 @@ export class StatisticService {
       acc.kills += mainSummoner.kills;
       acc.assists += mainSummoner.assists;
       acc.deaths += mainSummoner.deaths;
+
+      acc.wins += incWins;
+      acc.losses += incLosses;
 
       {
         const s = acc.statsByChampionId.find((s) => s.championId === mainSummoner.championId);
@@ -232,20 +238,10 @@ export class StatisticService {
       (item) => item.losses + item.wins,
     ).championId;
 
-    const version = await DDragonService.getLatestVersion();
-    const champions = await DDragonService.getChampionsData(version);
-
-    const mainChampionSplashImageUrl = `https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${champions[mainChampionId]!.id}_0.jpg`;
-
-    const test = await Vibrant.from(mainChampionSplashImageUrl).getPalette();
-
-    let mainChampionForegroundColor: string | undefined;
-    let mainChampionBackgroundColor: string | undefined;
-
-    if (test.Vibrant) {
-      mainChampionForegroundColor = test.Vibrant.bodyTextColor;
-      mainChampionBackgroundColor = test.Vibrant.hex;
-    }
+    const {
+      backgroundColor: mainChampionBackgroundColor,
+      foregroundColor: mainChampionForegroundColor,
+    } = await ServerColorsService.getMainColorsFromChampion(mainChampionId);
 
     const statsToInsert: InsertStatisticRowType = {
       puuid: summoner.puuid,
@@ -281,6 +277,10 @@ export class StatisticService {
         stats.statsByIndividualPosition,
         (item) => item.losses + item.wins,
       ).individualPosition,
+
+      wins: stats.wins,
+      losses: stats.losses,
+
       refreshedAt: new Date(),
     };
 
@@ -308,5 +308,44 @@ export class StatisticService {
       stats: insertedStats,
       lastMatch: matches.at(0),
     };
+  }
+
+  static async changeMainChampionColors(
+    puuid: SummonerType["puuid"],
+    queueType: LolQueueType,
+    skinId: number,
+  ) {
+    const stats = await db.query.statisticTable.findFirst({
+      where: and(eq(statisticTable.puuid, puuid), eq(statisticTable.queueType, queueType)),
+    });
+
+    if (!stats) {
+      throw new Error("No statistic found");
+    }
+
+    let mainChampionBackgroundColor: string | undefined;
+    let mainChampionForegroundColor: string | undefined;
+
+    try {
+      const { backgroundColor, foregroundColor } =
+        await ServerColorsService.getMainColorsFromChampionSkin(stats.mainChampionId, skinId);
+
+      mainChampionBackgroundColor = backgroundColor;
+      mainChampionForegroundColor = foregroundColor;
+    } catch (e) {
+      console.error(e);
+
+      throw new Error("Failed to get colors");
+    }
+
+    return db
+      .update(statisticTable)
+      .set({
+        mainChampionBackgroundColor,
+        mainChampionForegroundColor,
+        mainChampionSkinId: skinId,
+      })
+      .where(and(eq(statisticTable.puuid, puuid), eq(statisticTable.queueType, queueType)))
+      .returning();
   }
 }

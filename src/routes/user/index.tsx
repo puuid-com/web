@@ -15,7 +15,6 @@ import {
   UserPlus,
 } from "lucide-react";
 import React from "react";
-import riotGamesIcon from "./riot-games-red-round.png";
 import { UserUpdateForm } from "@/client/components/user/UserUpdateForm";
 
 export const Route = createFileRoute("/user/")({
@@ -233,7 +232,11 @@ function RouteComponent() {
             </CardContent>
             <CardFooter>
               <Button onClick={() => void handleLinkAccount()} variant={"secondary"}>
-                <img src={riotGamesIcon} alt="" className={"w-5 rounded-md"} />
+                <img
+                  src={"https://cdn.puuid.com/public/image/icon/riot-games-red-round.png"}
+                  alt=""
+                  className={"w-5 rounded-md"}
+                />
                 Link another account
               </Button>
             </CardFooter>

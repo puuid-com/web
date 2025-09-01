@@ -1,5 +1,5 @@
 import type { LolQueueType } from "@/server/api-route/riot/league/LeagueDTO";
-import { $stremedSummonerRefresh } from "@/server/functions/$stremedSummonerRefresh";
+import { $streamedSummonerRefresh } from "@/server/functions/$streamedSummonerRefresh";
 import type { RefreshProgressMsgType } from "@/server/services/RefreshService";
 import type { LolRegionType } from "@/server/types/riot/common";
 
@@ -8,7 +8,7 @@ type Args = { puuid: string; region: LolRegionType; queue: LolQueueType };
 export function progressAnswer(args: Args, signal: AbortSignal) {
   return {
     async *[Symbol.asyncIterator](): AsyncGenerator<RefreshProgressMsgType, void, void> {
-      const res = await $stremedSummonerRefresh({ data: args, signal });
+      const res = await $streamedSummonerRefresh({ data: args, signal });
       if (!res.body) return;
 
       const textStream = res.body.pipeThrough(new TextDecoderStream());
