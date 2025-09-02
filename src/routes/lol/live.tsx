@@ -9,8 +9,6 @@ export const Route = createFileRoute("/lol/live")({
       data: "euw1",
     });
 
-    console.log({ queue: featuredGames.gameList.map((g) => g.gameQueueConfigId) });
-
     const _puuid = featuredGames.gameList
       .find((g) => g.gameQueueConfigId === 420)
       ?.participants.at(0)?.puuid;

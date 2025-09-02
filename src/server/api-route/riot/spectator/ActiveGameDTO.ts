@@ -92,6 +92,12 @@ const CurrentGameInfoDTOSchema = v.object({
   participants: v.array(CurrentGameParticipantDTOSchema),
 });
 
+const NotInActiveGameSchema = v.object({
+  httpStatus: v.literal(404),
+});
+
+const ActiveGameResponseSchema = v.union([CurrentGameInfoDTOSchema, NotInActiveGameSchema]);
+
 /** Types inferred from schemas */
 type GameCustomizationObjectDTOType = v.InferOutput<typeof GameCustomizationObjectDTOSchema>;
 type PerksDTOType = v.InferOutput<typeof PerksDTOSchema>;
@@ -108,6 +114,7 @@ export {
   ObserverDTOSchema,
   BannedChampionDTOSchema,
   CurrentGameInfoDTOSchema,
+  ActiveGameResponseSchema,
 };
 
 export type {

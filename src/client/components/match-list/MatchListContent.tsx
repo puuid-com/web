@@ -1,4 +1,5 @@
 import { MatchListItem } from "@/client/components/match-list/MatchListItem";
+import { MatchProvider } from "@/client/context/MatchContext";
 import { cn } from "@/client/lib/utils";
 import type { GetSummonerMatchesType } from "@/client/queries/getSummonerMatches";
 import type { SummonerType } from "@/server/db/schema/summoner";
@@ -137,12 +138,14 @@ export const MatchListContent = ({ matches }: Props) => {
                   {(() => {
                     const { match: m, match_summoner: p } = matches[row.matchIndex]!;
                     return (
-                      <MatchListItem
-                        m={m}
-                        p={p}
-                        i={matches.length - row.matchIndex}
+                      <MatchProvider
+                        match={m}
+                        matchSummoner={p}
+                        index={matches.length - row.matchIndex}
                         count={matches.length}
-                      />
+                      >
+                        <MatchListItem />
+                      </MatchProvider>
                     );
                   })()}
                 </div>

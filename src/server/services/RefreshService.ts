@@ -65,8 +65,6 @@ export class RefreshService {
 
     const secSinceLastRefresh = (new Date().getTime() - lastRefresh.refreshedAt.getTime()) / 1000;
 
-    console.log({ secSinceLastRefresh });
-
     return secSinceLastRefresh > this.MIN_SEC_BETWEEN_REFRESH;
   }
 

@@ -78,6 +78,13 @@
       "when": 1756764939301,
       "tag": "0010_nebulous_hammerhead",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1756828720950,
+      "tag": "0011_easy_stone_men",
+      "breakpoints": true
     }
   ]
 }

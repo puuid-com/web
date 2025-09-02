@@ -87,7 +87,7 @@ export class DDragonService {
     champions: ChampionsResponseType["data"],
     championId: MatchSummonerRowType["championId"],
   ) {
-    return `https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${champions[championId]!.name}_0.jpg`;
+    return `https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${champions[championId]!.id}_0.jpg`;
   }
 
   static getChampionLoadingScreenImage(
@@ -118,18 +118,18 @@ export class DDragonService {
     });
   }
 
-  static async getChampionData(
-    champions: ChampionsResponseType["data"],
-    version: string,
-    championId: number,
-  ) {
+  static async getChampionData(version: string, stringId: string) {
     const data = await ky
       .get(
-        `https://ddragon.leagueoflegends.com/cdn/${version}/data/en_US/champion/${champions[championId]!.name}.json`,
+        `https://ddragon.leagueoflegends.com/cdn/${version}/data/en_US/champion/${stringId}.json`,
       )
       .json();
 
     return v.parse(DDragonChampionFileSchema, data);
+  }
+
+  static getChampionStringId(champions: ChampionsResponseType["data"], championId: number) {
+    return champions[championId]!.id;
   }
 
   static async getMetadata(): Promise<DDragonMetadata> {

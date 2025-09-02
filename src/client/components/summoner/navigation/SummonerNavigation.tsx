@@ -53,7 +53,7 @@ export const SummonerNavigation = ({ className }: Props) => {
         Live
       </SummonerNavigationItem>
       {user ? (
-        <div className={"flex gap-1.5 ml-auto items-center"}>
+        <div className={"flex gap-2.5 ml-auto items-center"}>
           <SummonerNotesDialog />
           <SummonerFollowButton />
         </div>

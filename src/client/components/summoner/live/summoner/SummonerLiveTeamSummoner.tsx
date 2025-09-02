@@ -13,7 +13,7 @@ type Props = {
   league?: LeagueRowType;
 };
 
-export function SummonerLiveSummoner({ /* side, */ isSelf, league, participant }: Props) {
+export function SummonerLiveTeamSummoner({ /* side, */ isSelf, league, participant }: Props) {
   const metadata = useLoaderData({ from: "/lol" });
 
   const championName = metadata.champions[participant.championId]!.name;

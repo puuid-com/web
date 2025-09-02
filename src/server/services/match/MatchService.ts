@@ -289,8 +289,12 @@ export class MatchService {
     };
 
     let nextStart: number | null = _params.start;
+    const maxLoopCount = 2;
+    let currentLoopCount = 0;
 
     do {
+      if (currentLoopCount >= maxLoopCount) break;
+
       _params.start = nextStart;
 
       const data = await this.getMatchIdsDTOByPuuidPaged(id, _params);
@@ -298,6 +302,7 @@ export class MatchService {
       nextStart = data.next_start;
 
       ids.push(...data.ids);
+      currentLoopCount++;
     } while (nextStart !== null);
 
     return ids;

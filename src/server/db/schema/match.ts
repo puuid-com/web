@@ -1,6 +1,7 @@
 import { pgTable, text, integer, boolean, bigint, index } from "drizzle-orm/pg-core";
 import { relations, type InferSelectModel } from "drizzle-orm";
 import type { LolIndividualPositionType } from "@/server/api-route/riot/match/MatchDTO";
+import { matchCommentTable } from "@/server/db/schema/match-comments";
 
 export const matchTable = pgTable(
   "match",
@@ -76,11 +77,12 @@ export const matchSummonerTable = pgTable(
 export type MatchSummonerRowType = typeof matchSummonerTable.$inferSelect;
 export type MatchSummonerInsertType = typeof matchSummonerTable.$inferInsert;
 
-export const matchSummonerRelations = relations(matchSummonerTable, ({ one }) => ({
+export const matchSummonerRelations = relations(matchSummonerTable, ({ one, many }) => ({
   match: one(matchTable, {
     fields: [matchSummonerTable.matchId],
     references: [matchTable.matchId],
   }),
+  comments: many(matchCommentTable),
 }));
 
 export type MatchWithSummonersType = InferSelectModel<typeof matchTable> & {

@@ -16,8 +16,6 @@ export const $isInActiveMatch = createServerFn({ method: "GET" })
       puuid: ctx.data.puuid,
     });
 
-    console.log("isInActiveMatch", data?.gameId);
-
     return !!data;
   });
 

@@ -3,8 +3,6 @@ import * as authSchema from "@/server/db/schema/auth";
 import * as matchSchema from "@/server/db/schema/match";
 import { serverEnv } from "@/server/lib/env/server";
 import { Pool } from "pg";
-import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
 import * as followingSchema from "@/server/db/schema/following";
 import * as leagueSchema from "@/server/db/schema/league";
 import * as refreshSchema from "@/server/db/schema/summoner-refresh";
@@ -12,9 +10,7 @@ import * as summonerSchema from "@/server/db/schema/summoner";
 import * as summonerStatisticSchema from "@/server/db/schema/summoner-statistic";
 import * as noteSchema from "@/server/db/schema/note";
 import * as viewsSchema from "@/server/db/schema/views";
-
-// charge le CA une seule fois
-const ca = readFileSync(resolve(process.cwd(), "ca-certificate.crt"), "utf8");
+import ca from "../../../ca-certificate.crt?raw";
 
 const pool = new Pool({
   host: serverEnv.DATABASE_HOST,
@@ -22,7 +18,7 @@ const pool = new Pool({
   database: serverEnv.DATABASE_NAME,
   user: serverEnv.DATABASE_USER,
   password: serverEnv.DATABASE_PASSWORD,
-  ssl: { ca }, // vérification activée
+  ssl: { ca: ca }, // vérification activée
 });
 
 export const db = drizzle({
@@ -38,7 +34,24 @@ export const db = drizzle({
     ...matchSchema,
     ...viewsSchema,
   },
-  logger: false,
+  logger:
+    process.env.NODE_ENV === "ddevelopment"
+      ? {
+          logQuery(query: string, params: unknown[]) {
+            console.log("=".repeat(60));
+
+            console.log("\n\x1b[32m[Drizzle]\x1b[0m\n");
+
+            console.log(`Query:\n${query}\n`);
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+            if (params && params.length > 0) {
+              console.log(`Params:\n${JSON.stringify(params, null, 2)}\n`);
+            }
+
+            console.log("=".repeat(60));
+          },
+        }
+      : false,
 });
 
 export type TransactionType = Parameters<Parameters<typeof db.transaction>[0]>[0];

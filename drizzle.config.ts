@@ -1,11 +1,11 @@
 import { serverEnv } from "@/server/lib/env/server";
 import "dotenv/config";
 import { defineConfig } from "drizzle-kit";
-import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
 
-const caPath = resolve(process.cwd(), "ca-certificate.crt");
-const ca = readFileSync(caPath, "utf8");
+import fs from "node:fs";
+import path from "node:path";
+const certPath = path.join(process.cwd(), "ca-certificate.crt");
+const ca = fs.readFileSync(certPath, "utf8");
 
 export default defineConfig({
   out: "./drizzle",

@@ -1,5 +1,5 @@
 import { RiotApiRoute } from "@/server/api-route/ApiRoute";
-import { CurrentGameInfoDTOSchema } from "@/server/api-route/riot/spectator/ActiveGameDTO";
+import { ActiveGameResponseSchema } from "@/server/api-route/riot/spectator/ActiveGameDTO";
 import { FeaturedGamesDTOSchema } from "@/server/api-route/riot/spectator/FeaturedGamesDTO";
 import type { SummonerType } from "@/server/db/schema/summoner";
 import type { LolRegionType } from "@/server/types/riot/common";
@@ -15,5 +15,5 @@ export const SpectatorActiveGameRoute = new RiotApiRoute({
   getUrl: (params: { region: LolRegionType; puuid: SummonerType["puuid"] }) =>
     `https://${params.region}.api.riotgames.com/lol/spectator/v5/active-games/by-summoner/${params.puuid}`,
   key: `spectator_by-puuid`,
-  schema: CurrentGameInfoDTOSchema,
+  schema: ActiveGameResponseSchema,
 });

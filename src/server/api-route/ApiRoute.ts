@@ -33,12 +33,7 @@ export class RiotApiRoute<S extends Schema, P> {
 
     const url = this.configs.getUrl(param);
 
-    try {
-      return await lolClient()(url, options).json<unknown>();
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      throw error;
-    }
+    return await lolClient()(url, options).json<unknown>();
   }
 
   protected parseData(data: unknown): v.InferOutput<S> {

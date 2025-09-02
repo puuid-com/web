@@ -40,10 +40,6 @@ export const SummonerHeader = ({ className }: Props) => {
     >
       {stats?.mainChampionId ? (
         <>
-          {/* <img
-            src={CDragonService.getChampionSplashArtCenteredSkin(stats.mainChampionId, skinId!)}
-            className="absolute right-0 mask-l-from-0% opacity-30"
-          /> */}
           <div className={"absolute top-0 right-0 m-1.5 flex gap-1.5"}>
             <SummonerSkinDialog />
             <SummonerHeaderInfo />

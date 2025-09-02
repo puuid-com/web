@@ -50,16 +50,18 @@ export function LiveSummonerStats({ stats }: StatsPanelProps) {
           "group-last:flex-row-reverse group-last:text-right",
         ].join(" ")}
       >
-        <div className="flex items-center gap-2 min-w-0 group-last:flex-row-reverse">
-          <img
-            src={champImg}
-            alt={champName}
-            className="w-6 h-6 rounded"
-            loading="lazy"
-            decoding="async"
-          />
-          <div className="hidden sm:block truncate max-w-[16ch]" title={champName}>
-            {champName}
+        <div className="flex flex-col items-center gap-2">
+          <div className={"flex flex-row gap-1"}>
+            <img
+              src={champImg}
+              alt={champName}
+              className="w-6 h-6 rounded"
+              loading="lazy"
+              decoding="async"
+            />
+            <div className="hidden sm:block truncate max-w-[16ch]" title={champName}>
+              {champName}
+            </div>
           </div>
           <span className="text-xs text-muted-foreground hidden md:inline">
             {stats.mainIndividualPosition}

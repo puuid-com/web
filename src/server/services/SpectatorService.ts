@@ -6,7 +6,6 @@ import type { SummonerType } from "@/server/db/schema/summoner";
 import { RefreshService } from "@/server/services/RefreshService";
 import { SummonerService } from "@/server/services/summoner/SummonerService";
 import type { LolRegionType } from "@/server/types/riot/common";
-import { HTTPError } from "ky";
 
 export class SpectatorService {
   static async getFeaturedGames(region: LolRegionType) {
@@ -16,22 +15,20 @@ export class SpectatorService {
   }
 
   static async getActiveGame(summoner: Pick<SummonerType, "puuid" | "region">) {
-    try {
-      return await SpectatorActiveGameRoute.call({
+    const data = await SpectatorActiveGameRoute.call(
+      {
         region: summoner.region,
         puuid: summoner.puuid,
-      });
-    } catch (error) {
-      if (error instanceof HTTPError) {
-        /**
-         * The summoner is simply not in a game.
-         */
-        if (error.response.status === 404) {
-          return null;
-        }
-      }
+      },
+      {
+        throwHttpErrors: false,
+      },
+    );
 
-      throw error;
+    if ("httpStatus" in data) {
+      return null;
+    } else {
+      return data;
     }
   }
 

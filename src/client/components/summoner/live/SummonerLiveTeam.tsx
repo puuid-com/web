@@ -1,4 +1,4 @@
-import { SummonerLiveSummoner } from "@/client/components/summoner/live/summoner/SummonerLiveSummoner";
+import { SummonerLiveTeamSummoner } from "@/client/components/summoner/live/summoner/SummonerLiveTeamSummoner";
 import { assignAndSortParticipantsByRole } from "@/client/components/summoner/live/utils";
 import { cn } from "@/client/lib/utils";
 import type { $GetSummonerActiveMatchType } from "@/server/functions/$getSummonerActiveMatch";
@@ -35,7 +35,7 @@ export const SummonerLiveTeam = ({ match, teamId }: Props) => {
         const isSelf = p.summoner.puuid === summoner.puuid;
         console.log(p);
         return (
-          <SummonerLiveSummoner
+          <SummonerLiveTeamSummoner
             key={p.puuid}
             side={side}
             isSelf={isSelf}
