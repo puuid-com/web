@@ -1,7 +1,10 @@
 import { pgTable, text, integer, boolean, bigint, index } from "drizzle-orm/pg-core";
 import { relations, type InferSelectModel } from "drizzle-orm";
-import type { LolIndividualPositionType } from "@/server/api-route/riot/match/MatchDTO";
+import type { LolPositionType } from "@/server/api-route/riot/match/MatchDTO";
 import { matchCommentTable } from "@/server/db/schema/match-comments";
+
+export const MatchResults = ["NORMAL", "SURRENDER", "REMAKE"] as const;
+export type MatchResultType = (typeof MatchResults)[number];
 
 export const matchTable = pgTable(
   "match",
@@ -11,6 +14,7 @@ export const matchTable = pgTable(
     gameDurationSec: integer("game_duration_sec").notNull(),
     queueId: integer("queue_id").notNull(),
     platformId: text("platform_id").notNull(),
+    resultType: text("result_type").$type<MatchResultType>().notNull(),
   },
   (t) => [
     index("idx_match_game_time").on(t.gameCreationMs, t.matchId),
@@ -36,7 +40,7 @@ export const matchSummonerTable = pgTable(
     tagLine: text("tag_line").notNull(),
     profileIconId: integer("profile_icon_id").notNull(),
 
-    individualPosition: text("individual_position").$type<LolIndividualPositionType>().notNull(),
+    position: text("position").$type<LolPositionType>().notNull(),
     teamId: integer("team_id").notNull(),
     win: boolean("win").notNull(),
 

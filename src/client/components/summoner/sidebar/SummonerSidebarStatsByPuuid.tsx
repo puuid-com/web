@@ -2,15 +2,13 @@ import { SummonerSidebarStats } from "@/client/components/summoner/sidebar/Summo
 import { SummonerSidebarStatsHeader } from "@/client/components/summoner/sidebar/SummonerSidebarStatsHeader";
 import { Skeleton } from "@/client/components/ui/skeleton";
 import { CDragonService } from "@/shared/services/CDragon/CDragonService";
-import { $getSummonersByPuuids } from "@/server/functions/$getSummonersByPuuids";
-import { useQuery } from "@tanstack/react-query";
-import { useServerFn } from "@tanstack/react-start";
 import { type LucideIcon } from "lucide-react";
 import React from "react";
 import type { StatsByTeammate } from "@/server/db/schema/summoner-statistic";
 import type { SummonerType } from "@/server/db/schema/summoner";
 import { cn } from "@/client/lib/utils";
 import { useSummonerFilter, type MatchesSearchKey } from "@/client/hooks/useSummonerFilter";
+import { useSummoners } from "@/client/queries/useSummoners";
 
 type Props = {
   statsByChampionId: StatsByTeammate | undefined;
@@ -26,16 +24,8 @@ export const SummonerSidebarStatsByPuuid = ({
   searchKey,
 }: Props) => {
   const { handleOnFilterClickEvent, isEqualToFilterValue } = useSummonerFilter(searchKey);
-  const _$getSummonersByPuuids = useServerFn($getSummonersByPuuids);
 
-  const { data: summoners } = useQuery({
-    queryKey: ["summoners", stats?.map((s) => s.puuid)],
-    queryFn: () =>
-      _$getSummonersByPuuids({
-        data: stats?.map((s) => s.puuid) ?? [],
-      }),
-    enabled: !!stats,
-  });
+  const { data: summoners } = useSummoners(stats?.map((s) => s.puuid) ?? []);
 
   const _data = React.useMemo<
     {

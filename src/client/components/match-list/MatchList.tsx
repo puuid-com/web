@@ -30,7 +30,7 @@ export const MatchList = ({}: Props) => {
 
     return q_matches.data.matches.filter((m) => {
       const pageParticipant = m.summoners.find((s) => s.puuid === summoner.puuid)!;
-      const vsParticipant = m.summoners.find((s) => s.puuid === pageParticipant.vsSummonerPuuid)!;
+      const vsParticipant = m.summoners.find((s) => s.puuid === pageParticipant.vsSummonerPuuid);
       const championName = champions[pageParticipant.championId]!.name.toUpperCase();
 
       const cCheck = !c || championName.startsWith(stringFilter);
@@ -39,7 +39,7 @@ export const MatchList = ({}: Props) => {
       const wCheck = w === undefined || pageParticipant.win === w;
       if (!wCheck) return false;
 
-      const mcCheck = mc === undefined || mc.includes(vsParticipant.championId);
+      const mcCheck = mc === undefined || !vsParticipant || mc.includes(vsParticipant.championId);
       if (!mcCheck) return false;
 
       const pcCheck = pc === undefined || pc.includes(pageParticipant.championId);

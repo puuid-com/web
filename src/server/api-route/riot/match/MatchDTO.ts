@@ -24,15 +24,8 @@ const PerksSchema = v.object({
   styles: v.array(PerkStyleSchema),
 });
 
-export const LolIndividualPositions = [
-  "BOTTOM",
-  "JUNGLE",
-  "MIDDLE",
-  "TOP",
-  "UTILITY",
-  "Invalid",
-] as const;
-export type LolIndividualPositionType = (typeof LolIndividualPositions)[number];
+export const LolPositions = ["BOTTOM", "JUNGLE", "MIDDLE", "TOP", "UTILITY", ""] as const;
+export type LolPositionType = (typeof LolPositions)[number];
 
 export const ParticipantDTOSchema = v.object({
   assists: v.number(),
@@ -41,6 +34,8 @@ export const ParticipantDTOSchema = v.object({
   championId: v.number(),
   championName: v.string(),
   champLevel: v.number(),
+
+  teamEarlySurrendered: v.boolean(),
 
   damageDealtToBuildings: v.number(),
   damageDealtToObjectives: v.number(),
@@ -53,7 +48,6 @@ export const ParticipantDTOSchema = v.object({
   dragonKills: v.number(),
   goldEarned: v.number(),
   goldSpent: v.number(),
-  individualPosition: v.picklist(LolIndividualPositions),
   inhibitorKills: v.number(),
   item0: v.number(),
   item1: v.number(),
@@ -85,7 +79,7 @@ export const ParticipantDTOSchema = v.object({
   summoner2Id: v.number(),
   summonerLevel: v.number(),
   teamId: v.number(),
-  teamPosition: v.string(),
+  teamPosition: v.picklist(LolPositions),
   totalAllyJungleMinionsKilled: v.number(),
   totalDamageDealtToChampions: v.number(),
   totalDamageTaken: v.number(),

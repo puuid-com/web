@@ -12,7 +12,7 @@ export const SummonerSidebar = ({}: Props) => {
   });
 
   return (
-    <div className={"flex flex-col gap-10 w-70 sticky self-start basis-70 shrink-0"}>
+    <div className={"flex flex-col gap-5 w-70 sticky self-start basis-70 shrink-0"}>
       <SummonerSidebarStatsRank />
       <SummonerSidebarStatsByChampionId
         statsByChampionId={stats?.statsByChampionId}
@@ -21,7 +21,7 @@ export const SummonerSidebar = ({}: Props) => {
         searchKey={"pc"}
       />
       <SummonerSidebarStatsByChampionId
-        statsByChampionId={stats?.statsByOppositeIndividualPositionChampionId}
+        statsByChampionId={stats?.statsByOppositePositionChampionId}
         iconName={RatIcon}
         label={"Stats by Matchup"}
         searchKey={"mc"}

@@ -64,7 +64,7 @@ export function LiveSummonerStats({ stats }: StatsPanelProps) {
             </div>
           </div>
           <span className="text-xs text-muted-foreground hidden md:inline">
-            {stats.mainIndividualPosition}
+            {stats.mainPosition}
           </span>
         </div>
 

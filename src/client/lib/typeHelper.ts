@@ -21,8 +21,8 @@ export const riotQueueTypeToFriendly = (type: LolQueueType): FriendlyQueueType =
   }
 };
 
-export type ArrayKeys<T> = {
-  [K in keyof T]-?: NonNullable<T[K]> extends readonly unknown[] | unknown[] ? K : never;
+export type ArrayKeys<T, P = unknown> = {
+  [K in keyof T]-?: NonNullable<T[K]> extends readonly P[] | P[] ? K : never;
 }[keyof T];
 
 export type Prettify<T> = {

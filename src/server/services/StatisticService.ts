@@ -27,8 +27,8 @@ export type Stat = {
 type StatsToRefresh = Pick<
   InsertStatisticRowType,
   | "statsByChampionId"
-  | "statsByIndividualPosition"
-  | "statsByOppositeIndividualPositionChampionId"
+  | "statsByPosition"
+  | "statsByOppositePositionChampionId"
   | "statsByTeammates"
   | "kills"
   | "assists"
@@ -82,15 +82,20 @@ export class StatisticService {
     stats: StatisticWithLeagueType | null;
     lastMatch: MatchWithSummonersType | undefined;
   }> {
+    const oldStats = await this.getSummonerStatistic(summoner.puuid, queueType);
     const queue = LOL_QUEUES[queueType];
 
     const matches =
-      cachedMatches ??
-      (await MatchService.getMatchesDBByPuuidFull(summoner, {
-        count: this.MATCHES_COUNTED,
-        queue: queue.queueId,
-        start: 0,
-      }));
+      cachedMatches?.filter((m) => m.resultType === "NORMAL") ??
+      (await MatchService.getMatchesDBByPuuidFull(
+        summoner,
+        {
+          count: this.MATCHES_COUNTED,
+          queue: queue.queueId,
+          start: 0,
+        },
+        "NORMAL",
+      ));
 
     if (!matches.length) {
       return {
@@ -106,8 +111,8 @@ export class StatisticService {
 
     const _stats: StatsToRefresh = {
       statsByChampionId: [],
-      statsByIndividualPosition: [],
-      statsByOppositeIndividualPositionChampionId: [],
+      statsByPosition: [],
+      statsByOppositePositionChampionId: [],
       kills: 0,
       assists: 0,
       deaths: 0,
@@ -159,12 +164,10 @@ export class StatisticService {
 
       // statsByIndividualPosition, incrémente ou crée
       {
-        const s = acc.statsByIndividualPosition.find(
-          (s) => s.individualPosition === mainSummoner.individualPosition,
-        );
+        const s = acc.statsByPosition.find((s) => s.position === mainSummoner.position);
         if (!s) {
-          acc.statsByIndividualPosition.push({
-            individualPosition: mainSummoner.individualPosition,
+          acc.statsByPosition.push({
+            position: mainSummoner.position,
             kills: mainSummoner.kills,
             assists: mainSummoner.assists,
             deaths: mainSummoner.deaths,
@@ -182,11 +185,9 @@ export class StatisticService {
 
       // statsByOppositeIndividualPositionChampionId, incrémente ou crée
       {
-        const s = acc.statsByOppositeIndividualPositionChampionId.find(
-          (s) => s.championId === vs.championId,
-        );
+        const s = acc.statsByOppositePositionChampionId.find((s) => s.championId === vs.championId);
         if (!s) {
-          acc.statsByOppositeIndividualPositionChampionId.push({
+          acc.statsByOppositePositionChampionId.push({
             championId: vs.championId,
             kills: mainSummoner.kills,
             assists: mainSummoner.assists,
@@ -238,17 +239,26 @@ export class StatisticService {
       (item) => item.losses + item.wins,
     ).championId;
 
+    const sameMainChampion = oldStats?.mainChampionId === mainChampionId;
+
     const {
       backgroundColor: mainChampionBackgroundColor,
       foregroundColor: mainChampionForegroundColor,
-    } = await ServerColorsService.getMainColorsFromChampion(mainChampionId);
+    } = sameMainChampion
+      ? {
+          backgroundColor: oldStats.mainChampionBackgroundColor,
+          foregroundColor: oldStats.mainChampionForegroundColor,
+        }
+      : await ServerColorsService.getMainColorsFromChampion(mainChampionId);
+
+    const mainChampionSkinId = sameMainChampion ? oldStats.mainChampionSkinId : undefined;
 
     const statsToInsert: InsertStatisticRowType = {
       puuid: summoner.puuid,
       statsByChampionId: stats.statsByChampionId.sort(sortByMatches),
-      statsByIndividualPosition: stats.statsByIndividualPosition.sort(sortByMatches),
-      statsByOppositeIndividualPositionChampionId:
-        stats.statsByOppositeIndividualPositionChampionId.sort(sortByMatches),
+      statsByPosition: stats.statsByPosition.sort(sortByMatches),
+      statsByOppositePositionChampionId:
+        stats.statsByOppositePositionChampionId.sort(sortByMatches),
       kills: stats.kills,
       assists: stats.assists,
       deaths: stats.deaths,
@@ -272,11 +282,9 @@ export class StatisticService {
       mainChampionId: mainChampionId,
       mainChampionForegroundColor: mainChampionForegroundColor,
       mainChampionBackgroundColor: mainChampionBackgroundColor,
+      mainChampionSkinId: mainChampionSkinId,
 
-      mainIndividualPosition: maxItemBy(
-        stats.statsByIndividualPosition,
-        (item) => item.losses + item.wins,
-      ).individualPosition,
+      mainPosition: maxItemBy(stats.statsByPosition, (item) => item.losses + item.wins).position,
 
       wins: stats.wins,
       losses: stats.losses,

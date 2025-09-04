@@ -25,6 +25,15 @@ export const SmartChildrens = ({ children, firstCount = 5 }: React.PropsWithChil
   const items = React.Children.toArray(children);
   const visible = showAll ? items : items.slice(0, firstCount);
 
+  if (items.length === 1) {
+    return (
+      <React.Fragment>
+        {children}
+        <div className={"text-muted-foreground w-full text-center p-1.5"}>No data</div>
+      </React.Fragment>
+    );
+  }
+
   if (items.length <= firstCount) return <>{items}</>;
 
   return (

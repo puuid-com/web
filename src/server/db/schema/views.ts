@@ -1,11 +1,9 @@
-import type { LolIndividualPositionType } from "@/server/api-route/riot/match/MatchDTO";
+import type { LolPositionType } from "@/server/api-route/riot/match/MatchDTO";
 import { integer, text, numeric, pgMaterializedView } from "drizzle-orm/pg-core";
 
 export const championView = pgMaterializedView("champion_main_position_stats_mv", {
   championId: integer("champion_id").notNull(),
-  mainIndividualPosition: text("main_individual_position")
-    .$type<LolIndividualPositionType>()
-    .notNull(),
+  mainPosition: text("main_position").$type<LolPositionType>().notNull(),
   gamesCount: integer("games_count").notNull(),
   wins: integer("wins").notNull(),
   losses: integer("losses").notNull(),

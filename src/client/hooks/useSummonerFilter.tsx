@@ -4,7 +4,7 @@ import { useSearch, useNavigate } from "@tanstack/react-router";
 import React, { useCallback } from "react";
 
 type MatchesRouteSearchType = (typeof Route)["types"]["fullSearchSchema"];
-export type MatchesSearchKey = ArrayKeys<MatchesRouteSearchType>;
+export type MatchesSearchKey<K = unknown> = ArrayKeys<MatchesRouteSearchType, K>;
 
 type ValueType = {
   handleOnFilterClickEvent: (value: unknown) => (e: React.MouseEvent<HTMLButtonElement>) => void;

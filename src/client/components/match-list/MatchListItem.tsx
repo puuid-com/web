@@ -7,7 +7,7 @@ import { useMatchContext } from "@/client/context/MatchContext";
 import { cn, formatSeconds } from "@/client/lib/utils";
 import { CDragonService } from "@/shared/services/CDragon/CDragonService";
 import { DDragonService } from "@/shared/services/DDragon/DDragonService";
-import { useLoaderData } from "@tanstack/react-router";
+import { Link, useLoaderData } from "@tanstack/react-router";
 
 type Props = {};
 
@@ -22,7 +22,7 @@ export const MatchListItem = ({}: Props) => {
       className="flex items-center gap-3 font-mono p-2 border-dashed h-[80px] bg-gradient-to-r from-neutral-900/20 to-match/10"
     >
       <div className="shrink-0 w-1/12 flex flex-col items-center justify-center gap-1">
-        <div className={cn("px-2 rounded-md bg-match w-fit")}>{`${index}/${count}`}</div>
+        <div className={cn("px-2 rounded-md w-fit bg-match")}>{`${index}/${count}`}</div>
       </div>
 
       {/* champion */}
@@ -39,7 +39,7 @@ export const MatchListItem = ({}: Props) => {
         <div className="font-bold">
           <MatchItemChampionName championId={matchSummoner.championId} />
           <div>
-            <Badge variant={"main"}>{matchSummoner.individualPosition}</Badge>
+            <Badge variant={"main"}>{matchSummoner.position}</Badge>
           </div>
         </div>
       </div>
@@ -76,12 +76,19 @@ export const MatchListItem = ({}: Props) => {
       <div className={"grid grid-cols-2 grid-rows-5 gap-x-1 ml-auto"}>
         {match.summoners
           .sort((a, b) => {
-            return POSITION_INDEXES[a.individualPosition] - POSITION_INDEXES[b.individualPosition];
+            return POSITION_INDEXES[a.position] - POSITION_INDEXES[b.position];
           })
           .map((s) => {
             const championIconUrl = CDragonService.getChampionTile(s.championId);
             return (
-              <div className={"flex gap-0.5"} key={`MatchListItem-summoner-#${s.puuid}`}>
+              <Link
+                to={"/r/$puuid"}
+                params={{
+                  puuid: s.puuid,
+                }}
+                className={"flex gap-0.5"}
+                key={`MatchListItem-summoner-#${s.puuid}`}
+              >
                 <div>
                   <img src={championIconUrl} alt="" className={"w-3 rounded-md"} />
                 </div>
@@ -94,7 +101,7 @@ export const MatchListItem = ({}: Props) => {
                   <div className={""}>{s.gameName}</div>
                   <div className={"text-muted-foreground text-tiny"}>{`#${s.tagLine}`}</div>
                 </div>
-              </div>
+              </Link>
             );
           })}
       </div>

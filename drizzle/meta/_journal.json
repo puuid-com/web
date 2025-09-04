@@ -85,6 +85,48 @@
       "when": 1756828720950,
       "tag": "0011_easy_stone_men",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1757014564403,
+      "tag": "0012_magical_mercury",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1757015408628,
+      "tag": "0013_mighty_enchantress",
+      "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1757015455529,
+      "tag": "0014_familiar_salo",
+      "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "7",
+      "when": 1757017669462,
+      "tag": "0015_regular_peter_quill",
+      "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1757018410914,
+      "tag": "0016_sharp_felicia_hardy",
+      "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1757018523969,
+      "tag": "0017_silky_starhawk",
+      "breakpoints": true
     }
   ]
 }

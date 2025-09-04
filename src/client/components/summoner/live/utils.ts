@@ -1,10 +1,10 @@
-import type { LolIndividualPositionType } from "@/server/api-route/riot/match/MatchDTO";
+import type { LolPositionType } from "@/server/api-route/riot/match/MatchDTO";
 import type { $GetChampionsDataType } from "@/server/functions/$getChampionsData";
 import type { $GetSummonerActiveMatchType } from "@/server/functions/$getSummonerActiveMatch";
 
 type Participant = NonNullable<$GetSummonerActiveMatchType>["participants"][number];
 
-export const POSITION_ORDER: readonly LolIndividualPositionType[] = [
+export const POSITION_ORDER: readonly LolPositionType[] = [
   "TOP",
   "JUNGLE",
   "MIDDLE",
@@ -17,7 +17,7 @@ export const POSITION_INDEXES = POSITION_ORDER.reduce(
 
     return acc;
   },
-  {} as Record<LolIndividualPositionType, number>,
+  {} as Record<LolPositionType, number>,
 );
 
 const SMITE = 11;
@@ -43,7 +43,7 @@ function gamesForChampion(meta: $GetChampionsDataType[number] | undefined): numb
 }
 
 function scoreCandidate(
-  role: LolIndividualPositionType,
+  role: LolPositionType,
   p: Participant,
   meta: $GetChampionsDataType[number] | undefined,
   lobbyIndex: number,
@@ -52,7 +52,7 @@ function scoreCandidate(
   if (hasSpell(p, SMITE)) {
     score += role === "JUNGLE" ? 1000 : -300;
   }
-  const main = meta?.mainIndividualPosition;
+  const main = meta?.mainPosition;
   if (main === role) score += 500;
   if (!hasSpell(p, SMITE)) {
     if (hasSpell(p, HEAL) || hasSpell(p, CLEANSE)) {
@@ -82,7 +82,7 @@ export function assignAndSortParticipantsByRole(
 ): Participant[] {
   const participants = list.map((p, i) => ({ p, i }));
 
-  type Edge = { role: LolIndividualPositionType; idx: number; score: number };
+  type Edge = { role: LolPositionType; idx: number; score: number };
   const edges: Edge[] = [];
 
   for (let i = 0; i < participants.length; i++) {
@@ -97,7 +97,7 @@ export function assignAndSortParticipantsByRole(
 
   edges.sort((a, b) => b.score - a.score);
 
-  const roleToIdx = new Map<LolIndividualPositionType, number>();
+  const roleToIdx = new Map<LolPositionType, number>();
   const used = new Set<number>();
 
   for (const e of edges) {
@@ -109,7 +109,7 @@ export function assignAndSortParticipantsByRole(
   }
 
   if (roleToIdx.size < POSITION_ORDER.length) {
-    const remainingRoles: LolIndividualPositionType[] = [];
+    const remainingRoles: LolPositionType[] = [];
     for (const r of POSITION_ORDER) {
       if (!roleToIdx.has(r)) remainingRoles.push(r);
     }

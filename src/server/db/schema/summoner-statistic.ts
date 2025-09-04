@@ -1,5 +1,5 @@
 import type { LolQueueType } from "@/server/api-route/riot/league/LeagueDTO";
-import type { LolIndividualPositionType } from "@/server/api-route/riot/match/MatchDTO";
+import type { LolPositionType } from "@/server/api-route/riot/match/MatchDTO";
 import { leagueTable, type LeagueRowType } from "@/server/db/schema/league";
 import { summonerTable } from "@/server/db/schema/summoner";
 import { relations } from "drizzle-orm";
@@ -24,14 +24,14 @@ export type StatItemType = {
 
 export type StatsByChampionId = (StatItemType & { championId: number })[];
 export type StatsByIndividualPosition = (StatItemType & {
-  individualPosition: LolIndividualPositionType;
+  position: LolPositionType;
 })[];
 export type StatsByTeamId = (StatItemType & { teamId: number })[];
 
 export type StatsByTeammate = { wins: number; losses: number; puuid: string }[];
 
 export const statisticTable = pgTable(
-  "summoner-statistic",
+  "summoner_statistic",
   {
     puuid: text("puuid")
       .references(() => summonerTable.puuid, { onDelete: "cascade" })
@@ -41,9 +41,7 @@ export const statisticTable = pgTable(
     latestLeagueEntryId: uuid("latest_league_entry_id").references(() => leagueTable.id, {
       onDelete: "set null",
     }),
-    mainIndividualPosition: text(
-      "main_individual_position",
-    ).$type<LolIndividualPositionType | null>(),
+    mainPosition: text("main_position").$type<LolPositionType | null>(),
 
     mainChampionId: integer("main_champion_id").notNull(),
     mainChampionSkinId: integer("main_champion_skin_id").notNull().default(0),
@@ -63,12 +61,8 @@ export const statisticTable = pgTable(
 
     // stats
     statsByChampionId: jsonb("stats_by_champion_id").$type<StatsByChampionId>().notNull(),
-    statsByIndividualPosition: jsonb("stats_by_individual_position")
-      .$type<StatsByIndividualPosition>()
-      .notNull(),
-    statsByOppositeIndividualPositionChampionId: jsonb(
-      "stats_by_opposite_individual_position_champion_id",
-    )
+    statsByPosition: jsonb("stats_by_position").$type<StatsByIndividualPosition>().notNull(),
+    statsByOppositePositionChampionId: jsonb("stats_by_opposite_position_champion_id")
       .$type<StatsByChampionId>()
       .notNull(),
 

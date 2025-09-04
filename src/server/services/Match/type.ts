@@ -19,7 +19,7 @@ export type FormattedMatchSummonerDTOType = {
   gameName: string;
   tagLine: string;
   profileIconId: number;
-  individualPosition: string;
+  position: string;
   teamId: number;
   win: boolean;
   kills: number;

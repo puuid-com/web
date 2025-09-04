@@ -92,7 +92,7 @@ export const SummonerHeader = ({ className }: Props) => {
             {stats ? (
               <div className="flex gap-2.5 text-sm">
                 <div>
-                  Main Position :<Badge variant={"secondary"}>{stats.mainIndividualPosition}</Badge>
+                  Main Position :<Badge variant={"secondary"}>{stats.mainPosition}</Badge>
                 </div>
                 <div>
                   Main Champion:{" "}

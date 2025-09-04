@@ -6,7 +6,7 @@ import { index, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 import { uuidv7 } from "uuidv7";
 
 export const matchCommentTable = pgTable(
-  "match-comment",
+  "match_comment",
   {
     id: uuid("id")
       .primaryKey()

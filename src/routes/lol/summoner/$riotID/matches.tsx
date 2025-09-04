@@ -3,7 +3,7 @@ import { MatchList } from "@/client/components/match-list/MatchList";
 import { SummonerSidebar } from "@/client/components/summoner/sidebar/SummonerSidebar";
 import * as v from "valibot";
 import { FriendlyQueueTypes } from "@/client/lib/typeHelper";
-import { SummonerFilters } from "@/client/components/summoner/SummonerFilters";
+import { SummonerFilters } from "@/client/components/summoner/sidebar/filters/SummonerFilters";
 
 export const Route = createFileRoute("/lol/summoner/$riotID/matches")({
   component: RouteComponent,
@@ -64,7 +64,7 @@ export const Route = createFileRoute("/lol/summoner/$riotID/matches")({
 
 function RouteComponent() {
   return (
-    <div className={"flex gap-10 flex-1"}>
+    <div className={"flex gap-5 flex-1"}>
       <SummonerSidebar />
       <div className={"flex flex-1 flex-col gap-5"}>
         <SummonerFilters />

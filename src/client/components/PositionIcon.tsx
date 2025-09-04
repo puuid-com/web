@@ -1,4 +1,4 @@
-import type { LolIndividualPositionType } from "@/server/api-route/riot/match/MatchDTO";
+import type { LolPositionType } from "@/server/api-route/riot/match/MatchDTO";
 import {
   ArrowDown,
   ArrowUp,
@@ -10,11 +10,11 @@ import {
 } from "lucide-react";
 
 type Props = {
-  individualPosition: LolIndividualPositionType;
+  position: LolPositionType;
 };
 
-const map: Record<LolIndividualPositionType, LucideIcon> = {
-  Invalid: SandwichIcon,
+const map: Record<LolPositionType, LucideIcon> = {
+  "": SandwichIcon,
   TOP: ArrowUp,
   JUNGLE: TreePine,
   MIDDLE: Zap,
@@ -22,8 +22,8 @@ const map: Record<LolIndividualPositionType, LucideIcon> = {
   UTILITY: Users,
 };
 
-export const PositionIcon = ({ individualPosition }: Props) => {
-  const Icon = map[individualPosition];
+export const PositionIcon = ({ position }: Props) => {
+  const Icon = map[position];
 
-  return <Icon aria-label={individualPosition} />;
+  return <Icon aria-label={position} />;
 };

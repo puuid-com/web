@@ -100,7 +100,7 @@ export function SummonerProfileCard({
             {matches.map((match, index) => {
               const ms = match.summoners.find((p) => p.puuid === summoner.puuid)!;
               const championName = metadata.champions[ms.championId]!.name;
-              const position = ms.individualPosition;
+              const position = ms.position;
               const kda = `${ms.kills}/${ms.deaths}/${ms.assists}`;
 
               return (

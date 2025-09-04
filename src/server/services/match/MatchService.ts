@@ -19,6 +19,7 @@ import {
   type MatchRowType,
   type MatchWithSummonersType,
   type MatchSummonerRowType,
+  type MatchResultType,
 } from "@/server/db/schema/match";
 import * as v from "valibot";
 import { summonerTable, type SummonerType } from "@/server/db/schema/summoner";
@@ -27,11 +28,16 @@ export class MatchService {
   private static riotMatchQueryParamsToCacheWhereConditions(
     summoner: Pick<SummonerType, "region" | "puuid">,
     params: OutputPagedMatchIDsQueryParams,
+    resultType?: MatchResultType,
   ) {
     const conditions = [ilike(matchTable.matchId, `${summoner.region}_%`)];
 
     if (params.queue) {
       conditions.push(eq(matchTable.queueId, params.queue));
+    }
+
+    if (resultType) {
+      conditions.push(eq(matchTable.resultType, resultType));
     }
 
     return and(...conditions);
@@ -86,18 +92,25 @@ export class MatchService {
     match: MatchRowType;
     summoners: MatchSummonerRowType[];
   } {
+    /*
+     * Not sure about the logic, can't really tell if the team actually FF or remake.
+     */
+    const isSurrender = matchDTO.info.participants.some((p) => p.teamEarlySurrendered);
+    const isRemake = matchDTO.info.gameCreation <= 5 * 60;
+
     const match: MatchInsertType = {
       matchId: matchDTO.metadata.matchId,
       gameCreationMs: matchDTO.info.gameStartTimestamp,
       gameDurationSec: matchDTO.info.gameDuration,
       queueId: matchDTO.info.queueId,
       platformId: matchDTO.info.platformId,
+      resultType: isSurrender || isRemake ? "SURRENDER" : "NORMAL",
     };
 
     const summoners: MatchSummonerRowType[] = matchDTO.info.participants.map((p) => {
-      const position = p.individualPosition;
+      const position = p.teamPosition;
       const vsSummoner = matchDTO.info.participants.find(
-        (s) => s.individualPosition === position && s.puuid !== p.puuid,
+        (s) => s.teamPosition === position && s.puuid !== p.puuid,
       );
 
       const vsSummonerPuuid = vsSummoner?.puuid ?? null;
@@ -109,7 +122,7 @@ export class MatchService {
         tagLine: p.riotIdTagline,
         profileIconId: p.profileIcon,
 
-        individualPosition: position,
+        position: position,
 
         teamId: p.teamId,
         win: p.win,
@@ -214,9 +227,10 @@ export class MatchService {
   static async getMatchesDBByPuuidFull(
     id: Pick<SummonerType, "region" | "puuid">,
     params: InputPagedMatchIDsQueryParams,
+    resultType?: MatchResultType,
   ) {
     const _param = v.parse(MatchIDsQueryParamsSchema, params);
-    const conditions = this.riotMatchQueryParamsToCacheWhereConditions(id, _param);
+    const conditions = this.riotMatchQueryParamsToCacheWhereConditions(id, _param, resultType);
 
     return db.query.matchTable.findMany({
       with: {
