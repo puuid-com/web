@@ -2,32 +2,30 @@ import { SummonerSidebarStats } from "@/client/components/summoner/sidebar/Summo
 import { SummonerSidebarStatsHeader } from "@/client/components/summoner/sidebar/SummonerSidebarStatsHeader";
 import { Skeleton } from "@/client/components/ui/skeleton";
 import { CDragonService } from "@/shared/services/CDragon/CDragonService";
-import { normalizeRiotID } from "@/lib/riotID";
 import { $getSummonersByPuuids } from "@/server/functions/$getSummonersByPuuids";
 import { useQuery } from "@tanstack/react-query";
-import { useSearch } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { type LucideIcon } from "lucide-react";
 import React from "react";
 import type { StatsByTeammate } from "@/server/db/schema/summoner-statistic";
 import type { SummonerType } from "@/server/db/schema/summoner";
+import { cn } from "@/client/lib/utils";
+import { useSummonerFilter, type MatchesSearchKey } from "@/client/hooks/useSummonerFilter";
 
 type Props = {
   statsByChampionId: StatsByTeammate | undefined;
   label: string;
   iconName: LucideIcon;
+  searchKey: MatchesSearchKey;
 };
 
 export const SummonerSidebarStatsByPuuid = ({
   statsByChampionId: stats,
   iconName,
   label,
+  searchKey,
 }: Props) => {
-  const c = useSearch({
-    from: "/lol/summoner/$riotID/matches",
-    select: (s) => s.c,
-  });
-
+  const { handleOnFilterClickEvent, isEqualToFilterValue } = useSummonerFilter(searchKey);
   const _$getSummonersByPuuids = useServerFn($getSummonersByPuuids);
 
   const { data: summoners } = useQuery({
@@ -57,29 +55,20 @@ export const SummonerSidebarStatsByPuuid = ({
     });
   }, [stats, summoners]);
 
-  const _filteredData = React.useMemo(() => {
-    const _c = normalizeRiotID(c ?? "");
-
-    if (!c) return _data;
-
-    return _data.filter((s) => {
-      return !s.summoner || s.summoner.normalizedRiotId.startsWith(_c);
-    });
-  }, [c, _data]);
-
   return (
     <SummonerSidebarStats>
       <SummonerSidebarStatsHeader iconName={iconName}>{label}</SummonerSidebarStatsHeader>
-      {_filteredData.map(({ summoner, stats: s }) => {
+      {_data.map(({ summoner, stats: s }) => {
         const profileIconUrl = summoner
           ? CDragonService.getProfileIcon(summoner.profileIconId)
           : null;
         const displayRiotId = summoner?.displayRiotId;
 
         return (
-          <div
+          <button
             key={`statsByChampionId-#${s.puuid}`}
             className={"flex gap-2.5 items-center justify-between px-2 py-1"}
+            onClick={handleOnFilterClickEvent(s.puuid)}
           >
             <div className={"flex gap-1 items-center"}>
               {profileIconUrl ? (
@@ -93,7 +82,14 @@ export const SummonerSidebarStatsByPuuid = ({
               )}
               <div>
                 {displayRiotId ? (
-                  <span className={"font-bold"}>{displayRiotId}</span>
+                  <span
+                    className={cn(
+                      "font-bold",
+                      isEqualToFilterValue(s.puuid) ? "text-main" : undefined,
+                    )}
+                  >
+                    {displayRiotId}
+                  </span>
                 ) : (
                   <Skeleton className={"w-[16ch] h-4"} />
                 )}
@@ -106,7 +102,7 @@ export const SummonerSidebarStatsByPuuid = ({
               </div>
               <div className={"text-xs text-neutral-400"}>{s.wins + s.losses} matches</div>
             </div>
-          </div>
+          </button>
         );
       })}
     </SummonerSidebarStats>

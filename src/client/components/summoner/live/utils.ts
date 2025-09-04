@@ -4,13 +4,21 @@ import type { $GetSummonerActiveMatchType } from "@/server/functions/$getSummone
 
 type Participant = NonNullable<$GetSummonerActiveMatchType>["participants"][number];
 
-const POSITION_ORDER: readonly LolIndividualPositionType[] = [
+export const POSITION_ORDER: readonly LolIndividualPositionType[] = [
   "TOP",
   "JUNGLE",
   "MIDDLE",
   "BOTTOM",
   "UTILITY",
 ];
+export const POSITION_INDEXES = POSITION_ORDER.reduce(
+  (acc, p, i) => {
+    acc[p] = i;
+
+    return acc;
+  },
+  {} as Record<LolIndividualPositionType, number>,
+);
 
 const SMITE = 11;
 const HEAL = 7;

@@ -9,6 +9,7 @@ import * as refreshSchema from "@/server/db/schema/summoner-refresh";
 import * as summonerSchema from "@/server/db/schema/summoner";
 import * as summonerStatisticSchema from "@/server/db/schema/summoner-statistic";
 import * as noteSchema from "@/server/db/schema/note";
+import * as commentSchema from "@/server/db/schema/match-comments";
 import * as viewsSchema from "@/server/db/schema/views";
 import ca from "../../../ca-certificate.crt?raw";
 
@@ -33,6 +34,7 @@ export const db = drizzle({
     ...noteSchema,
     ...matchSchema,
     ...viewsSchema,
+    ...commentSchema,
   },
   logger:
     process.env.NODE_ENV === "ddevelopment"

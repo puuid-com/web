@@ -2,6 +2,7 @@ import { LiveSummonerStats } from "@/client/components/summoner/live/summoner/Li
 import { cn } from "@/client/lib/utils";
 import type { LeagueRowType } from "@/server/db/schema/league";
 import type { $GetSummonerActiveMatchType } from "@/server/functions/$getSummonerActiveMatch";
+import { CDNService } from "@/shared/services/CDNService";
 import { CDragonService } from "@/shared/services/CDragon/CDragonService";
 import { DDragonService } from "@/shared/services/DDragon/DDragonService";
 import { Link, useLoaderData } from "@tanstack/react-router";
@@ -120,7 +121,7 @@ export function SummonerLiveTeamSummoner({ /* side, */ isSelf, league, participa
             <div className={cn("group-last:text-left group-first:text-right")}></div>
             <div className="text-center">
               <img
-                src={`https://cdn.puuid.com/public/image/tier/${league.tier.toLowerCase()}.png`}
+                src={CDNService.getTierImageUrl(league.tier)}
                 alt={`${league.tier} badge`}
                 className="w-10 sm:w-12 h-auto mx-auto drop-shadow"
                 loading="eager"

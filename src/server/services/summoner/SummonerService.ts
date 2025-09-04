@@ -16,6 +16,7 @@ import {
   type SummonerWithRelationsType,
   type InsertSummonerType,
 } from "@/server/db/schema/summoner";
+import type { User } from "better-auth";
 
 export class SummonerService {
   static async getSummoners() {
@@ -331,5 +332,15 @@ export class SummonerService {
       userID,
       verifiedAccounts.length === 0,
     );
+  }
+
+  static async assertSummonerIsVerifyByUserId(puuid: SummonerType["puuid"], userId: User["id"]) {
+    const data = await db.query.summonerTable.findFirst({
+      where: and(eq(summonerTable.verifiedUserId, userId), eq(summonerTable.puuid, puuid)),
+    });
+
+    if (!data) {
+      throw new Error("Summoner is not verified by the user.");
+    }
   }
 }

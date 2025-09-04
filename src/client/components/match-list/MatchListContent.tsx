@@ -1,8 +1,9 @@
-import { MatchListItem } from "@/client/components/match-list/MatchListItem";
+import { Match } from "@/client/components/match-list/Match";
 import { MatchProvider } from "@/client/context/MatchContext";
 import { cn } from "@/client/lib/utils";
 import type { GetSummonerMatchesType } from "@/client/queries/getSummonerMatches";
 import type { SummonerType } from "@/server/db/schema/summoner";
+import { useLoaderData } from "@tanstack/react-router";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import React from "react";
 
@@ -29,6 +30,7 @@ const formatDuration = (totalSec: number) => {
 };
 
 export const MatchListContent = ({ matches }: Props) => {
+  const { summoner } = useLoaderData({ from: "/lol/summoner/$riotID" });
   const parentRef = React.useRef<HTMLDivElement | null>(null);
 
   const ITEM_ESTIMATE = 60;
@@ -41,8 +43,8 @@ export const MatchListContent = ({ matches }: Props) => {
     const groups = new Map<string, { label: string; idxs: number[]; stats: GroupStats }>();
 
     for (let i = 0; i < matches.length; i++) {
-      const m = matches[i]!.match;
-      const p = matches[i]!.match_summoner;
+      const m = matches[i]!;
+      const p = m.summoners.find((s) => s.puuid === summoner.puuid)!;
 
       const d = new Date(m.gameCreationMs);
 
@@ -83,13 +85,13 @@ export const MatchListContent = ({ matches }: Props) => {
       for (const i of idxs) {
         flat.push({
           type: "item",
-          key: matches[i]!.match.matchId,
+          key: matches[i]!.matchId,
           matchIndex: i,
         });
       }
     }
     return flat;
-  }, [matches]);
+  }, [matches, summoner.puuid]);
 
   const rowVirtualizer = useVirtualizer({
     count: rows.length,
@@ -107,13 +109,14 @@ export const MatchListContent = ({ matches }: Props) => {
           return (
             <div
               data-index={vRow.index}
+              data-type={row.type}
               key={row.key + ":" + String(vRow.index)}
               ref={rowVirtualizer.measureElement}
-              className="absolute left-0 top-0 w-full"
+              className="absolute left-0 top-0 w-full group"
               style={{ transform: `translateY(${String(vRow.start)}px)` }}
             >
               {row.type === "header" ? (
-                <div className="px-3 py-2 border rounded-t-md bg-main/5 border-dashed justify-between items-center flex">
+                <div className="px-3 py-2 rounded-t-md bg-main/5 justify-between items-center flex border-dashed border border-b-0">
                   <div className={"flex gap-2.5"}>
                     <div>{row.label}</div>
                     {row.groupStats.loses + row.groupStats.wins > 1 ? (
@@ -134,17 +137,20 @@ export const MatchListContent = ({ matches }: Props) => {
                   ) : null}
                 </div>
               ) : (
-                <div className="border-b border-dashed">
+                <div className="group-[&:has(+[data-type=header])]:rounded-b-md border-dashed border-x group-last:border-b group-not-last:border-y group-[&:has(+[data-type=header])]:mb-5">
                   {(() => {
-                    const { match: m, match_summoner: p } = matches[row.matchIndex]!;
+                    const m = matches[row.matchIndex]!;
+                    const p = m.summoners.find((s) => s.puuid === summoner.puuid)!;
+
                     return (
                       <MatchProvider
                         match={m}
                         matchSummoner={p}
                         index={matches.length - row.matchIndex}
                         count={matches.length}
+                        key={m.matchId}
                       >
-                        <MatchListItem />
+                        <Match />
                       </MatchProvider>
                     );
                   })()}

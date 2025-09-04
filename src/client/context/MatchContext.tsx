@@ -1,8 +1,8 @@
-import type { MatchRowType, MatchSummonerRowType } from "@/server/db/schema/match";
+import type { MatchSummonerRowType, MatchWithSummonersType } from "@/server/db/schema/match";
 import React from "react";
 
 type ContextType = {
-  match: MatchRowType;
+  match: MatchWithSummonersType;
   matchSummoner: MatchSummonerRowType;
   index: number;
   count: number;
@@ -18,7 +18,7 @@ export const useMatchContext = () => {
 };
 
 type Props = {
-  match: MatchRowType;
+  match: MatchWithSummonersType;
   matchSummoner: MatchSummonerRowType;
   index: number;
   count: number;

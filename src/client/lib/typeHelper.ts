@@ -20,3 +20,11 @@ export const riotQueueTypeToFriendly = (type: LolQueueType): FriendlyQueueType =
       return "flex";
   }
 };
+
+export type ArrayKeys<T> = {
+  [K in keyof T]-?: NonNullable<T[K]> extends readonly unknown[] | unknown[] ? K : never;
+}[keyof T];
+
+export type Prettify<T> = {
+  [K in keyof T]: T[K];
+} & {};

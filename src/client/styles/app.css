@@ -4,6 +4,9 @@
 @theme {
   --color-main: oklch(0.205 0 0);
   --color-main-foreground: oklch(0.985 0 0);
+
+  --color-match: oklch(0.205 0 0);
+  --color-match-foreground: oklch(0.985 0 0);
 }
 
 @layer utilities {

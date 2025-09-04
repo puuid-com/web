@@ -90,6 +90,7 @@ export default tseslint.config(
           argsIgnorePattern: "^_",
         },
       ],
+      "no-case-declarations": "off",
     },
   },
 

@@ -33,7 +33,6 @@ export const SummonerLiveTeam = ({ match, teamId }: Props) => {
     >
       {participants.map((p) => {
         const isSelf = p.summoner.puuid === summoner.puuid;
-        console.log(p);
         return (
           <SummonerLiveTeamSummoner
             key={p.puuid}

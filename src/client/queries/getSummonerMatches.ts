@@ -1,8 +1,6 @@
 import { friendlyQueueTypeToRiot, type FriendlyQueueType } from "@/client/lib/typeHelper";
-import type { ChampionsResponseType } from "@/shared/services/DDragon/types";
 import { $getSummonerMatches } from "@/server/functions/$getSummonerMatches";
 import { queryOptions, useQuery } from "@tanstack/react-query";
-import { useLoaderData } from "@tanstack/react-router";
 import type { SummonerType } from "@/server/db/schema/summoner";
 
 type QueryParams = {
@@ -18,12 +16,7 @@ export const getSummonerMatchesKey = (params: QueryParams) =>
     params.summoner.region,
   ] as const;
 
-export const getSummonerMatchesOptions = (
-  { summoner, queue }: QueryParams,
-  c: string,
-  champions: ChampionsResponseType["data"],
-  w: boolean | undefined,
-) =>
+export const getSummonerMatchesOptions = ({ summoner, queue }: QueryParams) =>
   queryOptions({
     queryKey: getSummonerMatchesKey({ summoner, queue }),
     queryFn: () =>
@@ -34,26 +27,10 @@ export const getSummonerMatchesOptions = (
           queue: friendlyQueueTypeToRiot(queue),
         },
       }),
-    select: (data) => {
-      if (c || w !== undefined) {
-        return data.matches.filter((m) => {
-          const championName = champions[m.match_summoner.championId]!.name.toUpperCase();
-          const cCheck = championName.startsWith(c);
-
-          const wCheck = w === undefined ? true : m.match_summoner.win === w;
-
-          return cCheck && wCheck;
-        });
-      }
-
-      return data.matches;
-    },
   });
 
-export const useGetSummonerMatches = (params: QueryParams, c: string, w: boolean | undefined) => {
-  const { champions } = useLoaderData({ from: "/lol" });
-
-  return useQuery(getSummonerMatchesOptions(params, c, champions, w));
+export const useGetSummonerMatches = (params: QueryParams) => {
+  return useQuery(getSummonerMatchesOptions(params));
 };
 
 export type GetSummonerMatchesType = Awaited<ReturnType<typeof $getSummonerMatches>>;

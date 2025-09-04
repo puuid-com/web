@@ -1,45 +1,33 @@
 import { MatchItemChampionName } from "@/client/components/match-list/MatchItemChampionName";
 import { SummonerSidebarStats } from "@/client/components/summoner/sidebar/SummonerSidebarStats";
 import { SummonerSidebarStatsHeader } from "@/client/components/summoner/sidebar/SummonerSidebarStatsHeader";
+import { useSummonerFilter, type MatchesSearchKey } from "@/client/hooks/useSummonerFilter";
+import { cn } from "@/client/lib/utils";
 import type { StatsByChampionId } from "@/server/db/schema/summoner-statistic";
 import { DDragonService } from "@/shared/services/DDragon/DDragonService";
-import { useLoaderData, useSearch } from "@tanstack/react-router";
+import { useLoaderData } from "@tanstack/react-router";
 import { type LucideIcon } from "lucide-react";
-import React from "react";
 
 type Props = {
   statsByChampionId: StatsByChampionId | undefined;
   label: string;
   iconName: LucideIcon;
+  searchKey: MatchesSearchKey;
 };
 
 export const SummonerSidebarStatsByChampionId = ({
-  statsByChampionId: stats,
+  statsByChampionId,
   iconName,
   label,
+  searchKey,
 }: Props) => {
+  const { handleOnFilterClickEvent, isEqualToFilterValue } = useSummonerFilter(searchKey);
   const metadata = useLoaderData({ from: "/lol" });
-  const c = useSearch({
-    from: "/lol/summoner/$riotID/matches",
-    select: (s) => s.c,
-  });
-
-  const _data = React.useMemo(() => {
-    const _c = c?.toUpperCase();
-
-    if (!c || !stats) return stats;
-
-    return stats.filter((s) => {
-      const championName = metadata.champions[s.championId]!.name;
-
-      return championName.toUpperCase().startsWith(_c ?? "");
-    });
-  }, [c, metadata.champions, stats]);
 
   return (
     <SummonerSidebarStats>
       <SummonerSidebarStatsHeader iconName={iconName}>{label}</SummonerSidebarStatsHeader>
-      {_data?.map((s) => {
+      {statsByChampionId?.map((s) => {
         const championName = DDragonService.getChampionName(metadata.champions, s.championId);
         const championUrl = DDragonService.getChampionIconUrlFromParticipant(
           metadata.champions,
@@ -48,9 +36,14 @@ export const SummonerSidebarStatsByChampionId = ({
         );
 
         return (
-          <div
+          <button
             key={`statsByChampionId-#${s.championId}`}
-            className={"flex gap-2.5 items-center justify-between px-2 py-1"}
+            data-active={isEqualToFilterValue(s.championId)}
+            className={cn(
+              "flex gap-2.5 items-center justify-between px-2 py-1 hover:cursor-pointer transition-colors group",
+              `[&:is([data-active=true],:hover)]:bg-main/5`,
+            )}
+            onClick={handleOnFilterClickEvent(s.championId)}
           >
             <div className={"flex gap-1 items-center"}>
               <img
@@ -58,7 +51,10 @@ export const SummonerSidebarStatsByChampionId = ({
                 src={championUrl}
                 alt={`${championName} profil icon`}
               />
-              <MatchItemChampionName championId={s.championId} />
+              <MatchItemChampionName
+                championId={s.championId}
+                className={"group-[&:is([data-active=true],:hover)]:text-main"}
+              />
             </div>
             <div className={"leading-none text-end"}>
               <div className={"text-xs"}>
@@ -67,7 +63,7 @@ export const SummonerSidebarStatsByChampionId = ({
               </div>
               <div className={"text-xs text-neutral-400"}>{s.wins + s.losses} matches</div>
             </div>
-          </div>
+          </button>
         );
       })}
     </SummonerSidebarStats>

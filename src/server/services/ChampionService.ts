@@ -4,7 +4,7 @@ import { eq } from "drizzle-orm";
 
 export class ChampionService {
   static async getChampionsData() {
-    const data = (await db.select().from(championView)) as ChampionViewType[];
+    const data = await db.select().from(championView);
 
     return data.reduce<Record<number, ChampionViewType>>((acc, curr) => {
       acc[curr.championId] = curr;
@@ -24,6 +24,6 @@ export class ChampionService {
       throw new Error("Champion not found");
     }
 
-    return data as ChampionViewType;
+    return data;
   }
 }

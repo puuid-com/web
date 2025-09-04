@@ -8,6 +8,8 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Footer } from "@/client/components/footer/Footer";
 import { Navbar } from "@/client/components/navbar/Navbar";
 import { getUserSessionOptions } from "@/client/queries/getUserSession";
+import { PrimeReactProvider } from "primereact/api";
+import primeReacrCss from "primereact/resources/themes/lara-light-cyan/theme.css?url";
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
@@ -25,7 +27,10 @@ export const Route = createRootRouteWithContext<{
         title: "TanStack Start Starter",
       },
     ],
-    links: [{ rel: "stylesheet", href: appCss }],
+    links: [
+      { rel: "stylesheet", href: appCss },
+      { rel: "stylesheet", href: primeReacrCss },
+    ],
   }),
   component: RootComponent,
   beforeLoad: async (ctx) => ctx.context.queryClient.ensureQueryData(getUserSessionOptions()),
@@ -38,7 +43,9 @@ export const Route = createRootRouteWithContext<{
 function RootComponent() {
   return (
     <RootDocument>
-      <Outlet />
+      <PrimeReactProvider>
+        <Outlet />
+      </PrimeReactProvider>
       <Toaster richColors />
       <ReactQueryDevtools initialIsOpen={false} />
     </RootDocument>

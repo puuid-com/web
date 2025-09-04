@@ -1,24 +1,22 @@
 import { cn } from "@/client/lib/utils";
 import { useLoaderData, useSearch } from "@tanstack/react-router";
-import React from "react";
 
 type Props = {
   championId: number;
+  className?: string;
 };
 
-export const MatchItemChampionName = ({ championId }: Props) => {
+export const MatchItemChampionName = ({ championId, className }: Props) => {
   const { c = "" } = useSearch({ from: "/lol/summoner/$riotID/matches" });
   const { champions } = useLoaderData({ from: "/lol" });
 
   const name = champions[championId]!.name;
 
-  if (!c) return <>{name}</>;
-
   const prefix = name.slice(0, c.length);
   const rest = name.slice(c.length);
 
   return (
-    <span>
+    <span className={className}>
       {prefix ? (
         <span
           className={cn(

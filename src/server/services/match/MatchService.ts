@@ -213,9 +213,10 @@ export class MatchService {
 
   static async getMatchesDBByPuuidFull(
     id: Pick<SummonerType, "region" | "puuid">,
-    params: OutputPagedMatchIDsQueryParams,
+    params: InputPagedMatchIDsQueryParams,
   ) {
-    const conditions = this.riotMatchQueryParamsToCacheWhereConditions(id, params);
+    const _param = v.parse(MatchIDsQueryParamsSchema, params);
+    const conditions = this.riotMatchQueryParamsToCacheWhereConditions(id, _param);
 
     return db.query.matchTable.findMany({
       with: {
@@ -382,5 +383,18 @@ export class MatchService {
     }
 
     return [...alreadySaved, ...newlySaved];
+  }
+
+  public static async assertSummonerWasInMatch(
+    puuid: SummonerType["puuid"],
+    matchId: MatchRowType["matchId"],
+  ) {
+    const data = await db.query.matchSummonerTable.findFirst({
+      where: and(eq(matchSummonerTable.puuid, puuid), eq(matchSummonerTable.matchId, matchId)),
+    });
+
+    if (!data) {
+      throw new Error("Summoner was not in the match.");
+    }
   }
 }
