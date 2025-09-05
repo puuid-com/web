@@ -41,7 +41,6 @@ export class CachedApiRoute<S extends Schema, P extends CachedApiRouteParams> ex
 
       return parsedData;
     } catch (e) {
-      console.log({ param });
       console.error(e);
 
       throw e;

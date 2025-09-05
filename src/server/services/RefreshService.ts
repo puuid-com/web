@@ -13,7 +13,7 @@ import {
   type InsertSummonerRefreshType,
 } from "@/server/db/schema/summoner-refresh";
 import type { SummonerType } from "@/server/db/schema/summoner";
-import type { StatisticWithLeagueType } from "@/server/db/schema/summoner-statistic";
+import { MatchService } from "@/server/services/match/MatchService";
 
 export type FetchingSummonerSteps = {
   step: "fetching_summoner";
@@ -173,8 +173,6 @@ export class RefreshService {
   ): AsyncGenerator<RefreshProgressMsgType, SummonerType, void> {
     yield { status: "step_started", step: "fetching_summoner" };
 
-    await new Promise((resolve) => setTimeout(resolve, 500));
-
     yield { status: "step_in_progress", step: "fetching_summoner" };
 
     const summoner = await db.transaction((tx) =>
@@ -259,8 +257,6 @@ export class RefreshService {
   ): AsyncGenerator<RefreshProgressMsgType, LeagueRowType[], void> {
     yield { status: "step_started", step: "fetching_leagues" };
 
-    await new Promise((resolve) => setTimeout(resolve, 500));
-
     yield { status: "step_in_progress", step: "fetching_leagues" };
 
     const leagues = await db.transaction((tx) => LeagueService.cacheLeaguesTx(tx, id));
@@ -281,13 +277,17 @@ export class RefreshService {
     void
   > {
     yield { status: "step_started", step: "fetching_stats" };
-
-    await new Promise((resolve) => setTimeout(resolve, 500));
-
     yield { status: "step_in_progress", step: "fetching_stats" };
 
     const statsData = await db.transaction(async (tx) => {
-      return await StatisticService.refreshSummonerStatisticTx(tx, id, queue, leagues, matches);
+      return await StatisticService.refreshSummonerStatisticTx(
+        tx,
+        id,
+        queue,
+        true,
+        leagues,
+        matches ?? [],
+      );
     });
 
     yield { status: "step_finished", step: "fetching_stats" };
@@ -297,86 +297,54 @@ export class RefreshService {
     };
   }
 
-  static async batchFastRefresh(puuids: SummonerType["puuid"][], queueType: LolQueueType) {
-    const queueId = LOL_QUEUES[queueType].queueId;
+  static async batchFastRefresh(summoners: SummonerType[], queueType: LolQueueType) {
+    return db.transaction(async (tx) => {
+      const queueId = LOL_QUEUES[queueType].queueId;
 
-    // 1) Summoner
-    const summoners = await SummonerService.getOrCreateSummonersByPuuids(puuids);
+      const matchIdsData = await Promise.all(
+        summoners.map(async (s) => {
+          const ids = await MatchService.getMatchIdsDTOByPuuidPaged(
+            { region: s.region, puuid: s.puuid },
+            {
+              queue: queueId,
+              count: 10,
+              start: 0,
+            },
+          );
 
-    const { MatchService } = await import("@/server/services/match/MatchService");
+          return {
+            puuid: s.puuid,
+            matchIds: ids,
+          };
+        }),
+      );
 
-    const matchIdsData = await Promise.all(
-      summoners.map(async (s) => {
-        const ids = await MatchService.getMatchIdsDTOByPuuidPaged(
-          { region: s.region, puuid: s.puuid },
-          {
-            queue: queueId,
-            count: 10,
-            start: 0,
-          },
-        );
-
-        return {
-          puuid: s.puuid,
-          matchIds: ids,
-        };
-      }),
-    );
-
-    const matches = await db.transaction((tx) =>
-      MatchService.getAndSaveMatcheIdsTx(
+      const matches = await MatchService.getAndSaveMatcheIdsTx(
         tx,
         matchIdsData.flatMap((m) => m.matchIds.ids),
-      ),
-    );
-
-    const leagues = (
-      await db.transaction((tx) =>
-        Promise.all(summoners.map((s) => LeagueService.cacheLeaguesTx(tx, s))),
-      )
-    ).flat();
-
-    const dataBySummoner = summoners.map((s) => {
-      const matchIds = matchIdsData.find((m) => m.puuid === s.puuid)!.matchIds.ids;
-      const summonerLeagues = leagues.filter((l) => l.puuid === s.puuid);
-      const summonerMatches = matches.filter((m) => matchIds.includes(m.matchId));
-
-      return {
-        summoner: s,
-        matches: summonerMatches,
-        leagues: summonerLeagues,
-        lastMatch: summonerMatches.sort((a, b) => b.gameCreationMs - a.gameCreationMs).at(0),
-      };
-    });
-
-    const stats = await db.transaction(async (tx) => {
-      return Promise.all(
-        dataBySummoner.map((d) =>
-          StatisticService.refreshSummonerStatisticTx(
-            tx,
-            d.summoner,
-            queueType,
-            d.leagues,
-            d.matches,
-          ),
-        ),
       );
+
+      const dataBySummoner = summoners.map((s) => {
+        const matchIds = matchIdsData.find((m) => m.puuid === s.puuid)!.matchIds.ids;
+        const summonerMatches = matches.filter((m) => matchIds.includes(m.matchId));
+
+        return {
+          summoner: s,
+          matches: summonerMatches,
+          lastMatch: summonerMatches.sort((a, b) => b.gameCreationMs - a.gameCreationMs).at(0),
+        };
+      });
+
+      const { statistics } = await StatisticService.batchRefreshSummonerStatitisticsTx(
+        tx,
+        dataBySummoner,
+        queueType,
+        false,
+      );
+
+      await this.batchUpdateLastRefreshTx(tx, dataBySummoner, false);
+
+      return statistics;
     });
-
-    try {
-      await db.transaction((tx) => this.batchUpdateLastRefreshTx(tx, dataBySummoner, false));
-    } catch (error) {
-      console.error(error);
-    }
-
-    return stats.reduce<StatisticWithLeagueType[]>((acc, curr) => {
-      const _stats = curr.stats;
-
-      if (!_stats) return acc;
-
-      acc.push(_stats);
-
-      return acc;
-    }, []);
   }
 }

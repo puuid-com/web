@@ -177,7 +177,9 @@ export class SummonerService {
       return this.summonerDataToDB(account, summoner, accountRegion);
     });
 
-    return db.insert(summonerTable).values(summoners).returning();
+    const insertedSummoners = await db.insert(summonerTable).values(summoners).returning();
+
+    return [...cached, ...insertedSummoners];
   }
 
   static async handleSummonerCreationFromAccountTx(

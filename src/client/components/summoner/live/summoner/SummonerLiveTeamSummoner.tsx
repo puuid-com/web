@@ -32,7 +32,6 @@ export function SummonerLiveTeamSummoner({ /* side, */ isSelf, league, participa
   return (
     <div
       className={cn(
-        // miroir complet par colonne d’équipe via group-first, group-last
         "flex w-full items-center gap-3 rounded-lg px-3 py-2 justify-between",
         "group-last:flex-row-reverse group-last:text-right group-first:text-left",
         "bg-background/60",

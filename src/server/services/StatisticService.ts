@@ -3,18 +3,17 @@ import { db, type TransactionType } from "@/server/db";
 import type { MatchWithSummonersType } from "@/server/db/schema/match";
 import { averageBy, maxItemBy } from "@/server/lib";
 import { upsert } from "@/server/lib/drizzle";
-import { LeagueService } from "@/server/services/league/LeagueService";
-import { MatchService } from "@/server/services/match/MatchService";
-import { LOL_QUEUES } from "@/server/services/match/queues.type";
-import { and, eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import type { LeagueRowType } from "@/server/db/schema/league";
 import type { SummonerType } from "@/server/db/schema/summoner";
 import {
   statisticTable,
   type InsertStatisticRowType,
+  type StatisticRowType,
   type StatisticWithLeagueType,
 } from "@/server/db/schema/summoner-statistic";
 import { ServerColorsService } from "@/server/services/ServerColorsService";
+import { LeagueService } from "@/server/services/league/LeagueService";
 
 export type Stat = {
   wins: number;
@@ -50,6 +49,9 @@ const sortByMatches = (a: Stat, b: Stat) => {
 };
 
 export class StatisticService {
+  // 2 days
+  private static TIME_BEFORE_FORCED_REFRESH = 2 * 24 * 60 * 60 * 1000;
+
   static getSummonerStatistics(puuid: SummonerType["puuid"]) {
     return db.query.statisticTable.findMany({
       where: eq(statisticTable.puuid, puuid),
@@ -60,7 +62,7 @@ export class StatisticService {
   }
   static MATCHES_COUNTED = 9999;
 
-  static async getSummonerStatistic(
+  static async getSummonerStatisticWithLeague(
     puuid: SummonerType["puuid"],
     queueType: LolQueueType,
   ): Promise<StatisticWithLeagueType | undefined> {
@@ -72,42 +74,157 @@ export class StatisticService {
     });
   }
 
+  static async getSummonerStatistic(puuid: SummonerType["puuid"], queueType: LolQueueType) {
+    return db.query.statisticTable.findFirst({
+      where: and(eq(statisticTable.puuid, puuid), eq(statisticTable.queueType, queueType)),
+    });
+  }
+
+  public static async getSummonersStatisticWithLeagye(
+    puuids: SummonerType["puuid"][],
+    queueType: LolQueueType,
+  ) {
+    return db.query.statisticTable.findMany({
+      where: and(eq(statisticTable.queueType, queueType), inArray(statisticTable.puuid, puuids)),
+      with: {
+        league: true,
+      },
+    });
+  }
+
+  static shouldRefreshStatistic(statistic: StatisticRowType) {
+    return Date.now() - statistic.refreshedAt.getTime() > this.TIME_BEFORE_FORCED_REFRESH;
+  }
+
+  static async batchRefreshSummonerStatitisticsTx(
+    tx: TransactionType,
+    summonersData: {
+      summoner: SummonerType;
+      matches: MatchWithSummonersType[];
+    }[],
+    queueType: LolQueueType,
+    forceRefresh: boolean,
+  ) {
+    const oldStats = await this.getSummonersStatisticWithLeagye(
+      summonersData.map((data) => data.summoner.puuid),
+      queueType,
+    );
+
+    const oldStatsToKeep: StatisticWithLeagueType[] = [];
+
+    if (!forceRefresh) {
+      oldStatsToKeep.push(...oldStats.filter((s) => !this.shouldRefreshStatistic(s)));
+    }
+
+    if (oldStatsToKeep.length !== summonersData.length) {
+      const notMissingPuuids = oldStatsToKeep.map((s) => s.puuid);
+      const missingSummoners = summonersData.filter(
+        (data) => !notMissingPuuids.includes(data.summoner.puuid),
+      );
+
+      const leagues = await LeagueService.batchCacheLeaguesBySummonersTx(
+        tx,
+        missingSummoners.map((d) => d.summoner),
+      );
+
+      const createdStatistics = await Promise.all(
+        missingSummoners.map((data) =>
+          this.createSummonerStatistic(
+            data.summoner,
+            queueType,
+            leagues.filter((l) => l.puuid === data.summoner.puuid),
+            data.matches,
+            undefined,
+          ),
+        ),
+      );
+
+      await this.saveSummonerStatisticsTx(
+        tx,
+        createdStatistics.map((s) => s._toInsert).filter((s) => s !== null),
+      );
+      oldStatsToKeep.push(...createdStatistics.map((s) => s.stats).filter((s) => s !== null));
+    }
+
+    return {
+      statistics: oldStatsToKeep,
+    };
+  }
+
+  private static async saveSummonerStatisticsTx(
+    tx: TransactionType,
+    statistics: InsertStatisticRowType[],
+  ) {
+    return await tx
+      .insert(statisticTable)
+      .values(statistics)
+      .onConflictDoUpdate({
+        target: [statisticTable.puuid, statisticTable.queueType],
+        set: upsert(statisticTable),
+      });
+  }
+
   static async refreshSummonerStatisticTx(
     tx: TransactionType,
     summoner: Pick<SummonerType, "region" | "puuid">,
     queueType: LolQueueType,
-    cachedLeagues?: LeagueRowType[],
-    cachedMatches?: MatchWithSummonersType[],
+    forceRefresh: boolean,
+    cachedLeagues: LeagueRowType[],
+    cachedMatches: MatchWithSummonersType[],
+  ) {
+    const oldStats = await this.getSummonerStatistic(summoner.puuid, queueType);
+    const oldStatsRefreshedAt = oldStats?.refreshedAt;
+
+    if (
+      oldStats &&
+      !forceRefresh &&
+      oldStatsRefreshedAt &&
+      !this.shouldRefreshStatistic(oldStats)
+    ) {
+      return {
+        stats: oldStats,
+        lastMatch: undefined,
+      };
+    }
+
+    const stats = await this.createSummonerStatistic(
+      summoner,
+      queueType,
+      cachedLeagues,
+      cachedMatches,
+      oldStats,
+    );
+
+    if (stats._toInsert) await this.saveSummonerStatisticsTx(tx, [stats._toInsert]);
+
+    return {
+      stats: stats.stats,
+      lastMatch: stats.lastMatch,
+    };
+  }
+
+  private static async createSummonerStatistic(
+    summoner: Pick<SummonerType, "region" | "puuid">,
+    queueType: LolQueueType,
+    cachedLeagues: LeagueRowType[],
+    cachedMatches: MatchWithSummonersType[],
+    oldStats: StatisticRowType | undefined,
   ): Promise<{
     stats: StatisticWithLeagueType | null;
     lastMatch: MatchWithSummonersType | undefined;
+    _toInsert: StatisticRowType | null;
   }> {
-    const oldStats = await this.getSummonerStatistic(summoner.puuid, queueType);
-    const queue = LOL_QUEUES[queueType];
-
-    const matches =
-      cachedMatches?.filter((m) => m.resultType === "NORMAL") ??
-      (await MatchService.getMatchesDBByPuuidFull(
-        summoner,
-        {
-          count: this.MATCHES_COUNTED,
-          queue: queue.queueId,
-          start: 0,
-        },
-        "NORMAL",
-      ));
+    const matches = cachedMatches.filter((m) => m.resultType === "NORMAL");
 
     if (!matches.length) {
       return {
         stats: null,
         lastMatch: undefined,
+        _toInsert: null,
       };
     }
 
-    const league =
-      (cachedLeagues ?? (await LeagueService.cacheLeaguesTx(tx, summoner))).find(
-        (l) => l.queueType === queueType,
-      ) ?? null;
+    const league = cachedLeagues.find((l) => l.queueType === queueType) ?? null;
 
     const _stats: StatsToRefresh = {
       statsByChampionId: [],
@@ -253,7 +370,7 @@ export class StatisticService {
 
     const mainChampionSkinId = sameMainChampion ? oldStats.mainChampionSkinId : undefined;
 
-    const statsToInsert: InsertStatisticRowType = {
+    const statsToInsert: StatisticRowType = {
       puuid: summoner.puuid,
       statsByChampionId: stats.statsByChampionId.sort(sortByMatches),
       statsByPosition: stats.statsByPosition.sort(sortByMatches),
@@ -280,9 +397,9 @@ export class StatisticService {
         .slice(0, 5),
 
       mainChampionId: mainChampionId,
-      mainChampionForegroundColor: mainChampionForegroundColor,
-      mainChampionBackgroundColor: mainChampionBackgroundColor,
-      mainChampionSkinId: mainChampionSkinId,
+      mainChampionForegroundColor: mainChampionForegroundColor ?? null,
+      mainChampionBackgroundColor: mainChampionBackgroundColor ?? null,
+      mainChampionSkinId: mainChampionSkinId ?? 0,
 
       mainPosition: maxItemBy(stats.statsByPosition, (item) => item.losses + item.wins).position,
 
@@ -292,29 +409,13 @@ export class StatisticService {
       refreshedAt: new Date(),
     };
 
-    await tx
-      .insert(statisticTable)
-      .values(statsToInsert)
-      .onConflictDoUpdate({
-        target: [statisticTable.puuid, statisticTable.queueType],
-        set: upsert(statisticTable),
-      })
-      .returning();
-
-    const insertedStats = await tx.query.statisticTable.findFirst({
-      where: and(eq(statisticTable.puuid, summoner.puuid), eq(statisticTable.queueType, queueType)),
-      with: {
-        league: true,
-      },
-    });
-
-    if (!insertedStats) {
-      throw new Error("Failed to refresh statistic");
-    }
-
     return {
-      stats: insertedStats,
+      stats: {
+        ...statsToInsert,
+        league: cachedLeagues.find((l) => l.id === statsToInsert.latestLeagueEntryId) ?? null,
+      },
       lastMatch: matches.at(0),
+      _toInsert: statsToInsert,
     };
   }
 

@@ -43,10 +43,7 @@ export class SpectatorService {
       data.participants.map((p) => p.puuid),
     );
 
-    const refreshedStats = await RefreshService.batchFastRefresh(
-      summoners.map((s) => s.puuid),
-      "RANKED_SOLO_5x5",
-    );
+    const refreshedStats = await RefreshService.batchFastRefresh(summoners, "RANKED_SOLO_5x5");
 
     return {
       ...data,

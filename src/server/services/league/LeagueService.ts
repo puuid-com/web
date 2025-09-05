@@ -31,6 +31,26 @@ export class LeagueService {
     return tx.insert(leagueTable).values(leagues).returning();
   }
 
+  static async batchCacheLeaguesBySummonersTx(tx: TransactionType, summoners: SummonerType[]) {
+    const leagues = await Promise.all(
+      summoners.map((summoner) =>
+        LeagueV4ByPuuid.call({ puuid: summoner.puuid, region: summoner.region }),
+      ),
+    );
+
+    const flattened = leagues.flat();
+
+    if (flattened.length === 0) return [];
+
+    return this.upsertLeaguesTx(
+      tx,
+      flattened.map((l) => ({
+        isLatest: true,
+        ...l,
+      })),
+    );
+  }
+
   static async cacheLeaguesTx(
     tx: TransactionType,
     id: Pick<SummonerType, "puuid" | "region">,

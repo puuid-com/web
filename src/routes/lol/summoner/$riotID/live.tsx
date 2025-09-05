@@ -47,8 +47,6 @@ function RouteComponent() {
     return <div>No active game</div>;
   }
 
-  console.log({ liveGame });
-
   return (
     <div className={"justify-center w-full flex flex-col"}>
       <div>{liveGame.gameQueueConfigId}</div>

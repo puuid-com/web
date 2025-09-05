@@ -14,7 +14,7 @@ export const $getSummonerStatistic = createServerFn({ method: "GET" })
     const params = ctx.data;
 
     const { StatisticService } = await import("@/server/services/StatisticService");
-    const data = await StatisticService.getSummonerStatistic(params.puuid, params.queue);
+    const data = await StatisticService.getSummonerStatisticWithLeague(params.puuid, params.queue);
 
     return data ?? null;
   });
