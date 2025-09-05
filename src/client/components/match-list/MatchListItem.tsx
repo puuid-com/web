@@ -19,7 +19,7 @@ export const MatchListItem = ({}: Props) => {
   return (
     <div
       key={match.matchId}
-      className="flex items-center gap-3 font-mono p-2 border-dashed h-[80px] bg-gradient-to-r from-neutral-900/20 to-match/10"
+      className="flex items-center gap-3 font-mono p-2 border-dashed h-[80px] bg-gradient-to-r from-background to-match/20"
     >
       <div className="shrink-0 w-1/12 flex flex-col items-center justify-center gap-1">
         <div className={cn("px-2 rounded-md w-fit bg-match")}>{`${index}/${count}`}</div>

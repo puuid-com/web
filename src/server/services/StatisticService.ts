@@ -14,6 +14,8 @@ import {
 } from "@/server/db/schema/summoner-statistic";
 import { ServerColorsService } from "@/server/services/ServerColorsService";
 import { LeagueService } from "@/server/services/league/LeagueService";
+import { MatchService } from "@/server/services/match/MatchService";
+import { LOL_QUEUES } from "@/server/services/match/queues.type";
 
 export type Stat = {
   wins: number;
@@ -169,8 +171,8 @@ export class StatisticService {
     summoner: Pick<SummonerType, "region" | "puuid">,
     queueType: LolQueueType,
     forceRefresh: boolean,
-    cachedLeagues: LeagueRowType[],
-    cachedMatches: MatchWithSummonersType[],
+    cachedLeagues?: LeagueRowType[],
+    cachedMatches?: MatchWithSummonersType[],
   ) {
     const oldStats = await this.getSummonerStatistic(summoner.puuid, queueType);
     const oldStatsRefreshedAt = oldStats?.refreshedAt;
@@ -186,6 +188,16 @@ export class StatisticService {
         lastMatch: undefined,
       };
     }
+
+    cachedLeagues ??= await LeagueService.cacheLeaguesTx(tx, summoner);
+    cachedMatches ??= await MatchService.getMatchesDBByPuuidFull(
+      summoner,
+      {
+        count: this.MATCHES_COUNTED,
+        queue: LOL_QUEUES[queueType].queueId,
+      },
+      "NORMAL",
+    );
 
     const stats = await this.createSummonerStatistic(
       summoner,

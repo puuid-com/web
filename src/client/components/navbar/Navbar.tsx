@@ -21,14 +21,16 @@ export const Navbar = ({ className }: Props) => {
   return (
     <header className={cn("border-b flex items-center", className)}>
       <div className="container mx-auto">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <h1 className="text-xl font-semibold flex items-center gap-1">
-              {/* <IdCardLanyard size={16} /> */}
+        <div className="flex items-center">
+          <div className="flex items-center gap-2 justify-between mr-10">
+            <h1 className="font-semibold ">
               <Link to={"/"}>puuid.com</Link>
             </h1>
           </div>
-          <div className="flex items-center gap-3">
+          <div className={"flex items-center justify-between text-sm"}>
+            <Link to={"/lol/summoner"}>Summoners</Link>
+          </div>
+          <div className="flex items-center gap-3 ml-auto">
             <div className="relative">
               <RiotIdForm onSuccess={handleSummonerSearch} />
             </div>

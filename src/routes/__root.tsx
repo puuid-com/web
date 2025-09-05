@@ -59,7 +59,7 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
         <HeadContent />
       </head>
       <body
-        className={"flex flex-col dark bg-neutral-950 text-neutral-300 overflow-hidden scrollbar"}
+        className={"dark flex flex-col overflow-hidden scrollbar bg-background"}
         style={
           {
             "--footer-height": "calc(60px)",

@@ -29,7 +29,7 @@ export const SummonerHeader = ({ className }: Props) => {
   return (
     <div
       className={cn(
-        "rounded-b-3xl flex bg-main/30 relative justify-between bg-cover bg-blend-exclusion bg-no-repeat bg-[position:50%_-200px]",
+        "rounded-b-3xl flex bg-main/10 relative justify-between bg-cover bg-blend-exclusion bg-no-repeat bg-[position:50%_-200px]",
         className,
       )}
       style={{
