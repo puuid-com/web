@@ -82,6 +82,7 @@ export function SummonerLiveTeamSummoner({ /* side, */ isSelf, league, participa
           to={"/lol/summoner/$riotID/matches"}
           params={{ riotID: displayRiotId }}
           search={{ q: "solo" }}
+          target={"_blank"}
           className={cn(
             "mt-1 inline-flex items-center gap-2 rounded-md px-2 py-1",
             "ring-1 ring-border/70 hover:bg-accent/60 transition-colors",

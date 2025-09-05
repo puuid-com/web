@@ -140,7 +140,7 @@ export class RefreshService {
     const shouldUseEpochSec = lastGameCreationEpochSec !== null && !!lastRefresh?.isFullRefresh;
 
     // progressFetchMatches()
-    const { stream: $matchesStream /* , result: $matchesResult */ } = pipeStep(
+    const { stream: $matchesStream, result: $matchesResult } = pipeStep(
       this.progressFetchMatches(
         summoner,
         queueId,
@@ -148,6 +148,7 @@ export class RefreshService {
       ),
     );
     for await (const msg of $matchesStream) yield msg;
+    const matches = await $matchesResult;
 
     // progressFetchLeagues()
     const { stream: $leaguesStream, result: $leaguesResult } = pipeStep(
@@ -158,7 +159,7 @@ export class RefreshService {
 
     // progressFetchStats()
     const { stream: $statsStream, result: $statsResult } = pipeStep(
-      this.progressFetchStats(summoner, queueType, leagues /* , matches */),
+      this.progressFetchStats(summoner, queueType, leagues, matches),
     );
     for await (const msg of $statsStream) yield msg;
     const { lastMatch } = await $statsResult;
