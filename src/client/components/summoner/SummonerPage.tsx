@@ -1,5 +1,6 @@
 import { SummonerHeader } from "@/client/components/summoner/header/SummonerHeader";
 import { SummonerNavigation } from "@/client/components/summoner/navigation/SummonerNavigation";
+import { SummonerLiveMatchHeader } from "@/client/components/summoner/live-match-header/SummonerLiveMatchHeader";
 import { useChampionContext } from "@/client/context/MainChampionContext";
 import { Outlet } from "@tanstack/react-router";
 
@@ -24,6 +25,7 @@ export const SummonerPage = ({}: Props) => {
       }
     >
       <SummonerHeader className={"h-[var(--summoner-header-height)]"} />
+      <SummonerLiveMatchHeader />
       <SummonerNavigation className={"h-[var(--summoner-navigation-height)]"} />
       <div className={"flex min-h-[var(--summoner-outlet-height)] w-full"}>
         <Outlet />
