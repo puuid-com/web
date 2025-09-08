@@ -1,7 +1,7 @@
 import { SummonerLiveMatchHeaderTeam } from "@/client/components/summoner/live-match-header/SummonerLiveMatchHeaderTeam";
 import { useSummonerLiveMatch } from "@/client/hooks/useSummonerLiveMatch";
 import { cn, formatSeconds } from "@/client/lib/utils";
-import { getQueueById } from "@/server/services/match/queues.type";
+import { getQueueById } from "@/server/services/match/queues";
 import { Link, useParams } from "@tanstack/react-router";
 import { SummonerLiveMatchCenter } from "@/client/components/summoner/live-match-header/SummonerLiveMatchCenter";
 import type { LolTierType } from "@/server/types/riot/common";

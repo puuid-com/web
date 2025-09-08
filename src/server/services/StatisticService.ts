@@ -15,7 +15,7 @@ import {
 import { ServerColorsService } from "@/server/services/ServerColorsService";
 import { LeagueService } from "@/server/services/league/LeagueService";
 import { MatchService } from "@/server/services/match/MatchService";
-import { LOL_QUEUES } from "@/server/services/match/queues.type";
+import { LOL_QUEUES } from "@/server/services/match/queues";
 
 export type Stat = {
   wins: number;
