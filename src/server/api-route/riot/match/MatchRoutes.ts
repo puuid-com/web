@@ -2,7 +2,7 @@ import { RiotApiRoute } from "@/server/api-route/ApiRoute";
 import { CachedApiRoute } from "@/server/api-route/CacheApiRoute";
 import type { AccountDTOType } from "@/server/api-route/riot/account/AccountDTO";
 import { type MatchDTOType, MatchDTOSchema } from "@/server/api-route/riot/match/MatchDTO";
-import { MatchTimelineDTOSchema } from "@/server/api-route/riot/match/MatchTimeline.dto";
+import { MatchTimelineDTOSchema } from "@/server/api-route/riot/match/MatchTimelineDTO";
 import type { LolRoutingValueType } from "@/server/types/riot/common";
 import * as v from "valibot";
 

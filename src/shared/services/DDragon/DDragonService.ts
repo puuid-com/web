@@ -8,10 +8,10 @@ import {
 import ky from "ky";
 import * as v from "valibot";
 import type { MatchSummonerRowType } from "@/server/db/schema/match";
-import { DDragonItemFileSchema, type DDragonItemsData } from "@/shared/services/DDragon/items.dto";
-import type { ProfileIconType } from "@/shared/services/DDragon/profile-icons.dto";
+import { DDragonItemFileSchema, type DDragonItemsData } from "@/shared/services/DDragon/items-dto";
+import type { ProfileIconType } from "@/shared/services/DDragon/profile-icons-dto";
 import type { SummonerType } from "@/server/db/schema/summoner";
-import { DDragonChampionFileSchema } from "@/shared/services/DDragon/champion.dto";
+import { DDragonChampionFileSchema } from "@/shared/services/DDragon/champion-dto";
 
 export type DDragonMetadata = {
   champions: ChampionsResponseType["data"];
