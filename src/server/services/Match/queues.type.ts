@@ -348,7 +348,7 @@ export const LOL_QUEUES: Record<LoLQueueKeyType, LoLQueue> = {
   RANKED_SOLO_5x5: {
     queueId: 420,
     map: "Summoner's Rift",
-    description: "5v5 Ranked Solo games",
+    description: "Ranked Solo",
     notes: null,
   },
   blind_pick: {
@@ -360,7 +360,7 @@ export const LOL_QUEUES: Record<LoLQueueKeyType, LoLQueue> = {
   RANKED_FLEX_SR: {
     queueId: 440,
     map: "Summoner's Rift",
-    description: "5v5 Ranked Flex games",
+    description: "Ranked Flex",
     notes: null,
   },
   aram: {

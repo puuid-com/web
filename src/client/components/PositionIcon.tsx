@@ -6,24 +6,28 @@ import {
   TreePine,
   Users,
   Zap,
+  Mountain,
+  Leaf,
+  Compass,
+  Target,
+  Shield,
   type LucideIcon,
+  type LucideProps,
 } from "lucide-react";
-
-type Props = {
-  position: LolPositionType;
-};
 
 const map: Record<LolPositionType, LucideIcon> = {
   "": SandwichIcon,
-  TOP: ArrowUp,
-  JUNGLE: TreePine,
-  MIDDLE: Zap,
-  BOTTOM: ArrowDown,
-  UTILITY: Users,
+  // Tweaked icon set for clearer semantics
+  TOP: Mountain,
+  JUNGLE: Leaf,
+  MIDDLE: Compass,
+  BOTTOM: Target,
+  UTILITY: Shield,
 };
 
-export const PositionIcon = ({ position }: Props) => {
-  const Icon = map[position];
+type Props = { position: LolPositionType } & LucideProps;
 
-  return <Icon aria-label={position} />;
+export const PositionIcon = ({ position, ...iconProps }: Props) => {
+  const Icon = map[position];
+  return <Icon aria-label={position} {...iconProps} />;
 };

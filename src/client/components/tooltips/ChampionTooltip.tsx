@@ -16,7 +16,7 @@ export const ChampionTooltip = ({ championId, children }: React.PropsWithChildre
   return (
     <Tooltip>
       <TooltipTrigger asChild>{children}</TooltipTrigger>
-      <TooltipContent className={"border border-neutral-800 flex flex-col gap-1.5"}>
+      <TooltipContent className={"border border-neutral-800 flex flex-col gap-1.5 px-2"}>
         <div className={"flex items-center gap-2"}>
           <img src={imageUrl} alt={name} className="w-12 aspect-square" />
           <span className="font-medium text-xl">{name}</span>
