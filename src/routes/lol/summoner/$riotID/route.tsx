@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import type React from "react";
 import { trimRiotID } from "@/lib/riotID";
 import { getSummonerByRiotIDOptions } from "@/client/queries/getSummonerByRiotID";
 import { ChampionProvider } from "@/client/context/MainChampionContext";

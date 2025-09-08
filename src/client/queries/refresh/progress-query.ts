@@ -10,7 +10,7 @@ export const progressQueryOptions = (args: Args) =>
   queryOptions({
     queryKey: ["summoner-progress", args.puuid, args.region, args.queue] as const,
     queryFn: streamedQuery<RefreshProgressMsgType>({
-      queryFn: ({ signal }) => {
+      streamFn: ({ signal }) => {
         try {
           return progressAnswer(args, signal);
         } catch (e) {

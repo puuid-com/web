@@ -1,6 +1,6 @@
 import { AccountRegionDTOSchema } from "@/server/api-route/riot/account/AccountDTO";
 import { LolQueues } from "@/server/api-route/riot/league/LeagueDTO";
-import { LOL_QUEUES } from "@/server/services/match/queues.type";
+import { LOL_QUEUES } from "@/server/services/match/queues";
 import { createServerFn } from "@tanstack/react-start";
 import * as v from "valibot";
 

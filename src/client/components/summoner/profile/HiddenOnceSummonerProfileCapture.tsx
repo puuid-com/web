@@ -41,7 +41,7 @@ function HiddenOnceSummonerProfileCapture({
   const uploadedKey = React.useMemo(() => `spc-uploaded:${summoner.puuid}`, [summoner.puuid]);
   const _$postSummonerProfile = useServerFn($postSummonerProfile);
 
-  const mutation = useMutation({
+  const { mutateAsync } = useMutation({
     mutationKey: ["summoner-profile", summoner.puuid],
     mutationFn: (data: { imageSrc: string }) =>
       _$postSummonerProfile({ data: { puuid: summoner.puuid, imageSrc: data.imageSrc } }),
@@ -95,7 +95,7 @@ function HiddenOnceSummonerProfileCapture({
           pixelRatio: 2,
         });
 
-        await mutation.mutateAsync({ imageSrc: dataUrl });
+        await mutateAsync({ imageSrc: dataUrl });
 
         onSuccessCallback?.();
       } catch (err) {
@@ -115,11 +115,11 @@ function HiddenOnceSummonerProfileCapture({
   }, [
     container,
     uploadedKey,
-    mutation,
     shouldRender,
     summoner.riotId,
     onSuccessCallback,
     onStartCallback,
+    mutateAsync,
   ]);
 
   if (!shouldRender) return null;

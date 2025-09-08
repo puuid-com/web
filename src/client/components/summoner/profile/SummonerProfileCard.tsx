@@ -24,7 +24,7 @@ export function SummonerProfileCard({
   const ref = React.useRef<HTMLDivElement>(null);
   const saved = React.useRef(false);
 
-  const mutation = useMutation({
+  const { mutateAsync } = useMutation({
     mutationKey: ["summoner-profile", summoner.puuid],
     mutationFn: (data: { imageSrc: string }) =>
       $postSummonerProfile({
@@ -51,8 +51,7 @@ export function SummonerProfileCard({
         const img = new Image();
         img.src = dataUrl;
 
-        mutation
-          .mutateAsync({ imageSrc: dataUrl })
+        mutateAsync({ imageSrc: dataUrl })
           .catch(console.error)
           .finally(() => {
             saved.current = true;
@@ -61,7 +60,7 @@ export function SummonerProfileCard({
       .catch((err: unknown) => {
         console.error("oops, something went wrong!", err);
       });
-  }, [disableAutoUpload, mutation]);
+  }, [disableAutoUpload, mutateAsync]);
 
   return (
     <Card

@@ -6,8 +6,9 @@ import reactRefresh from "eslint-plugin-react-refresh";
 import tanstackQuery from "@tanstack/eslint-plugin-query";
 import eslintConfigPrettier from "eslint-config-prettier/flat";
 import unusedImports from "eslint-plugin-unused-imports";
+import { defineConfig } from "eslint/config";
 
-export default tseslint.config(
+export default defineConfig(
   // Global ignores
   {
     ignores: [
@@ -26,6 +27,7 @@ export default tseslint.config(
   // Base JS and TS presets
   js.configs.recommended,
   tseslint.configs.recommendedTypeChecked,
+  ...tanstackQuery.configs["flat/recommended"],
   {
     languageOptions: {
       parserOptions: {
@@ -56,7 +58,6 @@ export default tseslint.config(
       react,
       "react-hooks": reactHooks,
       "react-refresh": reactRefresh,
-      "@tanstack/query": tanstackQuery,
       "unused-imports": unusedImports,
     },
     rules: {

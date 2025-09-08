@@ -4,7 +4,7 @@ import type { MatchRowType, MatchWithSummonersType } from "@/server/db/schema/ma
 import { pipeStep } from "@/server/lib/generator";
 import { SummonerService } from "@/server/services/summoner/SummonerService";
 import { LeagueService } from "@/server/services/league/LeagueService";
-import { LOL_QUEUES } from "@/server/services/match/queues.type";
+import { LOL_QUEUES } from "@/server/services/match/queues";
 import { StatisticService } from "@/server/services/StatisticService";
 import { eq, sql } from "drizzle-orm";
 import type { LeagueRowType } from "@/server/db/schema/league";
