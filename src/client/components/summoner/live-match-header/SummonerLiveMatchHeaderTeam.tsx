@@ -13,6 +13,7 @@ type Props = {
 
 export const SummonerLiveMatchHeaderTeam = ({ match, teamId }: Props) => {
   const metadata = useLoaderData({ from: "/lol" });
+  const { summoner } = useLoaderData({ from: "/lol/summoner/$riotID" });
   const { championsData, latest_version, summoner_spells } = metadata;
 
   const participants = React.useMemo(() => {
@@ -45,6 +46,7 @@ export const SummonerLiveMatchHeaderTeam = ({ match, teamId }: Props) => {
             latest_version,
             p.spell2Id,
           );
+          const isSelf = p.summoner?.puuid === summoner.puuid;
           return (
             <ChampionTile
               key={p.puuid}
@@ -54,6 +56,7 @@ export const SummonerLiveMatchHeaderTeam = ({ match, teamId }: Props) => {
               spell2Url={s2}
               role={role}
               teamId={teamId}
+              isSelf={!!isSelf}
             />
           );
         })}

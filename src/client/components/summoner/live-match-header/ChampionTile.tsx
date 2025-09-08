@@ -13,22 +13,29 @@ type Props = {
   spell2Url: string;
   role: LolPositionType;
   teamId: number; // 100 | 200
+  isSelf?: boolean;
 };
 
-export const ChampionTile: React.FC<Props> = ({
+export const ChampionTile = React.memo(function ChampionTile({
   championId,
   championName = "",
   spell1Url,
   spell2Url,
   role,
   teamId,
-}) => {
+  isSelf = false,
+}: Props) {
   return (
-    <div className={"flex flex-col items-center gap-1.5 min-w-14"}>
+    <div
+      className={cn(
+        "flex flex-col items-center gap-1.5 min-w-14 transition-transform",
+        "hover:scale-[1.02]",
+      )}
+    >
       <ChampionTooltip championId={championId}>
-        <div className={"relative"}>
+        <div className={cn("relative rounded-md", isSelf && "ring-2 ring-main/70")}> 
           <img
-            className={"w-14 h-14 rounded-md object-cover"}
+            className={"w-14 h-14 aspect-square rounded-md object-cover"}
             src={CDragonService.getChampionSquare(championId)}
             alt={championName}
             loading="eager"
@@ -39,7 +46,7 @@ export const ChampionTile: React.FC<Props> = ({
             variant={"icon"}
             className={cn(
               "absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10",
-              "ring-1 ring-border/60 shadow-sm",
+              "ring-1 ring-border/60 shadow-sm backdrop-blur-[1px]",
               teamId === 100
                 ? "bg-red-500/60 border-red-500/60 text-red-50"
                 : "bg-blue-500/60 border-blue-500/60 text-blue-50",
@@ -48,19 +55,19 @@ export const ChampionTile: React.FC<Props> = ({
           >
             <img
               src={CDNService.getPositionImageUrl(role)}
-              alt={role}
+              alt=""
+              aria-hidden="true"
               className={"w-3 h-3"}
               loading="eager"
               decoding="async"
             />
           </Badge>
           <div className={"absolute bottom-0 right-0 flex gap-0.5 p-0.5"}>
-            <img src={spell1Url} alt="" className={"w-4 h-4 rounded-sm ring-1 ring-border/60"} />
-            <img src={spell2Url} alt="" className={"w-4 h-4 rounded-sm ring-1 ring-border/60"} />
+            <img src={spell1Url} alt="" className={"w-4 h-4 aspect-square rounded-sm ring-1 ring-border/40"} />
+            <img src={spell2Url} alt="" className={"w-4 h-4 aspect-square rounded-sm ring-1 ring-border/40"} />
           </div>
         </div>
       </ChampionTooltip>
     </div>
   );
-};
-
+});

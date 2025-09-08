@@ -37,7 +37,7 @@ export const SummonerLiveMatchCenter: React.FC<Props> = ({
   bansBlue,
 }) => {
   return (
-    <div className={"flex flex-col items-center justify-center px-3 min-w-56 gap-1"}>
+    <div className={"flex flex-col items-center justify-center px-3 sm:min-w-56 min-w-44 gap-1"}>
       <div className={"flex items-center gap-1.5 text-xs leading-none text-muted-foreground"}>
         <span className={"relative flex h-2 w-2"}>
           <span
@@ -77,7 +77,7 @@ export const SummonerLiveMatchCenter: React.FC<Props> = ({
         <div className={"relative flex items-center justify-center select-none py-0.5"}>
           <div
             className={
-              "text-base font-mono px-1.5 py-0.5 rounded-md ring-1 ring-border/60 bg-main/20 text-foreground/90"
+              "text-base font-mono tabular-nums font-medium px-1.5 py-0.5 rounded-md ring-1 ring-border/60 bg-main/30 text-foreground/90"
             }
           >
             {matchSecSinceStartTimer !== 0 ? (
@@ -110,39 +110,68 @@ export const SummonerLiveMatchCenter: React.FC<Props> = ({
         </div>
       </div>
 
-      {/* Bans row if present */}
-      {bansRed.length + bansBlue.length > 0 ? (
-        <div className={"mt-0.5 flex items-center gap-2 text-[10px] text-muted-foreground"}>
-          <div className={"flex gap-1"}>
-            {bansRed.map((b) => (
-              <ChampionTooltip key={`r-${b.pickTurn}`} championId={b.championId}>
-                <img
-                  src={CDragonService.getChampionSquare(b.championId)}
-                  alt=""
-                  className={"w-4 h-4 rounded-sm opacity-90 ring-1 ring-border/50"}
-                  loading="lazy"
-                  decoding="async"
-                />
-              </ChampionTooltip>
-            ))}
-          </div>
-          <span>Bans</span>
-          <div className={"flex gap-1"}>
-            {bansBlue.map((b) => (
-              <ChampionTooltip key={`b-${b.pickTurn}`} championId={b.championId}>
-                <img
-                  src={CDragonService.getChampionSquare(b.championId)}
-                  alt=""
-                  className={"w-4 h-4 rounded-sm opacity-90 ring-1 ring-border/50"}
-                  loading="lazy"
-                  decoding="async"
-                />
-              </ChampionTooltip>
-            ))}
-          </div>
-        </div>
-      ) : null}
+      <BansRow bansRed={bansRed} bansBlue={bansBlue} />
     </div>
   );
 };
 
+const PLACEHOLDER_COUNT = 5;
+
+const BansRow: React.FC<{ bansRed: Ban[]; bansBlue: Ban[] }> = ({ bansRed, bansBlue }) => {
+  const pad = (arr: Ban[]) =>
+    arr
+      .filter((b) => b.championId > 0)
+      .slice(0, PLACEHOLDER_COUNT)
+      .concat(Array(Math.max(0, PLACEHOLDER_COUNT - arr.length)).fill(null) as unknown as Ban[]);
+
+  const left = pad(bansRed);
+  const right = pad(bansBlue);
+
+  return (
+    <div className={"mt-0.5 flex items-center gap-2 text-[10px] text-muted-foreground"}>
+      <div className={"flex gap-1"}>
+        {left.map((b, idx) =>
+          b ? (
+            <ChampionTooltip key={`r-${b.pickTurn}`} championId={b.championId}>
+              <img
+                src={CDragonService.getChampionSquare(b.championId)}
+                alt=""
+                className={"w-4 h-4 rounded-sm opacity-90 ring-1 ring-border/50"}
+                loading="lazy"
+                decoding="async"
+              />
+            </ChampionTooltip>
+          ) : (
+            <span
+              key={`r-ph-${idx}`}
+              className={"w-4 h-4 rounded-sm ring-1 ring-border/30 bg-foreground/10 inline-block"}
+              aria-hidden
+            />
+          ),
+        )}
+      </div>
+      <span>Bans</span>
+      <div className={"flex gap-1"}>
+        {right.map((b, idx) =>
+          b ? (
+            <ChampionTooltip key={`b-${b.pickTurn}`} championId={b.championId}>
+              <img
+                src={CDragonService.getChampionSquare(b.championId)}
+                alt=""
+                className={"w-4 h-4 rounded-sm opacity-90 ring-1 ring-border/50"}
+                loading="lazy"
+                decoding="async"
+              />
+            </ChampionTooltip>
+          ) : (
+            <span
+              key={`b-ph-${idx}`}
+              className={"w-4 h-4 rounded-sm ring-1 ring-border/30 bg-foreground/10 inline-block"}
+              aria-hidden
+            />
+          ),
+        )}
+      </div>
+    </div>
+  );
+};

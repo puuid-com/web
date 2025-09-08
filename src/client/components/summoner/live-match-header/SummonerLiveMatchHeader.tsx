@@ -1,6 +1,6 @@
 import { SummonerLiveMatchHeaderTeam } from "@/client/components/summoner/live-match-header/SummonerLiveMatchHeaderTeam";
 import { useSummonerLiveMatch } from "@/client/hooks/useSummonerLiveMatch";
-import { cn } from "@/client/lib/utils";
+import { cn, formatSeconds } from "@/client/lib/utils";
 import { getQueueById } from "@/server/services/match/queues.type";
 import { Link, useParams } from "@tanstack/react-router";
 import { SummonerLiveMatchCenter } from "@/client/components/summoner/live-match-header/SummonerLiveMatchCenter";
@@ -16,7 +16,7 @@ export const SummonerLiveMatchHeader = ({}: Props) => {
   const [matchSecSinceStartTimer, setMatchSecSinceStartTimer] = React.useState(0);
   const { data, status } = useSummonerLiveMatch();
 
-  console.log({ data, status });
+  // console.debug({ data, status });
 
   React.useEffect(() => {
     if (status !== "success" || !data) return;
@@ -107,7 +107,7 @@ export const SummonerLiveMatchHeader = ({}: Props) => {
         "group rounded-xl flex justify-between items-center gap-2 p-2",
         "bg-main/10 text-main ring-1 ring-main/30 shadow-[inset_0_1px_0_rgb(255_255_255_/_0.04)] cursor-pointer hover:bg-main/20 transition-colors",
       )}
-      aria-label="Open live match view"
+      aria-label={`Live match ${matchSecSinceStartTimer ? formatSeconds(matchSecSinceStartTimer) : ""} - ${red.avgTier ?? "?"} vs ${blue.avgTier ?? "?"}`}
     >
       <SummonerLiveMatchHeaderTeam match={data} teamId={100} />
 
