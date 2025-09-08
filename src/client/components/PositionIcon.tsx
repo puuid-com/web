@@ -1,11 +1,6 @@
 import type { LolPositionType } from "@/server/api-route/riot/match/MatchDTO";
 import {
-  ArrowDown,
-  ArrowUp,
   SandwichIcon,
-  TreePine,
-  Users,
-  Zap,
   Mountain,
   Leaf,
   Compass,

@@ -1,5 +1,5 @@
 import { Skeleton } from "@/client/components/ui/skeleton";
-import { cn, formatSeconds } from "@/client/lib/utils";
+import { formatSeconds } from "@/client/lib/utils";
 import { CDNService } from "@/shared/services/CDNService";
 import { CDragonService } from "@/shared/services/CDragon/CDragonService";
 import { ChampionTooltip } from "@/client/components/tooltips/ChampionTooltip";
@@ -131,7 +131,7 @@ const BansRow: React.FC<{ bansRed: Ban[]; bansBlue: Ban[] }> = ({ bansRed, bansB
     <div className={"mt-0.5 flex items-center gap-2 text-[10px] text-muted-foreground"}>
       <div className={"flex gap-1"}>
         {left.map((b, idx) =>
-          b ? (
+          b.championId !== 0 ? (
             <ChampionTooltip key={`r-${b.pickTurn}`} championId={b.championId}>
               <img
                 src={CDragonService.getChampionSquare(b.championId)}
@@ -153,7 +153,7 @@ const BansRow: React.FC<{ bansRed: Ban[]; bansBlue: Ban[] }> = ({ bansRed, bansB
       <span>Bans</span>
       <div className={"flex gap-1"}>
         {right.map((b, idx) =>
-          b ? (
+          b.championId !== 0 ? (
             <ChampionTooltip key={`b-${b.pickTurn}`} championId={b.championId}>
               <img
                 src={CDragonService.getChampionSquare(b.championId)}

@@ -33,7 +33,7 @@ export const ChampionTile = React.memo(function ChampionTile({
       )}
     >
       <ChampionTooltip championId={championId}>
-        <div className={cn("relative rounded-md", isSelf && "ring-2 ring-main/70")}> 
+        <div className={cn("relative rounded-md", isSelf && "ring-2 ring-main/70")}>
           <img
             className={"w-14 h-14 aspect-square rounded-md object-cover"}
             src={CDragonService.getChampionSquare(championId)}
@@ -63,8 +63,16 @@ export const ChampionTile = React.memo(function ChampionTile({
             />
           </Badge>
           <div className={"absolute bottom-0 right-0 flex gap-0.5 p-0.5"}>
-            <img src={spell1Url} alt="" className={"w-4 h-4 aspect-square rounded-sm ring-1 ring-border/40"} />
-            <img src={spell2Url} alt="" className={"w-4 h-4 aspect-square rounded-sm ring-1 ring-border/40"} />
+            <img
+              src={spell1Url}
+              alt=""
+              className={"w-4 h-4 aspect-square rounded-sm ring-1 ring-border/40"}
+            />
+            <img
+              src={spell2Url}
+              alt=""
+              className={"w-4 h-4 aspect-square rounded-sm ring-1 ring-border/40"}
+            />
           </div>
         </div>
       </ChampionTooltip>
