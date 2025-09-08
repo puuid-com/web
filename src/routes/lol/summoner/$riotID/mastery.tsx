@@ -33,7 +33,7 @@ function RouteComponent() {
     from: "/lol/summoner/$riotID/mastery",
   });
 
-  const results = useQueries({
+  const [masteriesQuery, statisticsQuery] = useQueries({
     queries: [
       getSummonerMasteriesOptions({
         summoner,
@@ -45,11 +45,11 @@ function RouteComponent() {
   });
 
   const { data, isPending, isError, _masteriesData } = React.useMemo(() => {
-    const isPending = results.some((r) => r.status === "pending");
-    const isError = results.some((r) => r.status === "error");
+    const isPending = masteriesQuery.status === "pending" || statisticsQuery.status === "pending";
+    const isError = masteriesQuery.status === "error" || statisticsQuery.status === "error";
 
-    const _masteriesData = results[0].data;
-    const _statisticData = results[1].data;
+    const _masteriesData = masteriesQuery.data;
+    const _statisticData = statisticsQuery.data;
 
     if (isPending || isError || !_masteriesData) {
       return {
@@ -76,7 +76,16 @@ function RouteComponent() {
       data: combined,
       _masteriesData: _masteriesData.masteries,
     };
-  }, [champion, metadata.champions, onlyPlayed, queue, results]);
+  }, [
+    champion,
+    masteriesQuery.data,
+    masteriesQuery.status,
+    metadata.champions,
+    onlyPlayed,
+    queue,
+    statisticsQuery.data,
+    statisticsQuery.status,
+  ]);
 
   if (isPending) {
     return <div>Loading...</div>;

@@ -13,7 +13,7 @@ export const useGetChampionData = (championId: number | undefined, enabled?: boo
     queryFn: async () => {
       const data = await DDragonService.getChampionData(metadata.latest_version, id);
 
-      return data.data[id];
+      return data.data[id]!;
     },
     enabled: !!championId && enabled !== false,
     retry: false,
