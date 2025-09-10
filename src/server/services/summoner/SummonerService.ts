@@ -7,7 +7,7 @@ import type {
 import { AccountService } from "@/server/services/AccountService";
 import { getPartsFromRiotID } from "@/server/services/summoner/utils";
 import { SummonerDTOService } from "@/server/services/SummonrtDTOService";
-import { and, desc, eq, inArray } from "drizzle-orm";
+import { and, desc, eq, ilike, inArray } from "drizzle-orm";
 import { normalizeRiotID, trimRiotID } from "@/lib/riotID";
 import type { SummonerDTOType } from "@/server/api-route/riot/summoner/SummonerDTO";
 import {
@@ -19,8 +19,14 @@ import {
 import type { User } from "better-auth";
 
 export class SummonerService {
-  static async getSummoners() {
+  static async getSummoners(search?: string) {
+    const norm = search ? normalizeRiotID(search) : "";
+    const whereClause = norm
+      ? ilike(summonerTable.normalizedRiotId, `%${norm}%`)
+      : undefined;
+
     return db.query.summonerTable.findMany({
+      where: whereClause,
       with: {
         statistics: true,
         leagues: true,

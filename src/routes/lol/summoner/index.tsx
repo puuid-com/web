@@ -15,7 +15,8 @@ export const Route = createFileRoute("/lol/summoner/")({
       }),
       raw,
     ),
-  loader: async () => await $getSummoners(),
+  loaderDeps: (ctx) => ({ c: ctx.search.c }),
+  loader: async (ctx) => await $getSummoners({ data: { c: ctx.deps.c } }),
 });
 
 function RouteComponent() {
