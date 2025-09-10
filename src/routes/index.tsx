@@ -37,10 +37,9 @@ function Landing() {
             </p>
 
             <div className="mt-8 mx-auto w-full max-w-xl">
-              <div className="rounded-xl border border-neutral-800/80 bg-neutral-900/50 p-3 backdrop-blur">
+              <div className="rounded-xl border border-neutral-800/80 bg-neutral-900/50 p-3 backdrop-blur flex items-center justify-center w-fit mx-auto">
                 <RiotIdForm onSuccess={handleSummonerSearch} />
               </div>
-              <p className="mt-2 text-xs text-neutral-500">Format: GameName#TagLine</p>
             </div>
 
             {/* Quick examples */}

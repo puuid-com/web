@@ -1,165 +1,145 @@
-import ChecklistInline, { type Status } from "@/client/components/riot-id-form/helpers";
+import * as React from "react";
 import { Button } from "@/client/components/ui/button";
 import { Input } from "@/client/components/ui/input";
 import { cn } from "@/client/lib/utils";
-import { type AnyFieldApi, useForm } from "@tanstack/react-form";
-import * as v from "valibot";
+import { useQuery } from "@tanstack/react-query";
+import { debounce } from "@tanstack/react-pacer";
+import { CDragonService } from "@/shared/services/CDragon/CDragonService";
+import { useServerFn } from "@tanstack/react-start";
+import { $getSummoners, type $GetSummonersType } from "@/server/functions/$getSummoners";
 
-type Props = { onSuccess: (riotId: string) => void };
-
-const HAS_FORMAT =
-  /^[\p{Zs}]*(?:[\p{L}\p{N}][\p{L}\p{N}\p{Zs}]*)+[\p{Zs}]*#[\p{Zs}]*(?:[\p{L}\p{N}][\p{L}\p{N}\p{Zs}]*)+[\p{Zs}]*$/u;
-const GAME_OK = /^\s*(?:[\p{L}\p{N}][\p{Zs}]*){3,16}#/u;
-const TAG_OK = /#(?:[\p{Zs}]*[\p{L}\p{N}]){3,5}[\p{Zs}]*$/u;
-const NAME_CHARS = /^[\p{L}\p{N}\p{Zs}]*$/u;
-const TAG_CHARS = /^[\p{L}\p{N}\p{Zs}]*$/u;
-
-const validationSchema = v.object({
-  riotId: v.pipe(
-    v.string(),
-    v.regex(HAS_FORMAT, "RiotIdForm-#_CHECK"),
-    v.regex(GAME_OK, "RiotIdForm-GAME_NAME"),
-    v.regex(TAG_OK, "RiotIdForm-TAG_LINE"),
-  ),
-});
+type Props = {
+  onSuccess: (riotId: string) => void;
+};
 
 export function RiotIdForm({ onSuccess }: Props) {
-  const form = useForm({
-    defaultValues: { riotId: "" },
-    validators: { onChange: validationSchema },
-    onSubmit: ({ value }) => {
-      onSuccess(value.riotId);
+  const [value, setValue] = React.useState("");
+  const [open, setOpen] = React.useState(false);
+  const [highlight, setHighlight] = React.useState<number>(-1);
+  const $fn = useServerFn($getSummoners);
+
+  const [term, setTerm] = React.useState("");
+  const setTermDebounced = debounce(
+    (text: string) => {
+      setTerm(text.trim());
     },
+    { wait: 250 },
+  );
+
+  const { data: results = [], isFetching } = useQuery({
+    queryKey: ["summoner-suggest", term],
+    enabled: term.length >= 2,
+    queryFn: async () => await $fn({ data: { c: term } }),
+    staleTime: 10_000,
   });
 
-  return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        form.handleSubmit();
-      }}
-      className="flex items-start gap-3 w-90"
-    >
-      <div className="w-full max-w-md">
-        <form.Field
-          name="riotId"
-          children={(field) => (
-            <div className="relative group">
-              <Input
-                id={field.name}
-                name={field.name}
-                value={field.state.value}
-                onBlur={field.handleBlur}
-                onChange={(e) => {
-                  field.handleChange(e.target.value);
-                }}
-                placeholder="GameName#TagLine"
-                className="bg-neutral-900 border-neutral-800 text-neutral-200 placeholder:text-neutral-500"
-                aria-describedby={`${field.name}-checks`}
-              />
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const pick = results[highlight];
+    if (pick) onSuccess(pick.displayRiotId);
+    else if (value.trim()) onSuccess(value.trim());
+    setOpen(false);
+  };
 
-              {/* Popup under the input, visible only on focus */}
-              <div
-                id={`${field.name}-checks`}
-                className={cn(
-                  "absolute left-0 right-0 top-full z-20 mt-2",
-                  "pointer-events-none opacity-0 translate-y-1",
-                  "group-focus-within:pointer-events-auto group-focus-within:opacity-100 group-focus-within:translate-y-0",
-                  "transition-[opacity,transform] duration-150",
-                )}
-                aria-live="polite"
-              >
-                <div className="rounded-md border border-neutral-800 bg-neutral-900/95 backdrop-blur p-3 shadow-xl">
-                  <Checks field={field} />
-                </div>
-              </div>
+  const handlePick = (s: $GetSummonersType[number]) => {
+    onSuccess(s.displayRiotId);
+    setOpen(false);
+  };
+
+  const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!open) return;
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setHighlight((h) => Math.min(results.length - 1, h + 1));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setHighlight((h) => Math.max(-1, h - 1));
+    } else if (e.key === "Enter") {
+      // Let form submit handle selection
+    } else if (e.key === "Escape") {
+      setOpen(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="flex items-start gap-3 w-90">
+      <div className="w-full max-w-md">
+        <div className="relative">
+          <Input
+            value={value}
+            onChange={(e) => {
+              setValue(e.target.value);
+              setTermDebounced(e.target.value);
+              setOpen(true);
+            }}
+            onFocus={() => {
+              setOpen(true);
+            }}
+            onKeyDown={onKeyDown}
+            placeholder="GameName#TagLine"
+            className="bg-neutral-900 border-neutral-800 text-neutral-200 placeholder:text-neutral-500"
+            aria-autocomplete="list"
+            aria-expanded={open}
+            aria-controls="riotid-suggestions"
+          />
+
+          {open && (isFetching || results.length > 0 || term.length >= 2) ? (
+            <div
+              id="riotid-suggestions"
+              className={cn(
+                "absolute left-0 right-0 top-full z-30 mt-2",
+                "rounded-md border border-neutral-800 bg-neutral-900/95 backdrop-blur shadow-xl",
+                "max-h-72 overflow-auto",
+              )}
+              onMouseLeave={() => {
+                setHighlight(-1);
+              }}
+            >
+              {isFetching ? (
+                <div className="px-3 py-2 text-sm text-neutral-400">Searching…</div>
+              ) : results.length > 0 ? (
+                results.map((s, i) => {
+                  const [gameName, tagLine] = s.displayRiotId.split("#");
+                  const active = i === highlight;
+                  const icon = CDragonService.getProfileIcon(s.profileIconId);
+                  return (
+                    <button
+                      key={s.puuid}
+                      type="button"
+                      className={cn(
+                        "flex w-full items-center gap-3 px-3 py-2 text-left",
+                        active ? "bg-neutral-800/80" : "hover:bg-neutral-800/50",
+                      )}
+                      onMouseEnter={() => {
+                        setHighlight(i);
+                      }}
+                      onClick={() => {
+                        handlePick(s);
+                      }}
+                    >
+                      <img src={icon} alt="" className="h-6 w-6 rounded-sm" />
+                      <div className="flex-1">
+                        <div className="text-sm text-neutral-100">{gameName}</div>
+                        <div className="text-[11px] text-neutral-400">
+                          #{tagLine} • {s.region}
+                        </div>
+                      </div>
+                      <div className="text-[11px] text-neutral-500">Lv. {s.summonerLevel}</div>
+                    </button>
+                  );
+                })
+              ) : term.length >= 2 ? (
+                <div className="px-3 py-2 text-sm text-neutral-400">No matches</div>
+              ) : null}
             </div>
-          )}
-        />
+          ) : null}
+        </div>
       </div>
 
-      <form.Subscribe
-        selector={(s) => [s.canSubmit, s.isSubmitting]}
-        children={([canSubmit, isSubmitting]) => (
-          <Button type="submit" disabled={!canSubmit}>
-            {isSubmitting ? "..." : "Submit"}
-          </Button>
-        )}
-      />
+      <Button type="submit" disabled={!value.trim() && highlight < 0}>
+        Search
+      </Button>
     </form>
   );
-}
-
-function Checks({ field, className }: { field: AnyFieldApi; className?: string }) {
-  const value = String(field.state.value ?? "");
-  const statuses = computeStatuses(value);
-
-  return (
-    <div className={cn("text-sm", className)}>
-      <ChecklistInline
-        items={[
-          {
-            id: "game",
-            label: "Game Name",
-            hint: "min 3, max 16",
-            status: statuses.game,
-            icon: "game",
-          },
-          {
-            id: "format",
-            label: "Format",
-            hint: undefined,
-            status: statuses.format,
-            icon: "format",
-          },
-          {
-            id: "tag",
-            label: "Tag Line",
-            hint: "min 3, max 5",
-            status: statuses.tag,
-            icon: "tag",
-          },
-        ]}
-      />
-    </div>
-  );
-}
-
-function computeStatuses(riotId: string): {
-  game: Status;
-  tag: Status;
-  format: Status;
-} {
-  if (!riotId) {
-    return { game: "neutral", tag: "neutral", format: "neutral" };
-  }
-
-  const [namePart = "", tagPart = ""] = riotId.split("#", 2);
-
-  let game: Status = "neutral";
-  if (namePart.length > 0) {
-    if (!NAME_CHARS.test(namePart)) game = "invalid";
-    else if (namePart.length < 3) game = "pending";
-    else if (namePart.length > 16) game = "invalid";
-    else game = "valid";
-  }
-
-  let tag: Status = "neutral";
-  if (riotId.includes("#")) {
-    if (!TAG_CHARS.test(tagPart)) tag = "invalid";
-    else if (tagPart.length === 0) tag = "pending";
-    else if (tagPart.length < 3) tag = "pending";
-    else if (tagPart.length > 5) tag = "invalid";
-    else tag = "valid";
-  }
-
-  const format: Status = HAS_FORMAT.test(riotId)
-    ? "valid"
-    : riotId.includes("#")
-      ? "pending"
-      : "pending";
-
-  return { game, tag, format };
 }

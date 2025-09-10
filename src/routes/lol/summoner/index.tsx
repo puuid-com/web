@@ -1,5 +1,5 @@
 import { SummonerList } from "@/client/components/summoner-list/SummonerList";
-import { $getSummoners } from "@/server/functions/$getSummoners";
+import { $getSummonersWithRelations } from "@/server/functions/$getSummonersWithRelations";
 import { createFileRoute } from "@tanstack/react-router";
 import { Input } from "@/client/components/ui/input";
 import * as v from "valibot";
@@ -16,7 +16,7 @@ export const Route = createFileRoute("/lol/summoner/")({
       raw,
     ),
   loaderDeps: (ctx) => ({ c: ctx.search.c }),
-  loader: async (ctx) => await $getSummoners({ data: { c: ctx.deps.c } }),
+  loader: async (ctx) => await $getSummonersWithRelations({ data: { c: ctx.deps.c } }),
 });
 
 function RouteComponent() {

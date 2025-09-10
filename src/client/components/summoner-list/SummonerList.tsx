@@ -1,13 +1,13 @@
 import React from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { SummonerListItem } from "@/client/components/summoner-list/SummonerListItem";
-import type { $GetSummonersType } from "@/server/functions/$getSummoners";
+import type { $GetSummonersWithRelationsType } from "@/server/functions/$getSummonersWithRelations";
 
-type Props = { summoners: $GetSummonersType };
+type Props = { summoners: $GetSummonersWithRelationsType };
 
 type Row =
   | { type: "header"; key: string; region: string; count: number }
-  | { type: "item"; key: string; s: $GetSummonersType[number] };
+  | { type: "item"; key: string; s: $GetSummonersWithRelationsType[number] };
 
 export const SummonerList = ({ summoners }: Props) => {
   const parentRef = React.useRef<HTMLDivElement | null>(null);

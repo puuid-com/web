@@ -19,11 +19,9 @@ import {
 import type { User } from "better-auth";
 
 export class SummonerService {
-  static async getSummoners(search?: string) {
+  static async getSummonersWithRelations(search?: string) {
     const norm = search ? normalizeRiotID(search) : "";
-    const whereClause = norm
-      ? ilike(summonerTable.normalizedRiotId, `%${norm}%`)
-      : undefined;
+    const whereClause = norm ? ilike(summonerTable.normalizedRiotId, `%${norm}%`) : undefined;
 
     return db.query.summonerTable.findMany({
       where: whereClause,
@@ -32,6 +30,17 @@ export class SummonerService {
         leagues: true,
       },
       limit: 25,
+      orderBy: [summonerTable.region, desc(summonerTable.summonerLevel)],
+    });
+  }
+
+  static async getSummoners(search?: string, limit = 25) {
+    const norm = search ? normalizeRiotID(search) : "";
+    const whereClause = norm ? ilike(summonerTable.normalizedRiotId, `%${norm}%`) : undefined;
+
+    return db.query.summonerTable.findMany({
+      where: whereClause,
+      limit: limit,
       orderBy: [summonerTable.region, desc(summonerTable.summonerLevel)],
     });
   }

@@ -1,10 +1,10 @@
 import { Badge } from "@/client/components/ui/badge";
 import { DDragonService } from "@/shared/services/DDragon/DDragonService";
-import type { $GetSummonersType } from "@/server/functions/$getSummoners";
+import type { $GetSummonersWithRelationsType } from "@/server/functions/$getSummonersWithRelations";
 import { Link, useLoaderData } from "@tanstack/react-router";
 
 type Props = {
-  s: $GetSummonersType[number];
+  s: $GetSummonersWithRelationsType[number];
 };
 
 export const SummonerListItem = ({ s }: Props) => {
