@@ -1,3 +1,4 @@
+import * as React from "react";
 import { UserAccountButton } from "@/client/components/navbar/UserButton";
 import { RiotIdForm } from "@/client/components/riot-id-form/RiotIdForm";
 import { cn } from "@/client/lib/utils";
@@ -14,24 +15,19 @@ export const Navbar = ({ className }: Props) => {
     navigate({
       to: "/lol/summoner/$riotID",
       params: { riotID },
-      search: { queue: "RANKED_SOLO_5x5" },
+      search: { q: "solo" },
     }).catch(console.error);
   };
 
   return (
-    <header className={cn("border-b flex items-center", className)}>
-      <div className="container mx-auto">
-        <div className="flex items-center">
-          <div className="flex items-center gap-2 justify-between mr-10">
-            <h1 className="font-semibold ">
-              <Link to={"/"}>puuid.com</Link>
-            </h1>
-          </div>
-          <div className={"flex items-center justify-between text-sm"}>
-            <Link to={"/lol/summoner"}>Summoners</Link>
-          </div>
-          <div className="flex items-center gap-3 ml-auto">
-            <div className="relative">
+    <header className={cn("border-b", className)}>
+      <div className="container mx-auto h-full px-4">
+        <div className="flex h-full items-center justify-between gap-3">
+          <Link to={"/"} className="font-medium tracking-tight">
+            puuid.com
+          </Link>
+          <div className="flex items-center gap-2">
+            <div className="hidden sm:block">
               <RiotIdForm onSuccess={handleSummonerSearch} />
             </div>
             <UserAccountButton />
