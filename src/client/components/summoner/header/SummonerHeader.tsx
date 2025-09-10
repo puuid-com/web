@@ -38,14 +38,14 @@ export const SummonerHeader = ({ className }: Props) => {
           : undefined,
       }}
     >
-      {stats?.mainChampionId ? (
-        <>
-          <div className={"absolute top-0 right-0 m-1.5 flex gap-1.5"}>
+      <div className={"absolute top-0 right-0 m-1.5 flex gap-1.5 items-center"}>
+        {stats?.mainChampionId ? (
+          <>
             <SummonerSkinDialog />
             <SummonerHeaderInfo />
-          </div>
-        </>
-      ) : null}
+          </>
+        ) : null}
+      </div>
       <div className={cn("flex flex-col h-full justify-start")}>
         <div className={"flex gap-2.5"}>
           <div
@@ -92,11 +92,11 @@ export const SummonerHeader = ({ className }: Props) => {
             {stats ? (
               <div className="flex gap-2.5 text-sm">
                 <div>
-                  Main Position :<Badge variant={"secondary"}>{stats.mainPosition}</Badge>
+                  Main Position: <Badge variant={"main"}>{stats.mainPosition}</Badge>
                 </div>
                 <div>
                   Main Champion:{" "}
-                  <Badge variant={"secondary"}>
+                  <Badge variant={"main"}>
                     {DDragonService.getChampionName(metadata.champions, stats.mainChampionId)}
                   </Badge>
                 </div>

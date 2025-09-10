@@ -1,9 +1,10 @@
 import { LiveMatchIcon } from "@/client/components/icons/LiveMatchIcon";
 import { SummonerFollowButton } from "@/client/components/summoner/header/SummonerFollowButton";
 import { SummonerNotesDialog } from "@/client/components/summoner/header/SummonerNotesDialog";
+import { SummonerQueueSelect } from "@/client/components/summoner/header/SummonerQueueSelect";
 import { SummonerNavigationItem } from "@/client/components/summoner/navigation/SummonerNavigationItem";
 import { cn } from "@/client/lib/utils";
-import { useParams, useRouteContext } from "@tanstack/react-router";
+import { useParams, useRouteContext, useSearch } from "@tanstack/react-router";
 import { ChartScatterIcon, CrownIcon, ScrollTextIcon } from "lucide-react";
 
 type Props = {
@@ -13,15 +14,15 @@ type Props = {
 export const SummonerNavigation = ({ className }: Props) => {
   const params = useParams({ from: "/lol/summoner/$riotID" });
   const { user } = useRouteContext({ from: "__root__" });
+  const search = useSearch({ from: "/lol/summoner/$riotID" });
 
   return (
-    <div className={cn("flex gap-2.5", className)}>
+    <div className={cn("flex gap-2.5 items-center", className)}>
+      <SummonerQueueSelect />
       <SummonerNavigationItem
         to={"/lol/summoner/$riotID/matches"}
         params={params}
-        search={{
-          q: "solo",
-        }}
+        search={search}
         iconNode={ScrollTextIcon}
       >
         Matches
@@ -29,16 +30,15 @@ export const SummonerNavigation = ({ className }: Props) => {
       <SummonerNavigationItem
         to={"/lol/summoner/$riotID/mastery"}
         params={params}
+        search={search}
         iconNode={CrownIcon}
-        search={{
-          queue: "solo",
-        }}
         activeOptions={{ includeSearch: false }}
       >
         Masteries
       </SummonerNavigationItem>
       <SummonerNavigationItem
         to={"/lol/summoner/$riotID/charts"}
+        search={search}
         params={params}
         iconNode={ChartScatterIcon}
         activeOptions={{ includeSearch: false }}
@@ -47,6 +47,7 @@ export const SummonerNavigation = ({ className }: Props) => {
       </SummonerNavigationItem>
       <SummonerNavigationItem
         to={"/lol/summoner/$riotID/live"}
+        search={search}
         params={params}
         iconNode={LiveMatchIcon}
       >

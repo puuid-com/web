@@ -2,7 +2,7 @@ import { ChampionMasteryFilters } from "@/client/components/summoner/masteries/C
 import { ChampionMasteryVirtualTable } from "@/client/components/summoner/masteries/ChampionMasteryVirtualTable";
 import { Avatar, AvatarFallback, AvatarImage } from "@/client/components/ui/avatar";
 import { combineMasteryWithStatistic } from "@/client/lib/masteries";
-import { FriendlyQueueTypes, friendlyQueueTypeToRiot } from "@/client/lib/typeHelper";
+import { friendlyQueueTypeToRiot } from "@/client/lib/typeHelper";
 import { getSummonerMasteriesOptions } from "@/client/queries/getSummonerMasteries";
 import { getSummonerStatisticsOptions } from "@/client/queries/getSummonerStatistics";
 import { CDragonService } from "@/shared/services/CDragon/CDragonService";
@@ -17,7 +17,6 @@ export const Route = createFileRoute("/lol/summoner/$riotID/mastery")({
   validateSearch: (raw) =>
     v.parse(
       v.object({
-        queue: v.exactOptional(v.picklist(FriendlyQueueTypes), "solo"),
         champion: v.exactOptional(v.string()),
         onlyPlayed: v.exactOptional(v.boolean()),
         positions: v.exactOptional(v.array(v.picklist(LolPositions))),
@@ -29,7 +28,11 @@ export const Route = createFileRoute("/lol/summoner/$riotID/mastery")({
 function RouteComponent() {
   const metadata = useLoaderData({ from: "/lol" });
   const { summoner } = useLoaderData({ from: "/lol/summoner/$riotID" });
-  const { queue, champion, onlyPlayed } = useSearch({
+  const {
+    q: queue,
+    champion,
+    onlyPlayed,
+  } = useSearch({
     from: "/lol/summoner/$riotID/mastery",
   });
 

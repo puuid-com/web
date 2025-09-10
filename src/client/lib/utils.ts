@@ -61,3 +61,8 @@ export const hexToRgba = (hex: string | undefined | null, alpha: number) => {
   const b = parseInt(hex.slice(5, 7), 16);
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 };
+
+export const upperCaseFirstChar = (str: string) => {
+  if (!str || str.length === 0) return str;
+  return str.charAt(0).toUpperCase() + str.slice(1);
+};

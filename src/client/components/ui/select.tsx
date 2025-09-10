@@ -60,6 +60,7 @@ function SelectContent({
         )}
         position={position}
         {...props}
+        style={props.style}
       >
         <SelectScrollUpButton />
         <SelectPrimitive.Viewport
