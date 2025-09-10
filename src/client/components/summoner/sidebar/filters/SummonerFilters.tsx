@@ -74,7 +74,7 @@ export const SummonerFilters = ({}: Props) => {
   return (
     <div
       className={cn(
-        "border-main/10 bg-main/5 border-1 w-full rounded-md flex items-center transition-[height] flex-col",
+        " border-main/10 bg-main/5 border-1 w-full rounded-md flex items-center transition-[height] flex-col",
       )}
     >
       <div className={"flex flex-row justify-between items-center w-full p-2.5"}>

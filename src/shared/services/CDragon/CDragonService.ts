@@ -196,4 +196,13 @@ export class CDragonService {
   static getRankMiniIcon(rank: LolTierType, patch = this.LATEST_PATCH): string {
     return `${this.base(patch)}/plugins/rcp-fe-lol-static-assets/global/default/images/ranked-mini-crests/${rank.toLowerCase()}.svg`;
   }
+
+  // /:patch/champion/:championKey|:championId/spell/:spellKey
+  static getChampionSpell(
+    champion: string | number,
+    spellKey: string,
+    patch = this.LATEST_PATCH,
+  ): string {
+    return `https://cdn.communitydragon.org/${patch}/champion/${champion}/ability-icon/${spellKey}`;
+  }
 }

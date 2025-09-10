@@ -4,9 +4,21 @@ import { trimRiotID } from "@/lib/riotID";
 import { getSummonerByRiotIDOptions } from "@/client/queries/getSummonerByRiotID";
 import { ChampionProvider } from "@/client/context/MainChampionContext";
 import { SummonerPage } from "@/client/components/summoner/SummonerPage";
+import * as v from "valibot";
+import { FriendlyQueueTypes, friendlyQueueTypeToRiot } from "@/client/lib/typeHelper";
 
 export const Route = createFileRoute("/lol/summoner/$riotID")({
   component: RouteComponent,
+  validateSearch: (raw) =>
+    v.parse(
+      v.object({
+        /**
+         * Queue
+         */
+        q: v.exactOptional(v.picklist(FriendlyQueueTypes), "solo"),
+      }),
+      raw,
+    ),
   params: {
     parse: (raw) => ({
       riotID: decodeURIComponent(raw.riotID).normalize("NFC"),
@@ -24,22 +36,18 @@ export const Route = createFileRoute("/lol/summoner/$riotID")({
       }),
     );
   },
+  loaderDeps: (ctx) => ({
+    search: {
+      queue: ctx.search.q,
+    },
+  }),
   loader: (ctx) => {
     const summoner = ctx.context.summoner;
-
-    const mainQueue = summoner.statistics
-      .filter((s) => s.league)
-      .sort((a, b) => {
-        const aLeague = a.league!;
-        const bLeague = b.league!;
-
-        return aLeague.losses + aLeague.wins - bLeague.losses + bLeague.wins;
-      })
-      .at(0)?.queueType;
+    const queue = friendlyQueueTypeToRiot(ctx.deps.search.queue);
 
     return {
       summoner,
-      queueStats: mainQueue ? summoner.statistics.find((s) => s.queueType === mainQueue) : null,
+      queueStats: summoner.statistics.find((s) => s.queueType === queue) ?? null,
     };
   },
   head: async ({ loaderData, params }) => {

@@ -12,7 +12,7 @@ export const SummonerSidebar = ({}: Props) => {
   });
 
   return (
-    <div className={"flex flex-col gap-5 w-70 sticky self-start basis-70 shrink-0"}>
+    <div className={"hidden xl:flex flex-col gap-5 w-70 sticky self-start basis-70 shrink-0"}>
       <SummonerSidebarStatsRank />
       <SummonerSidebarStatsByChampionId
         statsByChampionId={stats?.statsByChampionId}

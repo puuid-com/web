@@ -6,7 +6,7 @@ import { SummonerService } from "@/server/services/summoner/SummonerService";
 import { LeagueService } from "@/server/services/league/LeagueService";
 import { LOL_QUEUES } from "@/server/services/match/queues";
 import { StatisticService } from "@/server/services/StatisticService";
-import { eq, sql } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import type { LeagueRowType } from "@/server/db/schema/league";
 import {
   summonerRefresh,
@@ -53,14 +53,14 @@ export type RefreshProgressMsgType =
 export class RefreshService {
   private static MIN_SEC_BETWEEN_REFRESH = 1; // 1 sec
 
-  static async getLastRefresh(puuid: SummonerType["puuid"]) {
+  static async getLastRefresh(puuid: SummonerType["puuid"], queue: LolQueueType) {
     return db.query.summonerRefresh.findFirst({
-      where: eq(summonerRefresh.puuid, puuid),
+      where: and(eq(summonerRefresh.puuid, puuid), eq(summonerRefresh.queueType, queue)),
     });
   }
 
-  static async canRefresh(puuid: SummonerType["puuid"]) {
-    const lastRefresh = await this.getLastRefresh(puuid);
+  static async canRefresh(puuid: SummonerType["puuid"], queue: LolQueueType) {
+    const lastRefresh = await this.getLastRefresh(puuid, queue);
     if (!lastRefresh) return true;
 
     const secSinceLastRefresh = (new Date().getTime() - lastRefresh.refreshedAt.getTime()) / 1000;
@@ -70,6 +70,7 @@ export class RefreshService {
 
   static async updateLastRefresh(
     puuid: SummonerType["puuid"],
+    queue: LolQueueType,
     isFullRefresh: boolean,
     lastMatchCreationMs: MatchRowType["gameCreationMs"] | null,
   ) {
@@ -79,7 +80,7 @@ export class RefreshService {
 
     return db
       .insert(summonerRefresh)
-      .values({ puuid, lastGameCreationEpochSec, isFullRefresh })
+      .values({ puuid, lastGameCreationEpochSec, isFullRefresh, queueType: queue })
       .onConflictDoUpdate({
         target: [summonerRefresh.puuid],
         set: {
@@ -92,6 +93,7 @@ export class RefreshService {
   static async batchUpdateLastRefreshTx(
     tx: TransactionType,
     dataBySummoner: { summoner: SummonerType; lastMatch: MatchWithSummonersType | undefined }[],
+    queueType: LolQueueType,
     isFullRefresh: boolean,
   ) {
     const updades: InsertSummonerRefreshType[] = dataBySummoner.map((d) => {
@@ -101,6 +103,7 @@ export class RefreshService {
 
       return {
         puuid: d.summoner.puuid,
+        queueType,
         lastGameCreationEpochSec,
         refreshedAt: new Date(),
         isFullRefresh,
@@ -123,7 +126,7 @@ export class RefreshService {
     puuid: SummonerType["puuid"],
     queueType: LolQueueType,
   ): AsyncGenerator<RefreshProgressMsgType, void, void> {
-    const lastRefresh = await this.getLastRefresh(puuid);
+    const lastRefresh = await this.getLastRefresh(puuid, queueType);
 
     const queueId = LOL_QUEUES[queueType].queueId;
 
@@ -164,7 +167,7 @@ export class RefreshService {
     for await (const msg of $statsStream) yield msg;
     const { lastMatch } = await $statsResult;
 
-    await this.updateLastRefresh(puuid, true, lastMatch?.gameCreationMs ?? null);
+    await this.updateLastRefresh(puuid, queueType, true, lastMatch?.gameCreationMs ?? null);
 
     yield { status: "finished" };
   }
@@ -343,7 +346,7 @@ export class RefreshService {
         false,
       );
 
-      await this.batchUpdateLastRefreshTx(tx, dataBySummoner, false);
+      await this.batchUpdateLastRefreshTx(tx, dataBySummoner, queueType, false);
 
       return statistics;
     });

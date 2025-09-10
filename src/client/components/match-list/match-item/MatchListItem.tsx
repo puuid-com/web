@@ -1,4 +1,4 @@
-import { MatchItemChampionName } from "@/client/components/match-list/MatchItemChampionName";
+import { MatchItemChampionName } from "@/client/components/match-list/match-item/MatchItemChampionName";
 import { POSITION_INDEXES } from "@/client/components/summoner/live/utils";
 import { ChampionTooltip } from "@/client/components/tooltips/ChampionTooltip";
 import { ItemTooltip } from "@/client/components/tooltips/ItemTooltip";
@@ -73,7 +73,7 @@ export const MatchListItem = ({}: Props) => {
       </div>
 
       <div className="text-right tabular-nums">{formatSeconds(match.gameDurationSec)}</div>
-      <div className={"grid grid-cols-2 grid-rows-5 gap-x-1 ml-auto"}>
+      <div className={"grid grid-cols-2 grid-rows-5 gap-x-1 ml-auto w-64 shrink-0"}>
         {match.summoners
           .sort((a, b) => {
             return POSITION_INDEXES[a.position] - POSITION_INDEXES[b.position];
@@ -86,7 +86,7 @@ export const MatchListItem = ({}: Props) => {
                 params={{
                   puuid: s.puuid,
                 }}
-                className={"flex gap-0.5"}
+                className={"flex gap-0.5 min-w-0"}
                 key={`MatchListItem-summoner-#${s.puuid}`}
               >
                 <div>
@@ -94,12 +94,14 @@ export const MatchListItem = ({}: Props) => {
                 </div>
                 <div
                   className={[
-                    "text-tiny truncate text-ellipsis flex",
+                    "text-tiny flex min-w-0 items-center gap-0.5",
                     s.puuid === matchSummoner.puuid ? "text-main" : "",
                   ].join(" ")}
                 >
-                  <div className={""}>{s.gameName}</div>
-                  <div className={"text-muted-foreground text-tiny"}>{`#${s.tagLine}`}</div>
+                  <div className={"truncate whitespace-nowrap"}>{s.gameName}</div>
+                  <div
+                    className={"text-muted-foreground text-tiny flex-shrink-0"}
+                  >{`#${s.tagLine}`}</div>
                 </div>
               </Link>
             );

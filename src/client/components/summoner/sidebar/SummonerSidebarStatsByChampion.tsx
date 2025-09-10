@@ -1,4 +1,4 @@
-import { MatchItemChampionName } from "@/client/components/match-list/MatchItemChampionName";
+import { MatchItemChampionName } from "@/client/components/match-list/match-item/MatchItemChampionName";
 import { SummonerSidebarStats } from "@/client/components/summoner/sidebar/SummonerSidebarStats";
 import { SummonerSidebarStatsHeader } from "@/client/components/summoner/sidebar/SummonerSidebarStatsHeader";
 import { useSummonerFilter, type MatchesSearchKey } from "@/client/hooks/useSummonerFilter";

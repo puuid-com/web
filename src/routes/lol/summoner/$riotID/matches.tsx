@@ -2,7 +2,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import { MatchList } from "@/client/components/match-list/MatchList";
 import { SummonerSidebar } from "@/client/components/summoner/sidebar/SummonerSidebar";
 import * as v from "valibot";
-import { FriendlyQueueTypes } from "@/client/lib/typeHelper";
 import { SummonerFilters } from "@/client/components/summoner/sidebar/filters/SummonerFilters";
 
 export const Route = createFileRoute("/lol/summoner/$riotID/matches")({
@@ -10,10 +9,6 @@ export const Route = createFileRoute("/lol/summoner/$riotID/matches")({
   validateSearch: (data) =>
     v.parse(
       v.object({
-        /**
-         * Queue
-         */
-        q: v.exactOptional(v.picklist(FriendlyQueueTypes), "solo"),
         /**
          * Global Filter
          */

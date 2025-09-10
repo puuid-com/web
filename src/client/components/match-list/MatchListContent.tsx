@@ -1,4 +1,4 @@
-import { Match } from "@/client/components/match-list/Match";
+import { MatchItem } from "@/client/components/match-list/match-item/MatchItem";
 import { MatchProvider } from "@/client/context/MatchContext";
 import { cn } from "@/client/lib/utils";
 import type { GetSummonerMatchesType } from "@/client/queries/getSummonerMatches";
@@ -150,7 +150,7 @@ export const MatchListContent = ({ matches }: Props) => {
                         count={matches.length}
                         key={m.matchId}
                       >
-                        <Match />
+                        <MatchItem />
                       </MatchProvider>
                     );
                   })()}
