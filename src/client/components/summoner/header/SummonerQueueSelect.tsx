@@ -1,5 +1,5 @@
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@/client/components/ui/select";
-import { useChampionContext } from "@/client/context/MainChampionContext";
+import { useMainChampionContext } from "@/client/context/MainChampionContext";
 import { FriendlyQueueTypes, type FriendlyQueueType } from "@/client/lib/typeHelper";
 import { cn, upperCaseFirstChar } from "@/client/lib/utils";
 import { useNavigate, useParams, useSearch } from "@tanstack/react-router";
@@ -8,7 +8,7 @@ export const SummonerQueueSelect = () => {
   const q = useSearch({ from: "/lol/summoner/$riotID", select: (s) => s.q });
   const params = useParams({ from: "/lol/summoner/$riotID" });
   const navigate = useNavigate();
-  const { backgroundColor, foregroundColor } = useChampionContext();
+  const { backgroundColor, foregroundColor } = useMainChampionContext();
 
   const handleChange = (value: FriendlyQueueType) => {
     console.log({ value });

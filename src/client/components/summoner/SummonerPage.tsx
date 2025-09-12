@@ -1,21 +1,16 @@
 import { SummonerHeader } from "@/client/components/summoner/header/SummonerHeader";
 import { SummonerNavigation } from "@/client/components/summoner/navigation/SummonerNavigation";
 import { SummonerLiveMatchHeader } from "@/client/components/summoner/live-match-header/SummonerLiveMatchHeader";
-import { useChampionContext } from "@/client/context/MainChampionContext";
 import { Outlet } from "@tanstack/react-router";
 
 type Props = {};
 
 export const SummonerPage = ({}: Props) => {
-  const { backgroundColor, foregroundColor } = useChampionContext();
-
   return (
     <div
       className={"flex flex-col container mx-auto gap-[var(--summoner-gap-height)]"}
       style={
         {
-          "--color-main": backgroundColor ?? undefined,
-          "--color-main-foreground": foregroundColor ?? undefined,
           "--summoner-header-height": "calc(96px + (20px * 2))",
           "--summoner-navigation-height": "calc(45px)",
           "--summoner-gap-height": "calc(20px)",

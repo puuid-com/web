@@ -134,6 +134,20 @@
       "when": 1757508464478,
       "tag": "0018_messy_dakota_north",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1757717365052,
+      "tag": "0019_colossal_changeling",
+      "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1757717485385,
+      "tag": "0020_military_sugar_man",
+      "breakpoints": true
     }
   ]
 }

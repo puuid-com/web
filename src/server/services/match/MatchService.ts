@@ -117,6 +117,7 @@ export class MatchService {
 
       return {
         matchId: matchDTO.metadata.matchId,
+        gameCreationMs: matchDTO.info.gameStartTimestamp,
         puuid: p.puuid,
         gameName: p.riotIdGameName,
         tagLine: p.riotIdTagline,

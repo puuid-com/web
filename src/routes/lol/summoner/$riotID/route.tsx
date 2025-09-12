@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { trimRiotID } from "@/lib/riotID";
 import { getSummonerByRiotIDOptions } from "@/client/queries/getSummonerByRiotID";
-import { ChampionProvider } from "@/client/context/MainChampionContext";
+import { MainChampionProvider } from "@/client/context/MainChampionContext";
 import { SummonerPage } from "@/client/components/summoner/SummonerPage";
 import * as v from "valibot";
 import { FriendlyQueueTypes, friendlyQueueTypeToRiot } from "@/client/lib/typeHelper";
@@ -89,13 +89,9 @@ export const Route = createFileRoute("/lol/summoner/$riotID")({
 function RouteComponent() {
   const { queueStats: stats } = Route.useLoaderData();
 
-  const bgColor = stats?.mainChampionBackgroundColor ?? undefined;
-  const textColor = stats?.mainChampionForegroundColor ?? undefined;
-  const skinId = stats?.mainChampionSkinId ?? undefined;
-
   return (
-    <ChampionProvider backgroundColor={bgColor} foregroundColor={textColor} skinId={skinId}>
+    <MainChampionProvider statistic={stats}>
       <SummonerPage />
-    </ChampionProvider>
+    </MainChampionProvider>
   );
 }

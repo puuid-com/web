@@ -3,7 +3,7 @@ import { SummonerHeaderInfo } from "@/client/components/summoner/header/Summoner
 import { SummonerSkinDialog } from "@/client/components/summoner/header/SummonerSkinDialog";
 import { VerifiedTooltips } from "@/client/components/tooltips/VerifiedTooltips";
 import { Badge } from "@/client/components/ui/badge";
-import { useChampionContext } from "@/client/context/MainChampionContext";
+import { useMainChampionContext } from "@/client/context/MainChampionContext";
 import { cn, timeago } from "@/client/lib/utils";
 import { CDragonService } from "@/shared/services/CDragon/CDragonService";
 import { DDragonService } from "@/shared/services/DDragon/DDragonService";
@@ -17,7 +17,7 @@ type Props = {
 
 export const SummonerHeader = ({ className }: Props) => {
   const metadata = useLoaderData({ from: "__root__" });
-  const { skinId } = useChampionContext();
+  const { skinId } = useMainChampionContext();
 
   const params = useParams({ from: "/lol/summoner/$riotID" });
   const search = useSearch({ from: "/lol/summoner/$riotID" });

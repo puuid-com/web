@@ -26,6 +26,9 @@ export const Navbar = ({ className }: Props) => {
           <Link to={"/"} className="font-medium tracking-tight">
             puuid.com
           </Link>
+          <div>
+            <Link to={"/lol/feed"}>Feed</Link>
+          </div>
           <div className="flex items-center gap-2">
             <div className="hidden sm:block">
               <RiotIdForm onSuccess={handleSummonerSearch} />

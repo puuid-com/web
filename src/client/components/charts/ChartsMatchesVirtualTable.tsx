@@ -26,7 +26,7 @@ export type MatchRow = {
 
 type Props = {
   data: MatchRow[];
-  height?: number;
+  height?: number | string;
   rowEstimate?: number;
 };
 
@@ -209,11 +209,7 @@ export function ChartsMatchesVirtualTable({ data, height = 520, rowEstimate = 44
 
   return (
     <div className="w-full">
-      <div
-        ref={parentRef}
-        className="w-full overflow-auto rounded-xl tabular-nums"
-        style={{ height }}
-      >
+      <div ref={parentRef} className="w-full overflow-auto rounded-xl tabular-nums" style={{ height }}>
         <table className="w-full border-collapse text-sm">
           <thead className="sticky top-0 z-10 bg-background border-none">
             {table.getHeaderGroups().map((hg) => (

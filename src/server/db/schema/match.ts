@@ -1,7 +1,8 @@
 import { pgTable, text, integer, boolean, bigint, index } from "drizzle-orm/pg-core";
-import { relations, type InferSelectModel } from "drizzle-orm";
+import { desc, relations, type InferSelectModel } from "drizzle-orm";
 import type { LolPositionType } from "@/server/api-route/riot/match/MatchDTO";
 import { matchCommentTable } from "@/server/db/schema/match-comments";
+import { summonerTable } from "@/server/db/schema/summoner";
 
 export const MatchResults = ["NORMAL", "SURRENDER", "REMAKE"] as const;
 export type MatchResultType = (typeof MatchResults)[number];
@@ -35,6 +36,8 @@ export const matchSummonerTable = pgTable(
     matchId: text("match_id")
       .notNull()
       .references(() => matchTable.matchId, { onDelete: "cascade" }),
+    // For query performance
+    gameCreationMs: bigint("game_creation_ms", { mode: "number" }).notNull(),
     puuid: text("puuid").notNull(),
     gameName: text("game_name").notNull(),
     tagLine: text("tag_line").notNull(),
@@ -74,7 +77,7 @@ export const matchSummonerTable = pgTable(
     index("idx_fms_match").on(t.matchId),
     index("idx_fms_puuid").on(t.puuid),
     index("idx_ms_puuid_matchid").on(t.puuid, t.matchId),
-    index("idx_ms_match_puuid").on(t.matchId, t.puuid),
+    index("idx_ms_puuid_matchid_gameCreationMs").on(t.puuid, t.matchId, desc(t.gameCreationMs)),
   ],
 );
 
@@ -87,6 +90,10 @@ export const matchSummonerRelations = relations(matchSummonerTable, ({ one, many
     references: [matchTable.matchId],
   }),
   comments: many(matchCommentTable),
+  summoner: one(summonerTable, {
+    fields: [matchSummonerTable.puuid],
+    references: [summonerTable.puuid],
+  }),
 }));
 
 export type MatchWithSummonersType = InferSelectModel<typeof matchTable> & {

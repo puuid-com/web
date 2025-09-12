@@ -1,6 +1,8 @@
 import { user } from "@/server/db/schema/auth";
 import { leagueTable, type LeagueRowType } from "@/server/db/schema/league";
+import { matchSummonerTable } from "@/server/db/schema/match";
 import { matchCommentTable } from "@/server/db/schema/match-comments";
+import { noteTable } from "@/server/db/schema/note";
 import { summonerRefresh } from "@/server/db/schema/summoner-refresh";
 import {
   statisticTable,
@@ -53,6 +55,8 @@ export const summonerTableRelations = relations(summonerTable, ({ many, one }) =
     references: [user.id],
   }),
   comments: many(matchCommentTable),
+  notes: many(noteTable),
+  matchSummoner: many(matchSummonerTable),
 }));
 
 export type SummonerType = typeof summonerTable.$inferSelect;

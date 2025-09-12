@@ -12,6 +12,9 @@ const toggleVariants = cva(
         default: "bg-transparent",
         outline:
           "border border-input bg-transparent shadow-xs hover:bg-accent hover:text-accent-foreground",
+        main:
+          // Match Button variant="main" feel; strengthen selected state.
+          "bg-main/10 text-main ring-1 ring-main/30 shadow-[inset_0_1px_0_rgb(255_255_255_/_0.04)] hover:scale-105 transition-scale rounded-md px-4 py-2 data-[state=on]:bg-main/20 data-[state=on]:text-main",
       },
       size: {
         default: "h-9 px-2 min-w-9",

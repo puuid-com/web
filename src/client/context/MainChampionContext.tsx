@@ -1,9 +1,10 @@
+import type { StatisticRowType } from "@/server/db/schema/summoner-statistic";
 import React from "react";
 
 type ContextType = {
-  backgroundColor: string | undefined;
-  foregroundColor: string | undefined;
-  skinId: number | undefined;
+  backgroundColor: string | null;
+  foregroundColor: string | null;
+  skinId: number | null;
 
   handleTempColorChange: (backgroundColor: string, foregroundColor: string, skinId: number) => void;
   handleTempColorReset: () => void;
@@ -13,45 +14,41 @@ type ContextType = {
 const context = React.createContext<ContextType>({} as ContextType);
 
 // eslint-disable-next-line react-refresh/only-export-components
-export const useChampionContext = () => {
+export const useMainChampionContext = () => {
   const _context = React.useContext(context);
 
   return _context;
 };
 
 type Props = {
-  backgroundColor: string | undefined;
-  foregroundColor: string | undefined;
-  skinId: number | undefined;
+  statistic: StatisticRowType | null;
 };
 
-export const ChampionProvider: React.FC<React.PropsWithChildren<Props>> = ({
+export const MainChampionProvider: React.FC<React.PropsWithChildren<Props>> = ({
   children,
-  backgroundColor: _backgroundColor,
-  foregroundColor: _foregroundColor,
-  skinId: _skinId,
+  statistic,
 }) => {
-  const [tempBackgroundColor, setTempBackgroundColor] = React.useState<string | undefined>(
-    undefined,
-  );
-  const [tempForegroundColor, setTempForegroundColor] = React.useState<string | undefined>(
-    undefined,
-  );
-  const [tempSkinId, setTempSkinId] = React.useState<number | undefined>(undefined);
+  const [tempBackgroundColor, setTempBackgroundColor] = React.useState<string | null>(null);
+  const [tempForegroundColor, setTempForegroundColor] = React.useState<string | null>(null);
+  const [tempSkinId, setTempSkinId] = React.useState<number | null>(null);
 
-  const [backgroundColor, setBackgroundColor] = React.useState<string | undefined>(
-    _backgroundColor,
+  const [backgroundColor, setBackgroundColor] = React.useState<string | null>(
+    statistic?.mainChampionBackgroundColor ?? null,
   );
-  const [foregroundColor, setForegroundColor] = React.useState<string | undefined>(
-    _foregroundColor,
+  const [foregroundColor, setForegroundColor] = React.useState<string | null>(
+    statistic?.mainChampionForegroundColor ?? null,
   );
-  const [skinId, setSkinId] = React.useState<number | undefined>(_skinId);
+  const [skinId, setSkinId] = React.useState<number | null>(statistic?.mainChampionSkinId ?? null);
 
   React.useEffect(() => {
-    setBackgroundColor(_backgroundColor);
-    setForegroundColor(_foregroundColor);
-    setSkinId(_skinId);
-  }, [_backgroundColor, _foregroundColor, _skinId]);
+    setBackgroundColor(statistic?.mainChampionBackgroundColor ?? null);
+    setForegroundColor(statistic?.mainChampionForegroundColor ?? null);
+    setSkinId(statistic?.mainChampionSkinId ?? null);
+  }, [
+    statistic?.mainChampionBackgroundColor,
+    statistic?.mainChampionForegroundColor,
+    statistic?.mainChampionSkinId,
+  ]);
 
   const handleTempColorChange = React.useCallback(
     (backgroundColor: string, foregroundColor: string, skinId: number) => {
@@ -63,9 +60,9 @@ export const ChampionProvider: React.FC<React.PropsWithChildren<Props>> = ({
   );
 
   const handleTempColorReset = React.useCallback(() => {
-    setTempBackgroundColor(undefined);
-    setTempForegroundColor(undefined);
-    setTempSkinId(undefined);
+    setTempBackgroundColor(null);
+    setTempForegroundColor(null);
+    setTempSkinId(null);
   }, []);
 
   const handleSaveTempData = React.useCallback(() => {
@@ -97,5 +94,18 @@ export const ChampionProvider: React.FC<React.PropsWithChildren<Props>> = ({
     tempSkinId,
   ]);
 
-  return <context.Provider value={value}>{children}</context.Provider>;
+  return (
+    <context.Provider value={value}>
+      <div
+        style={
+          {
+            "--color-main": value.backgroundColor ?? undefined,
+            "--color-main-foreground": value.foregroundColor ?? undefined,
+          } as React.CSSProperties
+        }
+      >
+        {children}
+      </div>
+    </context.Provider>
+  );
 };

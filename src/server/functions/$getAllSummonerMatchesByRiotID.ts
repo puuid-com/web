@@ -17,7 +17,7 @@ export const $getAllSummonerMatchesByRiotID = createServerFn({ method: "GET" })
     const { riotId, queue } = ctx.data;
 
     const { MatchService } = await import("@/server/services/match/MatchService");
-    const matches = await MatchService.getAllMatchesDBByRiotIDSmall(
+    const matches = await MatchService.getMatchesDBByPuuidFull(
       {
         riotId: trimRiotID(riotId),
       },

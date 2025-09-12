@@ -6,10 +6,10 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function timeago(
-  input: Date | string,
+  input: Date | string | number,
   locale: string | string[] = navigator.language,
 ): string {
-  const date = typeof input === "string" ? new Date(input) : input;
+  const date = typeof input === "string" || typeof input === "number" ? new Date(input) : input;
   const now = new Date();
   const diffMs = now.getTime() - date.getTime();
 

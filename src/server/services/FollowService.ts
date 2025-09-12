@@ -1,6 +1,8 @@
 import { db } from "@/server/db";
 import { followingTable } from "@/server/db/schema/following";
-import { and, eq, sql } from "drizzle-orm";
+import { matchSummonerTable } from "@/server/db/schema/match";
+import { noteTable } from "@/server/db/schema/note";
+import { and, desc, eq, sql } from "drizzle-orm";
 
 export class FollowService {
   static async followSummoner(puuid: string, userId: string) {
@@ -26,7 +28,21 @@ export class FollowService {
     return db.query.followingTable.findMany({
       where: eq(followingTable.userId, userId),
       with: {
-        summoner: true,
+        summoner: {
+          with: {
+            statistics: true,
+            notes: {
+              where: eq(noteTable.userId, userId),
+            },
+            matchSummoner: {
+              limit: 1,
+              with: {
+                match: true,
+              },
+              orderBy: [desc(matchSummonerTable.gameCreationMs)],
+            },
+          },
+        },
       },
     });
   }

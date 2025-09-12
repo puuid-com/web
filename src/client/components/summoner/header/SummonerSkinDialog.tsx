@@ -7,7 +7,7 @@ import {
   SheetDescription,
   Sheet,
 } from "@/client/components/ui/sheet";
-import { useChampionContext } from "@/client/context/MainChampionContext";
+import { useMainChampionContext } from "@/client/context/MainChampionContext";
 import { useGetChampionData } from "@/client/hooks/useChampionData";
 import { ClientColorsService } from "@/client/service/ClientColorsService";
 import { $changeMainChampionColors } from "@/server/functions/$changeMainChampionColors";
@@ -31,7 +31,7 @@ export const SummonerSkinDialog = ({}: Props) => {
     backgroundColor,
     foregroundColor,
     handleSaveTempData,
-  } = useChampionContext();
+  } = useMainChampionContext();
   const [skinId, setSkinId] = React.useState<number | undefined>(undefined);
 
   const { queueStats } = useLoaderData({
