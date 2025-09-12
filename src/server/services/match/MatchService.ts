@@ -304,7 +304,7 @@ export class MatchService {
     };
 
     let nextStart: number | null = _params.start;
-    const maxLoopCount = 2;
+    const maxLoopCount = process.env.NODE_ENV === "development" ? 1000 : 1;
     let currentLoopCount = 0;
 
     do {

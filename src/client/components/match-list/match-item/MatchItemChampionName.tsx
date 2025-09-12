@@ -8,7 +8,7 @@ type Props = {
 
 export const MatchItemChampionName = ({ championId, className }: Props) => {
   const { c = "" } = useSearch({ from: "/lol/summoner/$riotID/matches" });
-  const { champions } = useLoaderData({ from: "/lol" });
+  const { champions } = useLoaderData({ from: "__root__" });
 
   const name = champions[championId]!.name;
 

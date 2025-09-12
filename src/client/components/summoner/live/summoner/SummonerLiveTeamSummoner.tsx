@@ -15,7 +15,7 @@ type Props = {
 };
 
 export function SummonerLiveTeamSummoner({ /* side, */ isSelf, league, participant }: Props) {
-  const metadata = useLoaderData({ from: "/lol" });
+  const metadata = useLoaderData({ from: "__root__" });
 
   const championName = metadata.champions[participant.championId]!.name;
   const championImageUrl = CDragonService.getChampionSquare(participant.championId);

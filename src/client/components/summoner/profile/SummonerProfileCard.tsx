@@ -20,7 +20,7 @@ export function SummonerProfileCard({
   summoner,
   disableAutoUpload,
 }: SummonerProfileCardProps) {
-  const metadata = useLoaderData({ from: "/lol" });
+  const metadata = useLoaderData({ from: "__root__" });
   const ref = React.useRef<HTMLDivElement>(null);
   const saved = React.useRef(false);
 

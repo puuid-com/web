@@ -12,7 +12,7 @@ type Props = {
 
 export const SummonerLiveTeam = ({ match, teamId }: Props) => {
   const { summoner } = useRouteContext({ from: "/lol/summoner/$riotID/live" });
-  const { championsData } = useLoaderData({ from: "/lol" });
+  const { championsData } = useLoaderData({ from: "__root__" });
   const side: "red" | "blue" = teamId === 100 ? "red" : "blue";
 
   const participants = React.useMemo(() => {

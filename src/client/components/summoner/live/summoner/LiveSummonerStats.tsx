@@ -29,7 +29,7 @@ type StatsPanelProps = {
  * mirrors with team columns using group-last utilities.
  */
 export function LiveSummonerStats({ stats }: StatsPanelProps) {
-  const metadata = useLoaderData({ from: "/lol" });
+  const metadata = useLoaderData({ from: "__root__" });
   const total = stats.wins + stats.losses;
   const winrate01 = total > 0 ? stats.wins / total : 0;
   const winratePct = pct(winrate01);

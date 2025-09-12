@@ -9,7 +9,7 @@ type Props = {
 };
 
 export const ItemTooltip = ({ itemId, children }: React.PropsWithChildren<Props>) => {
-  const { items, latest_version } = useLoaderData({ from: "/lol" });
+  const { items, latest_version } = useLoaderData({ from: "__root__" });
   const [forceOpen, setForceOpen] = React.useState(false);
 
   if (itemId === 0) return children;

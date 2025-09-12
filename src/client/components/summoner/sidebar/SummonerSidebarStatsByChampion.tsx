@@ -22,7 +22,7 @@ export const SummonerSidebarStatsByChampionId = ({
   searchKey,
 }: Props) => {
   const { handleOnFilterClickEvent, isEqualToFilterValue } = useSummonerFilter(searchKey);
-  const metadata = useLoaderData({ from: "/lol" });
+  const metadata = useLoaderData({ from: "__root__" });
 
   return (
     <SummonerSidebarStats>

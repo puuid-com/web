@@ -5,10 +5,8 @@ type QueryParams = {
   matchId: string;
 };
 
-export const getMatchDetailsKey = (params: QueryParams) => [
-  "getMatchDetails",
-  params.matchId,
-] as const;
+export const getMatchDetailsKey = (params: QueryParams) =>
+  ["getMatchDetails", params.matchId] as const;
 
 export const getMatchDetailsOptions = (params: QueryParams) =>
   queryOptions({
@@ -21,4 +19,3 @@ export const useGetMatchDetails = (params: QueryParams, opts?: { enabled?: boole
 };
 
 export type GetMatchDetailsType = Awaited<ReturnType<typeof $getMatchDetails>>;
-

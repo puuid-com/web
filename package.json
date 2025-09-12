@@ -13,7 +13,7 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier . --check",
     "format:write": "prettier . --write",
-    "test:full": "bun run build && bun run lint:fix && bun run format:write"
+    "test:all": "bun run lint:fix && bun run format:write && bun run build"
   },
   "devDependencies": {
     "@eslint/js": "^9.35.0",

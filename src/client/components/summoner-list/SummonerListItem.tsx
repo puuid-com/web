@@ -8,7 +8,7 @@ type Props = {
 };
 
 export const SummonerListItem = ({ s }: Props) => {
-  const metadata = useLoaderData({ from: "/lol" });
+  const metadata = useLoaderData({ from: "__root__" });
 
   const soloDuoStats = s.statistics.find((s) => s.queueType === "RANKED_SOLO_5x5");
   const bgColor = soloDuoStats?.mainChampionBackgroundColor;

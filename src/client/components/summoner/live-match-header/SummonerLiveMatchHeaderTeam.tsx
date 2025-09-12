@@ -15,7 +15,7 @@ type Props = {
 };
 
 export const SummonerLiveMatchHeaderTeam = ({ match, teamId }: Props) => {
-  const metadata = useLoaderData({ from: "/lol" });
+  const metadata = useLoaderData({ from: "__root__" });
   const { summoner } = useLoaderData({ from: "/lol/summoner/$riotID" });
   const { championsData, latest_version, summoner_spells } = metadata;
 

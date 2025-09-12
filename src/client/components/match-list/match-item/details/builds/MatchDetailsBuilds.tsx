@@ -19,7 +19,7 @@ type Props = {
 };
 
 export const MatchDetailsBuilds: React.FC<Props> = ({ match, timeline, selectedPuuid }) => {
-  const { latest_version } = useLoaderData({ from: "/lol" });
+  const { latest_version } = useLoaderData({ from: "__root__" });
 
   const mapping =
     timeline.info.participants?.reduce((acc: Map<string, number>, p) => {

@@ -15,7 +15,7 @@ type Props = {
 const MAX_FILTER_DISPLAYED_COUNT = 3;
 
 export const SummonerChampionFilterGroup = ({ searchKey, icon: Icon, label }: Props) => {
-  const metadata = useLoaderData({ from: "/lol" });
+  const metadata = useLoaderData({ from: "__root__" });
   const searchValue = useSearch({
     from: "/lol/summoner/$riotID/matches",
     select: (s) => s[searchKey],

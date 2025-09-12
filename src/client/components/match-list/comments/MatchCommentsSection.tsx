@@ -8,7 +8,7 @@ import { useLoaderData } from "@tanstack/react-router";
 type Props = {};
 
 export const MatchCommentsSection = ({}: Props) => {
-  const metadata = useLoaderData({ from: "/lol" });
+  const metadata = useLoaderData({ from: "__root__" });
   const { data, status } = useMatchComments();
   const { match } = useMatchContext();
 

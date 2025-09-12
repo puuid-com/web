@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useLoaderData } from "@tanstack/react-router";
 
 export const useGetChampionData = (championId: number | undefined, enabled?: boolean) => {
-  const metadata = useLoaderData({ from: "/lol" });
+  const metadata = useLoaderData({ from: "__root__" });
 
   const id = DDragonService.getChampionStringId(metadata.champions, championId!);
 

@@ -7,7 +7,7 @@ type Props = {
 };
 
 export const ChampionTooltip = ({ championId, children }: React.PropsWithChildren<Props>) => {
-  const { champions, latest_version } = useLoaderData({ from: "/lol" });
+  const { champions, latest_version } = useLoaderData({ from: "__root__" });
 
   const champion = champions[championId]!;
   const name = champion.name;

@@ -10,7 +10,7 @@ type Props = {};
 
 export const MatchList = ({}: Props) => {
   const { summoner } = useLoaderData({ from: "/lol/summoner/$riotID" });
-  const metadata = useLoaderData({ from: "/lol" });
+  const metadata = useLoaderData({ from: "__root__" });
   const { q, c, w, mc, pc, t } = useSearch({
     from: "/lol/summoner/$riotID/matches",
   });

@@ -14,7 +14,7 @@ type Props = {
 
 export const SummonerChampionItemBuilds: React.FC<Props> = ({ queue = "solo", className }) => {
   const { summoner } = useLoaderData({ from: "/lol/summoner/$riotID" });
-  const { latest_version, champions } = useLoaderData({ from: "/lol" });
+  const { latest_version, champions } = useLoaderData({ from: "__root__" });
 
   const q_matches = useGetSummonerMatches({ queue, summoner });
 

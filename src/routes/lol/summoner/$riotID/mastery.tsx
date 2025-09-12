@@ -26,7 +26,7 @@ export const Route = createFileRoute("/lol/summoner/$riotID/mastery")({
 });
 
 function RouteComponent() {
-  const metadata = useLoaderData({ from: "/lol" });
+  const metadata = useLoaderData({ from: "__root__" });
   const { summoner } = useLoaderData({ from: "/lol/summoner/$riotID" });
   const {
     q: queue,

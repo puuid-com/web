@@ -13,7 +13,7 @@ import { InfoIcon } from "lucide-react";
 type Props = {};
 
 export const SummonerHeaderInfo = ({}: Props) => {
-  const metadata = useLoaderData({ from: "/lol" });
+  const metadata = useLoaderData({ from: "__root__" });
   const { queueStats } = useLoaderData({
     from: "/lol/summoner/$riotID",
   });

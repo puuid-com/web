@@ -12,9 +12,16 @@ import { Link, useLoaderData } from "@tanstack/react-router";
 type Props = {};
 
 export const MatchListItem = ({}: Props) => {
-  const { match, matchSummoner, index, count } = useMatchContext();
+  const { match, matchSummoner, index, count, getMatchSummonerTeammates } = useMatchContext();
 
-  const metadata = useLoaderData({ from: "/lol" });
+  const { queueStats } = useLoaderData({ from: "/lol/summoner/$riotID" });
+  const metadata = useLoaderData({ from: "__root__" });
+
+  const teammatesPuuids = getMatchSummonerTeammates().map((t) => t.puuid);
+
+  const isGroupGame = queueStats
+    ? queueStats.statsByTeammates.some((t) => teammatesPuuids.includes(t.puuid))
+    : null;
 
   return (
     <div
@@ -23,6 +30,7 @@ export const MatchListItem = ({}: Props) => {
     >
       <div className="shrink-0 w-1/12 flex flex-col items-center justify-center gap-1">
         <div className={cn("px-2 rounded-md w-fit bg-match")}>{`${index}/${count}`}</div>
+        {isGroupGame === true ? <Badge variant={"main"}>Duo</Badge> : null}
       </div>
 
       {/* champion */}

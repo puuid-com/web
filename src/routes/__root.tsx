@@ -10,6 +10,8 @@ import { Navbar } from "@/client/components/navbar/Navbar";
 import { getUserSessionOptions } from "@/client/queries/getUserSession";
 import { PrimeReactProvider } from "primereact/api";
 import primeReacrCss from "primereact/resources/themes/lara-light-cyan/theme.css?url";
+import { DDragonService } from "@/shared/services/DDragon/DDragonService";
+import { $getChampionsData } from "@/server/functions/$getChampionsData";
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
@@ -34,8 +36,17 @@ export const Route = createRootRouteWithContext<{
   }),
   component: RootComponent,
   beforeLoad: async (ctx) => ctx.context.queryClient.ensureQueryData(getUserSessionOptions()),
-  staleTime: 60_000,
-  gcTime: 30 * 60_000,
+  loader: async () => {
+    const metadata = await DDragonService.loadMetadata();
+    const champions = await $getChampionsData();
+
+    return {
+      ...metadata,
+      championsData: champions,
+    };
+  },
+  staleTime: Infinity,
+  gcTime: Infinity,
 
   shouldReload: true,
 });

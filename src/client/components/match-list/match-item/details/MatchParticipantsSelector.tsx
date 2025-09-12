@@ -22,7 +22,7 @@ export const MatchParticipantsSelector: React.FC<Props> = ({
   selectedPuuid,
   onSelect,
 }) => {
-  const { champions } = useLoaderData({ from: "/lol" });
+  const { champions } = useLoaderData({ from: "__root__" });
 
   const mapping =
     timeline.info.participants?.reduce((acc: Map<string, number>, p) => {

@@ -16,7 +16,7 @@ type Props = {
 };
 
 export const SummonerHeader = ({ className }: Props) => {
-  const metadata = useLoaderData({ from: "/lol" });
+  const metadata = useLoaderData({ from: "__root__" });
   const { skinId } = useChampionContext();
 
   const params = useParams({ from: "/lol/summoner/$riotID" });

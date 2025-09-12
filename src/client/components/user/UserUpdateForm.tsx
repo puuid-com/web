@@ -19,7 +19,7 @@ const validationSchema = v.object({
 type Props = {};
 
 export function UserUpdateForm({}: Props) {
-  const { user } = useRouteContext({ from: "/user/" });
+  const { user } = useRouteContext({ from: "/user" });
   const router = useRouter();
 
   const q_updateUser = useMutation({

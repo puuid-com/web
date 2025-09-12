@@ -13,9 +13,10 @@ import { createServerRootRoute } from '@tanstack/react-start/server'
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as PrivacyRouteImport } from './routes/privacy'
-import { Route as LolRouteRouteImport } from './routes/lol/route'
+import { Route as UserRouteRouteImport } from './routes/user/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as UserIndexRouteImport } from './routes/user/index'
+import { Route as UserSettingsRouteImport } from './routes/user/settings'
+import { Route as UserAccountsRouteImport } from './routes/user/accounts'
 import { Route as RPuuidRouteImport } from './routes/r.$puuid'
 import { Route as LolLiveRouteImport } from './routes/lol/live'
 import { Route as LolSummonerIndexRouteImport } from './routes/lol/summoner/index'
@@ -40,9 +41,9 @@ const PrivacyRoute = PrivacyRouteImport.update({
   path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LolRouteRoute = LolRouteRouteImport.update({
-  id: '/lol',
-  path: '/lol',
+const UserRouteRoute = UserRouteRouteImport.update({
+  id: '/user',
+  path: '/user',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -50,10 +51,15 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const UserIndexRoute = UserIndexRouteImport.update({
-  id: '/user/',
-  path: '/user/',
-  getParentRoute: () => rootRouteImport,
+const UserSettingsRoute = UserSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => UserRouteRoute,
+} as any)
+const UserAccountsRoute = UserAccountsRouteImport.update({
+  id: '/accounts',
+  path: '/accounts',
+  getParentRoute: () => UserRouteRoute,
 } as any)
 const RPuuidRoute = RPuuidRouteImport.update({
   id: '/r/$puuid',
@@ -61,24 +67,24 @@ const RPuuidRoute = RPuuidRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const LolLiveRoute = LolLiveRouteImport.update({
-  id: '/live',
-  path: '/live',
-  getParentRoute: () => LolRouteRoute,
+  id: '/lol/live',
+  path: '/lol/live',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const LolSummonerIndexRoute = LolSummonerIndexRouteImport.update({
-  id: '/summoner/',
-  path: '/summoner/',
-  getParentRoute: () => LolRouteRoute,
+  id: '/lol/summoner/',
+  path: '/lol/summoner/',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const LolFeaturedGamesRegionRoute = LolFeaturedGamesRegionRouteImport.update({
-  id: '/featured-games/$region',
-  path: '/featured-games/$region',
-  getParentRoute: () => LolRouteRoute,
+  id: '/lol/featured-games/$region',
+  path: '/lol/featured-games/$region',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const LolSummonerRiotIDRouteRoute = LolSummonerRiotIDRouteRouteImport.update({
-  id: '/summoner/$riotID',
-  path: '/summoner/$riotID',
-  getParentRoute: () => LolRouteRoute,
+  id: '/lol/summoner/$riotID',
+  path: '/lol/summoner/$riotID',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const LolSummonerRiotIDIndexRoute = LolSummonerRiotIDIndexRouteImport.update({
   id: '/',
@@ -115,12 +121,13 @@ const ApiAuthSplatServerRoute = ApiAuthSplatServerRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/lol': typeof LolRouteRouteWithChildren
+  '/user': typeof UserRouteRouteWithChildren
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
   '/lol/live': typeof LolLiveRoute
   '/r/$puuid': typeof RPuuidRoute
-  '/user': typeof UserIndexRoute
+  '/user/accounts': typeof UserAccountsRoute
+  '/user/settings': typeof UserSettingsRoute
   '/lol/summoner/$riotID': typeof LolSummonerRiotIDRouteRouteWithChildren
   '/lol/featured-games/$region': typeof LolFeaturedGamesRegionRoute
   '/lol/summoner': typeof LolSummonerIndexRoute
@@ -132,12 +139,13 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/lol': typeof LolRouteRouteWithChildren
+  '/user': typeof UserRouteRouteWithChildren
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
   '/lol/live': typeof LolLiveRoute
   '/r/$puuid': typeof RPuuidRoute
-  '/user': typeof UserIndexRoute
+  '/user/accounts': typeof UserAccountsRoute
+  '/user/settings': typeof UserSettingsRoute
   '/lol/featured-games/$region': typeof LolFeaturedGamesRegionRoute
   '/lol/summoner': typeof LolSummonerIndexRoute
   '/lol/summoner/$riotID/charts': typeof LolSummonerRiotIDChartsRoute
@@ -149,12 +157,13 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/lol': typeof LolRouteRouteWithChildren
+  '/user': typeof UserRouteRouteWithChildren
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
   '/lol/live': typeof LolLiveRoute
   '/r/$puuid': typeof RPuuidRoute
-  '/user/': typeof UserIndexRoute
+  '/user/accounts': typeof UserAccountsRoute
+  '/user/settings': typeof UserSettingsRoute
   '/lol/summoner/$riotID': typeof LolSummonerRiotIDRouteRouteWithChildren
   '/lol/featured-games/$region': typeof LolFeaturedGamesRegionRoute
   '/lol/summoner/': typeof LolSummonerIndexRoute
@@ -168,12 +177,13 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/lol'
+    | '/user'
     | '/privacy'
     | '/terms'
     | '/lol/live'
     | '/r/$puuid'
-    | '/user'
+    | '/user/accounts'
+    | '/user/settings'
     | '/lol/summoner/$riotID'
     | '/lol/featured-games/$region'
     | '/lol/summoner'
@@ -185,12 +195,13 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/lol'
+    | '/user'
     | '/privacy'
     | '/terms'
     | '/lol/live'
     | '/r/$puuid'
-    | '/user'
+    | '/user/accounts'
+    | '/user/settings'
     | '/lol/featured-games/$region'
     | '/lol/summoner'
     | '/lol/summoner/$riotID/charts'
@@ -201,12 +212,13 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
-    | '/lol'
+    | '/user'
     | '/privacy'
     | '/terms'
     | '/lol/live'
     | '/r/$puuid'
-    | '/user/'
+    | '/user/accounts'
+    | '/user/settings'
     | '/lol/summoner/$riotID'
     | '/lol/featured-games/$region'
     | '/lol/summoner/'
@@ -219,11 +231,14 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  LolRouteRoute: typeof LolRouteRouteWithChildren
+  UserRouteRoute: typeof UserRouteRouteWithChildren
   PrivacyRoute: typeof PrivacyRoute
   TermsRoute: typeof TermsRoute
+  LolLiveRoute: typeof LolLiveRoute
   RPuuidRoute: typeof RPuuidRoute
-  UserIndexRoute: typeof UserIndexRoute
+  LolSummonerRiotIDRouteRoute: typeof LolSummonerRiotIDRouteRouteWithChildren
+  LolFeaturedGamesRegionRoute: typeof LolFeaturedGamesRegionRoute
+  LolSummonerIndexRoute: typeof LolSummonerIndexRoute
 }
 export interface FileServerRoutesByFullPath {
   '/api/auth/$': typeof ApiAuthSplatServerRoute
@@ -263,11 +278,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/lol': {
-      id: '/lol'
-      path: '/lol'
-      fullPath: '/lol'
-      preLoaderRoute: typeof LolRouteRouteImport
+    '/user': {
+      id: '/user'
+      path: '/user'
+      fullPath: '/user'
+      preLoaderRoute: typeof UserRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -277,12 +292,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/user/': {
-      id: '/user/'
-      path: '/user'
-      fullPath: '/user'
-      preLoaderRoute: typeof UserIndexRouteImport
-      parentRoute: typeof rootRouteImport
+    '/user/settings': {
+      id: '/user/settings'
+      path: '/settings'
+      fullPath: '/user/settings'
+      preLoaderRoute: typeof UserSettingsRouteImport
+      parentRoute: typeof UserRouteRoute
+    }
+    '/user/accounts': {
+      id: '/user/accounts'
+      path: '/accounts'
+      fullPath: '/user/accounts'
+      preLoaderRoute: typeof UserAccountsRouteImport
+      parentRoute: typeof UserRouteRoute
     }
     '/r/$puuid': {
       id: '/r/$puuid'
@@ -293,31 +315,31 @@ declare module '@tanstack/react-router' {
     }
     '/lol/live': {
       id: '/lol/live'
-      path: '/live'
+      path: '/lol/live'
       fullPath: '/lol/live'
       preLoaderRoute: typeof LolLiveRouteImport
-      parentRoute: typeof LolRouteRoute
+      parentRoute: typeof rootRouteImport
     }
     '/lol/summoner/': {
       id: '/lol/summoner/'
-      path: '/summoner'
+      path: '/lol/summoner'
       fullPath: '/lol/summoner'
       preLoaderRoute: typeof LolSummonerIndexRouteImport
-      parentRoute: typeof LolRouteRoute
+      parentRoute: typeof rootRouteImport
     }
     '/lol/featured-games/$region': {
       id: '/lol/featured-games/$region'
-      path: '/featured-games/$region'
+      path: '/lol/featured-games/$region'
       fullPath: '/lol/featured-games/$region'
       preLoaderRoute: typeof LolFeaturedGamesRegionRouteImport
-      parentRoute: typeof LolRouteRoute
+      parentRoute: typeof rootRouteImport
     }
     '/lol/summoner/$riotID': {
       id: '/lol/summoner/$riotID'
-      path: '/summoner/$riotID'
+      path: '/lol/summoner/$riotID'
       fullPath: '/lol/summoner/$riotID'
       preLoaderRoute: typeof LolSummonerRiotIDRouteRouteImport
-      parentRoute: typeof LolRouteRoute
+      parentRoute: typeof rootRouteImport
     }
     '/lol/summoner/$riotID/': {
       id: '/lol/summoner/$riotID/'
@@ -368,6 +390,20 @@ declare module '@tanstack/react-start/server' {
   }
 }
 
+interface UserRouteRouteChildren {
+  UserAccountsRoute: typeof UserAccountsRoute
+  UserSettingsRoute: typeof UserSettingsRoute
+}
+
+const UserRouteRouteChildren: UserRouteRouteChildren = {
+  UserAccountsRoute: UserAccountsRoute,
+  UserSettingsRoute: UserSettingsRoute,
+}
+
+const UserRouteRouteWithChildren = UserRouteRoute._addFileChildren(
+  UserRouteRouteChildren,
+)
+
 interface LolSummonerRiotIDRouteRouteChildren {
   LolSummonerRiotIDChartsRoute: typeof LolSummonerRiotIDChartsRoute
   LolSummonerRiotIDLiveRoute: typeof LolSummonerRiotIDLiveRoute
@@ -390,31 +426,16 @@ const LolSummonerRiotIDRouteRouteWithChildren =
     LolSummonerRiotIDRouteRouteChildren,
   )
 
-interface LolRouteRouteChildren {
-  LolLiveRoute: typeof LolLiveRoute
-  LolSummonerRiotIDRouteRoute: typeof LolSummonerRiotIDRouteRouteWithChildren
-  LolFeaturedGamesRegionRoute: typeof LolFeaturedGamesRegionRoute
-  LolSummonerIndexRoute: typeof LolSummonerIndexRoute
-}
-
-const LolRouteRouteChildren: LolRouteRouteChildren = {
+const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
+  UserRouteRoute: UserRouteRouteWithChildren,
+  PrivacyRoute: PrivacyRoute,
+  TermsRoute: TermsRoute,
   LolLiveRoute: LolLiveRoute,
+  RPuuidRoute: RPuuidRoute,
   LolSummonerRiotIDRouteRoute: LolSummonerRiotIDRouteRouteWithChildren,
   LolFeaturedGamesRegionRoute: LolFeaturedGamesRegionRoute,
   LolSummonerIndexRoute: LolSummonerIndexRoute,
-}
-
-const LolRouteRouteWithChildren = LolRouteRoute._addFileChildren(
-  LolRouteRouteChildren,
-)
-
-const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  LolRouteRoute: LolRouteRouteWithChildren,
-  PrivacyRoute: PrivacyRoute,
-  TermsRoute: TermsRoute,
-  RPuuidRoute: RPuuidRoute,
-  UserIndexRoute: UserIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

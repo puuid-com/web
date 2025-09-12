@@ -46,7 +46,7 @@ function kda(k: number, d: number, a: number) {
 }
 
 export function ChartsMatchesVirtualTable({ data, height = 520, rowEstimate = 44 }: Props) {
-  const metadata = useLoaderData({ from: "/lol" });
+  const metadata = useLoaderData({ from: "__root__" });
 
   const columnHelper = createColumnHelper<MatchRow>();
 

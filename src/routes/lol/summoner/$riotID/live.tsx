@@ -44,7 +44,6 @@ function RouteComponent() {
 
   return (
     <div className={"justify-center w-full flex flex-col"}>
-      <div>{liveGame.gameQueueConfigId}</div>
       <div className={"justify-center w-full flex flex-row"}>
         <SummonerLiveTeam match={liveGame} teamId={100} />
         <SummonerLiveTeam match={liveGame} teamId={200} />
