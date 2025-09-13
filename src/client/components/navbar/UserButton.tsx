@@ -23,7 +23,7 @@ export function UserAccountButton({}: Props) {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleNavigateToUsers = async () => {
-    await navigate({ to: "/user" });
+    await navigate({ to: "/user/settings" });
     setIsOpen(false);
   };
 
