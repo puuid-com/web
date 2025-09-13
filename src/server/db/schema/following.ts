@@ -27,3 +27,6 @@ export const followingTableRelations = relations(followingTable, ({ one }) => ({
     references: [user.id],
   }),
 }));
+
+export type FollowingRowType = typeof followingTable.$inferSelect;
+export type FollowingInsertType = typeof followingTable.$inferInsert;

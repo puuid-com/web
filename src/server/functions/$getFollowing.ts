@@ -12,4 +12,4 @@ export const $getFollowing = createServerFn({ method: "GET" })
     return data;
   });
 
-export type $getFollowingType = Awaited<ReturnType<typeof $getFollowing>>;
+export type $GetFollowingType = Awaited<ReturnType<typeof $getFollowing>>;

@@ -1,20 +1,16 @@
 import React from "react";
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { $getFollowing } from "@/server/functions/$getFollowing";
-import { CDragonService } from "@/shared/services/CDragon/CDragonService";
 import { Card, CardContent, CardHeader, CardTitle } from "@/client/components/ui/card";
 import { Input } from "@/client/components/ui/input";
 import { Button } from "@/client/components/ui/button";
-import { Badge } from "@/client/components/ui/badge";
 import { Separator } from "@/client/components/ui/separator";
-import { ExternalLink, BrainIcon, RatIcon, NotebookPenIcon } from "lucide-react";
-import { timeago } from "@/client/lib/utils";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { useServerFn } from "@tanstack/react-start";
 import { useMutation } from "@tanstack/react-query";
 import { $unfollow } from "@/server/functions/$unfollow";
 import { toast } from "sonner";
-import { MainChampionProvider } from "@/client/context/MainChampionContext";
+import { FollowingPost } from "@/client/components/follow/FollowingPost";
 
 export const Route = createFileRoute("/lol/feed/following")({
   component: RouteComponent,
@@ -51,7 +47,8 @@ function RouteComponent() {
     );
   }, [following, query]);
 
-  const ITEM_ESTIMATE = 112;
+  // Slightly larger estimate to fit the new post layout
+  const ITEM_ESTIMATE = 200;
   const rowVirtualizer = useVirtualizer({
     count: filtered.length,
     getScrollElement: () => document.querySelector("#body-content"),
@@ -103,89 +100,17 @@ function RouteComponent() {
         <div className="relative w-full" style={{ height: rowVirtualizer.getTotalSize() }}>
           {rowVirtualizer.getVirtualItems().map((vRow) => {
             const f = filtered[vRow.index]!;
-            const summoner = f.summoner;
-            const [gameName, tagLine] = summoner.displayRiotId.split("#");
-            const note = summoner.notes.at(0);
-            const stats =
-              summoner.statistics.find((s) => s.queueType === "RANKED_SOLO_5x5") ??
-              summoner.statistics.find((s) => s.queueType === "RANKED_FLEX_SR");
-
-            const lastMatchSummoner = summoner.matchSummoner.at(0);
-            const lastMatch = lastMatchSummoner ? lastMatchSummoner.match : undefined;
-
             return (
-              <MainChampionProvider statistic={stats ?? null} key={f.puuid}>
-                <div
-                  ref={rowVirtualizer.measureElement}
-                  className="absolute left-0 top-0 w-full p-1.5"
-                  style={{ transform: `translateY(${String(vRow.start)}px)` }}
-                >
-                  <div className="bg-cover flex items-center justify-between gap-4 rounded-md border p-3 bg-main/10 ring ring-main">
-                    <div className="flex items-center gap-3">
-                      <img
-                        className="w-12 h-12 rounded-md border"
-                        src={CDragonService.getProfileIcon(summoner.profileIconId)}
-                        alt="profile icon"
-                      />
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <h3 className="font-medium">{gameName}</h3>
-                          <span className="text-muted-foreground">#{tagLine}</span>
-                          <Badge variant="secondary" className="text-xs">
-                            Lv. {summoner.summonerLevel}
-                          </Badge>
-                        </div>
-                        <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
-                          <Badge variant="outline" className="gap-1 uppercase text-[10px]">
-                            {summoner.region}
-                          </Badge>
-                          <Badge variant="outline" className="gap-1">
-                            {summoner.isMain ? (
-                              <>
-                                <BrainIcon className="w-3 h-3" /> Main
-                              </>
-                            ) : (
-                              <>
-                                <RatIcon className="w-3 h-3" /> Smurf
-                              </>
-                            )}
-                          </Badge>
-                          {note ? (
-                            <Badge>
-                              <NotebookPenIcon /> {note.note}
-                            </Badge>
-                          ) : null}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Button variant="outline" size="sm" asChild>
-                        <Link
-                          to={"/lol/summoner/$riotID/matches"}
-                          params={{ riotID: summoner.riotId.replace("#", "-") }}
-                          search={{ q: "solo" }}
-                          target="_blank"
-                        >
-                          <ExternalLink className="w-4 h-4" /> Go to page
-                        </Link>
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="destructive"
-                        onClick={() => {
-                          mUnfollow.mutate(summoner.puuid);
-                        }}
-                      >
-                        Unfollow
-                      </Button>
-                      <div className="ml-2 text-xs text-neutral-500">
-                        Followed {timeago(f.createdAt)} ago
-                      </div>
-                    </div>
-                  </div>
-                  <div>{lastMatch?.matchId}</div>
-                </div>
-              </MainChampionProvider>
+              <FollowingPost
+                key={f.puuid}
+                item={f}
+                start={vRow.start}
+                index={vRow.index}
+                measureElement={rowVirtualizer.measureElement}
+                onUnfollow={(puuid) => {
+                  mUnfollow.mutate(puuid);
+                }}
+              />
             );
           })}
         </div>

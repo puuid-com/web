@@ -7,6 +7,8 @@ import { debounce } from "@tanstack/react-pacer";
 import { CDragonService } from "@/shared/services/CDragon/CDragonService";
 import { useServerFn } from "@tanstack/react-start";
 import { $getSummoners, type $GetSummonersType } from "@/server/functions/$getSummoners";
+import { Badge } from "@/client/components/ui/badge";
+import { NotebookPenIcon } from "lucide-react";
 
 type Props = {
   onSuccess: (riotId: string) => void;
@@ -37,13 +39,13 @@ export function RiotIdForm({ onSuccess }: Props) {
     e.preventDefault();
     e.stopPropagation();
     const pick = results[highlight];
-    if (pick) onSuccess(pick.displayRiotId);
+    if (pick) onSuccess(pick.summoner.displayRiotId);
     else if (value.trim()) onSuccess(value.trim());
     setOpen(false);
   };
 
   const handlePick = (s: $GetSummonersType[number]) => {
-    onSuccess(s.displayRiotId);
+    onSuccess(s.summoner.displayRiotId);
     setOpen(false);
   };
 
@@ -100,12 +102,12 @@ export function RiotIdForm({ onSuccess }: Props) {
                 <div className="px-3 py-2 text-sm text-neutral-400">Searching…</div>
               ) : results.length > 0 ? (
                 results.map((s, i) => {
-                  const [gameName, tagLine] = s.displayRiotId.split("#");
+                  const [gameName, tagLine] = s.summoner.displayRiotId.split("#");
                   const active = i === highlight;
-                  const icon = CDragonService.getProfileIcon(s.profileIconId);
+                  const icon = CDragonService.getProfileIcon(s.summoner.profileIconId);
                   return (
                     <button
-                      key={s.puuid}
+                      key={s.summoner.puuid}
                       type="button"
                       className={cn(
                         "flex w-full items-center gap-3 px-3 py-2 text-left",
@@ -120,12 +122,19 @@ export function RiotIdForm({ onSuccess }: Props) {
                     >
                       <img src={icon} alt="" className="h-6 w-6 rounded-sm" />
                       <div className="flex-1">
-                        <div className="text-sm text-neutral-100">{gameName}</div>
+                        <div className="text-sm text-neutral-100">
+                          {gameName}
+                          {s.note ? (
+                            <Badge variant="secondary" className="gap-1 max-w-[50%] truncate">
+                              <NotebookPenIcon className="w-3 h-3" />{" "}
+                              <span className="truncate">{s.note.note}</span>
+                            </Badge>
+                          ) : null}
+                        </div>
                         <div className="text-[11px] text-neutral-400">
-                          #{tagLine} • {s.region}
+                          #{tagLine} • {s.summoner.region}
                         </div>
                       </div>
-                      <div className="text-[11px] text-neutral-500">Lv. {s.summonerLevel}</div>
                     </button>
                   );
                 })

@@ -37,7 +37,7 @@ export const db = drizzle({
     ...commentSchema,
   },
   logger:
-    process.env.NODE_ENV === "development"
+    process.env.NODE_ENV === "ddevelopment"
       ? {
           logQuery(query: string, params: unknown[]) {
             console.log("=".repeat(60));

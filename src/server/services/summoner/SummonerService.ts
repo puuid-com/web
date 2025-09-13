@@ -7,7 +7,7 @@ import type {
 import { AccountService } from "@/server/services/AccountService";
 import { getPartsFromRiotID } from "@/server/services/summoner/utils";
 import { SummonerDTOService } from "@/server/services/SummonrtDTOService";
-import { and, desc, eq, ilike, inArray } from "drizzle-orm";
+import { and, desc, eq, ilike, inArray, or, sql } from "drizzle-orm";
 import { normalizeRiotID, trimRiotID } from "@/lib/riotID";
 import type { SummonerDTOType } from "@/server/api-route/riot/summoner/SummonerDTO";
 import {
@@ -17,6 +17,7 @@ import {
   type InsertSummonerType,
 } from "@/server/db/schema/summoner";
 import type { User } from "better-auth";
+import { noteTable } from "@/server/db/schema/note";
 
 export class SummonerService {
   static async getSummonersWithRelations(search?: string) {
@@ -34,15 +35,63 @@ export class SummonerService {
     });
   }
 
-  static async getSummoners(search?: string, limit = 25) {
-    const norm = search ? normalizeRiotID(search) : "";
-    const whereClause = norm ? ilike(summonerTable.normalizedRiotId, `%${norm}%`) : undefined;
+  static async getSummoners(
+    options: { search?: string; limit?: number; userId?: User["id"] } = {},
+  ) {
+    const { search, limit = 25, userId } = options;
 
-    return db.query.summonerTable.findMany({
-      where: whereClause,
-      limit: limit,
-      orderBy: [summonerTable.region, desc(summonerTable.summonerLevel)],
-    });
+    const norm = search ? normalizeRiotID(search) : "";
+    const pattern = norm ? `%${norm}%` : undefined;
+    const prefixPattern = norm ? `${norm}%` : undefined;
+
+    // Adaptive threshold for short inputs
+    const jwThreshold = norm ? (norm.length <= 3 ? 0.6 : norm.length <= 4 ? 0.68 : 0.75) : 0.0;
+
+    // Join only the current user's note, otherwise no-op join
+    const joinOn =
+      userId !== undefined
+        ? and(eq(noteTable.puuid, summonerTable.puuid), eq(noteTable.userId, userId))
+        : sql`false`;
+
+    // Fuzzy note predicate for WHERE (only when we have a term and a user)
+    const noteFuzzyHit =
+      norm && userId !== undefined
+        ? sql<boolean>`jarowinkler(${noteTable.note}, ${norm}) >= ${jwThreshold}`
+        : sql<boolean>`false`;
+
+    // Build the OR filter, summoner id substring OR fuzzy note match
+    const whereClause = pattern
+      ? or(ilike(summonerTable.normalizedRiotId, pattern), noteFuzzyHit)
+      : undefined;
+
+    // Similarities for ranking
+    const simNote =
+      norm && userId !== undefined
+        ? sql<number>`COALESCE(jarowinkler(${noteTable.note}, ${norm}), 0)`
+        : sql<number>`0`;
+
+    const simId = norm
+      ? sql<number>`jarowinkler(${summonerTable.normalizedRiotId}, ${norm})`
+      : sql<number>`0`;
+
+    // Priority scoring
+    // 1) any fuzzy note hit gets a large bucket boost
+    // 2) within those, sort by note similarity
+    // 3) then use Riot ID similarity, with a tiny prefix boost
+    const score = sql<number>`
+    (CASE WHEN ${noteFuzzyHit} THEN 100 ELSE 0 END)
+    + (${simNote} * 10)
+    + ${simId}
+    + (CASE WHEN ${prefixPattern ? sql`${summonerTable.normalizedRiotId} ILIKE ${prefixPattern}` : sql`false`} THEN 1 ELSE 0 END)
+  `;
+
+    return db
+      .select()
+      .from(summonerTable)
+      .leftJoin(noteTable, joinOn)
+      .where(whereClause) // inferred type fits .where()
+      .orderBy(desc(score), summonerTable.region, desc(summonerTable.summonerLevel))
+      .limit(limit);
   }
 
   static async getSummonerByPuuidTx(
