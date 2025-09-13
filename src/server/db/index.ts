@@ -11,6 +11,7 @@ import * as summonerStatisticSchema from "@/server/db/schema/summoner-statistic"
 import * as noteSchema from "@/server/db/schema/note";
 import * as commentSchema from "@/server/db/schema/match-comments";
 import * as viewsSchema from "@/server/db/schema/views";
+import * as userPageSchema from "@/server/db/schema/user-page";
 import ca from "../../../ca-certificate.crt?raw";
 
 const pool = new Pool({
@@ -35,6 +36,7 @@ export const db = drizzle({
     ...matchSchema,
     ...viewsSchema,
     ...commentSchema,
+    ...userPageSchema,
   },
   logger:
     process.env.NODE_ENV === "ddevelopment"

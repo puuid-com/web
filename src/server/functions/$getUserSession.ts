@@ -24,8 +24,12 @@ export const $getUserSession = createServerFn({ method: "GET" }).handler(async (
   const mainAccount = summoners.find((s) => s.isMain);
   const otherAccounts = summoners.filter((s) => !s.isMain);
 
+  const { UserPage } = await import("@/server/services/UserPageService");
+  const page = await UserPage.gerOrCreateUserPage(user.id);
+
   return {
     user: user,
+    userPage: page,
     mainSummoner: mainAccount,
     otherSummoners: otherAccounts,
     summoners: summoners.sort((a, b) => {

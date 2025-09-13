@@ -20,6 +20,12 @@ import type { User } from "better-auth";
 import { noteTable } from "@/server/db/schema/note";
 
 export class SummonerService {
+  static async getMainSummoner(userId: User["id"]) {
+    return db.query.summonerTable.findFirst({
+      where: and(eq(summonerTable.verifiedUserId, userId), eq(summonerTable.isMain, true)),
+    });
+  }
+
   static async getSummonersWithRelations(search?: string) {
     const norm = search ? normalizeRiotID(search) : "";
     const whereClause = norm ? ilike(summonerTable.normalizedRiotId, `%${norm}%`) : undefined;

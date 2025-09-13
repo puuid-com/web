@@ -11,6 +11,7 @@ import { eq, sql } from "drizzle-orm";
 import { SummonerService } from "@/server/services/summoner/SummonerService";
 import { CDragonService } from "@/shared/services/CDragon/CDragonService";
 import { summonerTable } from "@/server/db/schema/summoner";
+import { UserPage } from "@/server/services/UserPageService";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -33,8 +34,25 @@ export const auth = betterAuth({
           const isMain = !data || data.count === "0";
 
           await db.transaction(async (tx) => {
-            // Ensure that the summoner is created
-            await SummonerService.getOrCreateSummonerByPuuidTx(tx, accountId, false);
+            const summoner = await SummonerService.getOrCreateSummonerByPuuidTx(
+              tx,
+              accountId,
+              false,
+            );
+
+            /**
+             * If the account was a main Account, we need to create a page for the user.
+             */
+            if (isMain) {
+              await UserPage.createUserPageTx(tx, {
+                userId,
+                displayName: summoner.displayRiotId,
+                profileImage: CDragonService.getProfileIcon(summoner.profileIconId),
+                type: "DEFAULT",
+                isPublic: false,
+              });
+            }
+
             await tx
               .update(summonerTable)
               .set({

@@ -17,6 +17,7 @@ export const Route = createFileRoute("/user")({
     }
     return {
       user: context.user,
+      userPage: context.userPage,
       summoners: context.summoners,
       mainSummoner: context.mainSummoner,
       otherSummoners: context.otherSummoners,

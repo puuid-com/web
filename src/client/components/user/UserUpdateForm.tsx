@@ -1,6 +1,5 @@
 import { useRouteContext, useRouter } from "@tanstack/react-router";
 import { useMutation } from "@tanstack/react-query";
-import { authClient } from "@/lib/auth-client";
 import * as v from "valibot";
 import { useAppForm } from "@/client/components/form/useAppForm";
 import { toast } from "sonner";
@@ -12,27 +11,38 @@ import { CameraIcon } from "lucide-react";
 import { Button } from "@/client/components/ui/button";
 
 const validationSchema = v.object({
-  name: v.pipe(v.string()),
-  image: v.pipe(v.string(), v.url()),
+  displayName: v.pipe(v.string()),
+  description: v.nullable(v.string()),
+  xUsername: v.nullable(v.string()),
+  twitchUsername: v.nullable(v.string()),
+  isPublic: v.boolean(),
+  profileImage: v.pipe(v.string(), v.url()),
 });
 
 type Props = {};
 
 export function UserUpdateForm({}: Props) {
-  const { user } = useRouteContext({ from: "/user" });
+  const { userPage, user } = useRouteContext({ from: "/user" });
   const router = useRouter();
 
   const q_updateUser = useMutation({
     mutationKey: ["update-user", user.id],
-    mutationFn: async (data: v.InferOutput<typeof validationSchema>) =>
-      await authClient.updateUser(data),
+    mutationFn: async (data: v.InferOutput<typeof validationSchema>) => {
+      console.log(data);
+
+      await new Promise((r) => setTimeout(r, 500));
+    },
   });
 
   const form = useAppForm({
     validators: { onChange: validationSchema },
     defaultValues: {
-      name: user.name,
-      image: user.image!,
+      displayName: userPage.displayName,
+      description: userPage.description,
+      xUsername: userPage.xUsername,
+      twitchUsername: userPage.twitchUsername,
+      isPublic: userPage.isPublic,
+      profileImage: userPage.profileImage,
     },
     onSubmit: async ({ value }) => {
       await q_updateUser.mutateAsync(value);
@@ -41,7 +51,7 @@ export function UserUpdateForm({}: Props) {
     },
   });
 
-  const userName = useStore(form.store, (state) => state.values.name);
+  const userName = useStore(form.store, (state) => state.values.displayName);
 
   return (
     <Card className="bg-card border-border">
@@ -51,7 +61,7 @@ export function UserUpdateForm({}: Props) {
       <CardContent className="space-y-6">
         <div className="flex flex-col items-center text-center space-y-4">
           <form.Field
-            name="image"
+            name="profileImage"
             children={(field) => (
               <>
                 <UserProfileIconsDialog
@@ -90,7 +100,10 @@ export function UserUpdateForm({}: Props) {
           }}
           className="space-y-4"
         >
-          <form.AppField name="name" children={(field) => <field.TextField label="Name" />} />
+          <form.AppField
+            name="displayName"
+            children={(field) => <field.TextField label="Name" />}
+          />
           <form.AppForm>
             <form.SubmitButton label="Submit" />
           </form.AppForm>

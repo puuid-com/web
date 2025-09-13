@@ -10,10 +10,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/client/components/ui/dropdown-menu";
-import { User, LogOut, BrainIcon, RatIcon } from "lucide-react";
+import { User, LogOut, BrainIcon, RatIcon, FileUserIcon } from "lucide-react";
 import { Link, useNavigate, useRouteContext } from "@tanstack/react-router";
 import { authClient } from "@/lib/auth-client";
 import React from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { useMutation } from "@tanstack/react-query";
+import { $postUserPage } from "@/server/functions/$postUserPage";
 
 type Props = {};
 
@@ -21,6 +24,12 @@ export function UserAccountButton({}: Props) {
   const session = useRouteContext({ from: "__root__" });
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
+
+  const $_postUserPage = useServerFn($postUserPage);
+
+  const $m_userPage = useMutation({
+    mutationFn: () => $_postUserPage(),
+  });
 
   const handleNavigateToUsers = async () => {
     await navigate({ to: "/user" });
@@ -38,17 +47,41 @@ export function UserAccountButton({}: Props) {
     setIsOpen(false);
   };
 
+  const handleNavigateToUserPage = async () => {
+    if (session.userPage) {
+      await navigate({
+        to: "/page/$name",
+        params: {
+          name: session.userPage.displayName,
+        },
+      });
+    } else {
+      const { page } = await $m_userPage.mutateAsync();
+
+      await navigate({
+        to: "/page/$name",
+        params: {
+          name: page.displayName,
+        },
+      });
+    }
+  };
+
   if (!session.user) {
     return <Button onClick={() => void signInWithRiot()}>Sign In</Button>;
   }
 
-  const { user, summoners } = session;
+  const { summoners } = session;
 
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
       <DropdownMenuTrigger asChild>
         <Button variant={"ghost"} className={"px-1"}>
-          <img src={user.image!} alt="" className={"rounded-md w-8 aspect-square"} />
+          <img
+            src={session.userPage.profileImage}
+            alt=""
+            className={"rounded-md w-8 aspect-square"}
+          />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56 bg-zinc-900 border-zinc-800 text-white">
@@ -99,6 +132,13 @@ export function UserAccountButton({}: Props) {
         >
           <User className="mr-2 h-4 w-4" />
           <span>Profile</span>
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => void handleNavigateToUserPage()}
+          className="hover:bg-zinc-800 focus:bg-zinc-800 cursor-pointer"
+        >
+          <FileUserIcon className="mr-2 h-4 w-4" />
+          <span>{"Your Page"}</span>
         </DropdownMenuItem>
         <DropdownMenuSeparator className="bg-zinc-800" />
         <DropdownMenuItem
