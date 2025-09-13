@@ -5,4 +5,3 @@ export const Route = createFileRoute("/lol/feed/")({
     throw redirect({ to: "/lol/feed/following" });
   },
 });
-

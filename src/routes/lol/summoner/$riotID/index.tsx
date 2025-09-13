@@ -9,6 +9,7 @@ export const Route = createFileRoute("/lol/summoner/$riotID/")({
       search: {
         q: "solo",
       },
+      statusCode: 301,
     });
   },
 });

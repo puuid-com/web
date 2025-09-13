@@ -31,6 +31,10 @@ import { Route as LolSummonerRiotIDMatchesRouteImport } from './routes/lol/summo
 import { Route as LolSummonerRiotIDMasteryRouteImport } from './routes/lol/summoner/$riotID/mastery'
 import { Route as LolSummonerRiotIDLiveRouteImport } from './routes/lol/summoner/$riotID/live'
 import { Route as LolSummonerRiotIDChartsRouteImport } from './routes/lol/summoner/$riotID/charts'
+import { ServerRoute as SitemapXmlServerRouteImport } from './routes/sitemap.xml'
+import { ServerRoute as SitemapStaticXmlServerRouteImport } from './routes/sitemap-static.xml'
+import { ServerRoute as RobotsTxtServerRouteImport } from './routes/robots.txt'
+import { ServerRoute as SitemapSummonersPageXmlServerRouteImport } from './routes/sitemap-summoners/$page.xml'
 import { ServerRoute as ApiAuthSplatServerRouteImport } from './routes/api/auth/$'
 
 const rootServerRouteImport = createServerRootRoute()
@@ -137,6 +141,27 @@ const LolSummonerRiotIDChartsRoute = LolSummonerRiotIDChartsRouteImport.update({
   path: '/charts',
   getParentRoute: () => LolSummonerRiotIDRouteRoute,
 } as any)
+const SitemapXmlServerRoute = SitemapXmlServerRouteImport.update({
+  id: '/sitemap/xml',
+  path: '/sitemap/xml',
+  getParentRoute: () => rootServerRouteImport,
+} as any)
+const SitemapStaticXmlServerRoute = SitemapStaticXmlServerRouteImport.update({
+  id: '/sitemap-static/xml',
+  path: '/sitemap-static/xml',
+  getParentRoute: () => rootServerRouteImport,
+} as any)
+const RobotsTxtServerRoute = RobotsTxtServerRouteImport.update({
+  id: '/robots/txt',
+  path: '/robots/txt',
+  getParentRoute: () => rootServerRouteImport,
+} as any)
+const SitemapSummonersPageXmlServerRoute =
+  SitemapSummonersPageXmlServerRouteImport.update({
+    id: '/sitemap-summoners/$page/xml',
+    path: '/sitemap-summoners/$page/xml',
+    getParentRoute: () => rootServerRouteImport,
+  } as any)
 const ApiAuthSplatServerRoute = ApiAuthSplatServerRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
@@ -288,25 +313,57 @@ export interface RootRouteChildren {
   LolSummonerIndexRoute: typeof LolSummonerIndexRoute
 }
 export interface FileServerRoutesByFullPath {
+  '/robots/txt': typeof RobotsTxtServerRoute
+  '/sitemap-static/xml': typeof SitemapStaticXmlServerRoute
+  '/sitemap/xml': typeof SitemapXmlServerRoute
   '/api/auth/$': typeof ApiAuthSplatServerRoute
+  '/sitemap-summoners/$page/xml': typeof SitemapSummonersPageXmlServerRoute
 }
 export interface FileServerRoutesByTo {
+  '/robots/txt': typeof RobotsTxtServerRoute
+  '/sitemap-static/xml': typeof SitemapStaticXmlServerRoute
+  '/sitemap/xml': typeof SitemapXmlServerRoute
   '/api/auth/$': typeof ApiAuthSplatServerRoute
+  '/sitemap-summoners/$page/xml': typeof SitemapSummonersPageXmlServerRoute
 }
 export interface FileServerRoutesById {
   __root__: typeof rootServerRouteImport
+  '/robots/txt': typeof RobotsTxtServerRoute
+  '/sitemap-static/xml': typeof SitemapStaticXmlServerRoute
+  '/sitemap/xml': typeof SitemapXmlServerRoute
   '/api/auth/$': typeof ApiAuthSplatServerRoute
+  '/sitemap-summoners/$page/xml': typeof SitemapSummonersPageXmlServerRoute
 }
 export interface FileServerRouteTypes {
   fileServerRoutesByFullPath: FileServerRoutesByFullPath
-  fullPaths: '/api/auth/$'
+  fullPaths:
+    | '/robots/txt'
+    | '/sitemap-static/xml'
+    | '/sitemap/xml'
+    | '/api/auth/$'
+    | '/sitemap-summoners/$page/xml'
   fileServerRoutesByTo: FileServerRoutesByTo
-  to: '/api/auth/$'
-  id: '__root__' | '/api/auth/$'
+  to:
+    | '/robots/txt'
+    | '/sitemap-static/xml'
+    | '/sitemap/xml'
+    | '/api/auth/$'
+    | '/sitemap-summoners/$page/xml'
+  id:
+    | '__root__'
+    | '/robots/txt'
+    | '/sitemap-static/xml'
+    | '/sitemap/xml'
+    | '/api/auth/$'
+    | '/sitemap-summoners/$page/xml'
   fileServerRoutesById: FileServerRoutesById
 }
 export interface RootServerRouteChildren {
+  RobotsTxtServerRoute: typeof RobotsTxtServerRoute
+  SitemapStaticXmlServerRoute: typeof SitemapStaticXmlServerRoute
+  SitemapXmlServerRoute: typeof SitemapXmlServerRoute
   ApiAuthSplatServerRoute: typeof ApiAuthSplatServerRoute
+  SitemapSummonersPageXmlServerRoute: typeof SitemapSummonersPageXmlServerRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -455,6 +512,34 @@ declare module '@tanstack/react-router' {
 }
 declare module '@tanstack/react-start/server' {
   interface ServerFileRoutesByPath {
+    '/sitemap/xml': {
+      id: '/sitemap/xml'
+      path: '/sitemap/xml'
+      fullPath: '/sitemap/xml'
+      preLoaderRoute: typeof SitemapXmlServerRouteImport
+      parentRoute: typeof rootServerRouteImport
+    }
+    '/sitemap-static/xml': {
+      id: '/sitemap-static/xml'
+      path: '/sitemap-static/xml'
+      fullPath: '/sitemap-static/xml'
+      preLoaderRoute: typeof SitemapStaticXmlServerRouteImport
+      parentRoute: typeof rootServerRouteImport
+    }
+    '/robots/txt': {
+      id: '/robots/txt'
+      path: '/robots/txt'
+      fullPath: '/robots/txt'
+      preLoaderRoute: typeof RobotsTxtServerRouteImport
+      parentRoute: typeof rootServerRouteImport
+    }
+    '/sitemap-summoners/$page/xml': {
+      id: '/sitemap-summoners/$page/xml'
+      path: '/sitemap-summoners/$page/xml'
+      fullPath: '/sitemap-summoners/$page/xml'
+      preLoaderRoute: typeof SitemapSummonersPageXmlServerRouteImport
+      parentRoute: typeof rootServerRouteImport
+    }
     '/api/auth/$': {
       id: '/api/auth/$'
       path: '/api/auth/$'
@@ -533,7 +618,11 @@ export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
 const rootServerRouteChildren: RootServerRouteChildren = {
+  RobotsTxtServerRoute: RobotsTxtServerRoute,
+  SitemapStaticXmlServerRoute: SitemapStaticXmlServerRoute,
+  SitemapXmlServerRoute: SitemapXmlServerRoute,
   ApiAuthSplatServerRoute: ApiAuthSplatServerRoute,
+  SitemapSummonersPageXmlServerRoute: SitemapSummonersPageXmlServerRoute,
 }
 export const serverRouteTree = rootServerRouteImport
   ._addFileChildren(rootServerRouteChildren)

@@ -64,11 +64,14 @@ export const Route = createFileRoute("/lol/summoner/$riotID")({
     const title = displayRiodId;
 
     const { CDragonService } = await import("@/shared/services/CDragon/CDragonService");
+    const { clientEnv } = await import("@/client/lib/env/client");
     const profileIconUrl = CDragonService.getProfileIcon(summoner.profileIconId);
+    const canonicalUrl = `${clientEnv.VITE_CLIENT_ORIGIN}/lol/summoner/${params.riotID}`;
 
     const meta: Record<string, string>[] = [
       { title },
       { name: "description", content: description },
+      { property: "og:url", content: canonicalUrl },
       { property: "og:title", content: title },
       { property: "og:description", content: description },
       { name: "twitter:card", content: "summary" },
@@ -78,7 +81,38 @@ export const Route = createFileRoute("/lol/summoner/$riotID")({
       { name: "og:image", content: profileIconUrl },
     ];
 
-    return { meta, links: [{ rel: "icon", href: profileIconUrl }] };
+    const headScripts = [
+      {
+        type: "application/ld+json",
+        // JSON-LD describing the profile
+        children: JSON.stringify(
+          {
+            "@context": "https://schema.org",
+            "@type": "ProfilePage",
+            url: canonicalUrl,
+            name: displayRiodId,
+            about: description,
+            thumbnailUrl: profileIconUrl,
+            mainEntity: {
+              "@type": "Person",
+              name: displayRiodId,
+              identifier: summoner.riotId,
+            },
+          },
+          null,
+          0,
+        ),
+      },
+    ];
+
+    return {
+      meta,
+      links: [
+        { rel: "icon", href: profileIconUrl },
+        { rel: "canonical", href: canonicalUrl },
+      ],
+      headScripts,
+    };
   },
   staleTime: 60_000,
   gcTime: 30 * 60_000,
