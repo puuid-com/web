@@ -1,4 +1,4 @@
-import { useRouteContext, useRouter } from "@tanstack/react-router";
+import { useRouteContext } from "@tanstack/react-router";
 import { useMutation } from "@tanstack/react-query";
 import * as v from "valibot";
 import { useAppForm } from "@/client/components/form/useAppForm";
@@ -9,12 +9,16 @@ import { useStore } from "@tanstack/react-form";
 import { UserProfileIconsDialog } from "@/client/components/user/profile-icons/UserProfileIconsDialog";
 import { CameraIcon } from "lucide-react";
 import { Button } from "@/client/components/ui/button";
+import { Switch } from "@/client/components/ui/switch";
+import { Label } from "@/client/components/ui/label";
+import { useServerFn } from "@tanstack/react-start";
+import { $postUserPage } from "@/server/functions/$postUserPage";
 
-const validationSchema = v.object({
+export const UserPageUpdateFormSchema = v.object({
   displayName: v.pipe(v.string()),
-  description: v.nullable(v.string()),
-  xUsername: v.nullable(v.string()),
-  twitchUsername: v.nullable(v.string()),
+  description: v.string(),
+  xUsername: v.string(),
+  twitchUsername: v.string(),
   isPublic: v.boolean(),
   profileImage: v.pipe(v.string(), v.url()),
 });
@@ -23,31 +27,30 @@ type Props = {};
 
 export function UserUpdateForm({}: Props) {
   const { userPage, user } = useRouteContext({ from: "/user" });
-  const router = useRouter();
+  const $fn = useServerFn($postUserPage);
 
-  const q_updateUser = useMutation({
+  const $m = useMutation({
     mutationKey: ["update-user", user.id],
-    mutationFn: async (data: v.InferOutput<typeof validationSchema>) => {
-      console.log(data);
-
-      await new Promise((r) => setTimeout(r, 500));
-    },
+    mutationFn: async (data: v.InferOutput<typeof UserPageUpdateFormSchema>) =>
+      $fn({
+        data,
+      }),
   });
 
   const form = useAppForm({
-    validators: { onChange: validationSchema },
+    validators: { onChange: UserPageUpdateFormSchema },
     defaultValues: {
       displayName: userPage.displayName,
-      description: userPage.description,
-      xUsername: userPage.xUsername,
-      twitchUsername: userPage.twitchUsername,
+      description: userPage.description ?? "",
+      xUsername: userPage.xUsername ?? "",
+      twitchUsername: userPage.twitchUsername ?? "",
       isPublic: userPage.isPublic,
       profileImage: userPage.profileImage,
     },
     onSubmit: async ({ value }) => {
-      await q_updateUser.mutateAsync(value);
-      await router.invalidate();
+      await $m.mutateAsync(value);
       toast.success("User updated");
+      window.location.reload();
     },
   });
 
@@ -103,6 +106,39 @@ export function UserUpdateForm({}: Props) {
           <form.AppField
             name="displayName"
             children={(field) => <field.TextField label="Name" />}
+          />
+          <form.AppField
+            name="description"
+            children={(field) => (
+              <field.TextareaField label="Description" placeholder="Tell people about yourself" />
+            )}
+          />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <form.AppField
+              name="xUsername"
+              children={(field) => <field.TextField label="X username" />}
+            />
+            <form.AppField
+              name="twitchUsername"
+              children={(field) => <field.TextField label="Twitch username" />}
+            />
+          </div>
+          <form.Field
+            name="isPublic"
+            children={(field) => (
+              <div className="flex items-center gap-2">
+                <Switch
+                  id="public-toggle"
+                  checked={field.state.value}
+                  onCheckedChange={(checked) => {
+                    field.handleChange(checked);
+                  }}
+                />
+                <Label htmlFor="public-toggle" className="cursor-pointer">
+                  Public profile
+                </Label>
+              </div>
+            )}
           />
           <form.AppForm>
             <form.SubmitButton label="Submit" />

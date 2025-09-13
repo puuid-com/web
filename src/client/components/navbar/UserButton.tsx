@@ -14,9 +14,6 @@ import { User, LogOut, BrainIcon, RatIcon, FileUserIcon } from "lucide-react";
 import { Link, useNavigate, useRouteContext } from "@tanstack/react-router";
 import { authClient } from "@/lib/auth-client";
 import React from "react";
-import { useServerFn } from "@tanstack/react-start";
-import { useMutation } from "@tanstack/react-query";
-import { $postUserPage } from "@/server/functions/$postUserPage";
 
 type Props = {};
 
@@ -24,12 +21,6 @@ export function UserAccountButton({}: Props) {
   const session = useRouteContext({ from: "__root__" });
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
-
-  const $_postUserPage = useServerFn($postUserPage);
-
-  const $m_userPage = useMutation({
-    mutationFn: () => $_postUserPage(),
-  });
 
   const handleNavigateToUsers = async () => {
     await navigate({ to: "/user" });
@@ -53,15 +44,6 @@ export function UserAccountButton({}: Props) {
         to: "/page/$name",
         params: {
           name: session.userPage.displayName,
-        },
-      });
-    } else {
-      const { page } = await $m_userPage.mutateAsync();
-
-      await navigate({
-        to: "/page/$name",
-        params: {
-          name: page.displayName,
         },
       });
     }

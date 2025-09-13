@@ -3,7 +3,6 @@ import { db, type TransactionType } from "@/server/db";
 import {
   userPageTable,
   type UserPageInsertType,
-  type UserPageRowType,
   type UserPageUpdateType,
 } from "@/server/db/schema/user-page";
 import { SummonerService } from "@/server/services/summoner/SummonerService";
@@ -86,13 +85,13 @@ export class UserPage {
     });
   }
 
-  static async updateUserPage(id: UserPageRowType["id"], data: UserPageUpdateType) {
+  static async updateUserPage(userId: User["id"], data: UserPageUpdateType) {
     return db
       .update(userPageTable)
       .set({
         ...data,
         ...(data.displayName ? { normalizedName: normalizeString(data.displayName) } : {}),
       })
-      .where(eq(userPageTable.id, id));
+      .where(eq(userPageTable.userId, userId));
   }
 }

@@ -1,34 +1,21 @@
+import { UserPageUpdateFormSchema } from "@/client/components/user/UserUpdateForm";
 import { $authMiddleware } from "@/server/middleware/$authMiddleware";
-import { CDragonService } from "@/shared/services/CDragon/CDragonService";
-import { redirect } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 
 export const $postUserPage = createServerFn({ method: "POST" })
   .middleware([$authMiddleware])
+  .validator(UserPageUpdateFormSchema)
   .handler(async (ctx) => {
     const { user } = ctx.context;
-
-    const { SummonerService } = await import("@/server/services/summoner/SummonerService");
-    const mainSummoner = await SummonerService.getMainSummoner(user.id);
-
-    if (!mainSummoner) {
-      throw redirect({
-        to: "/",
-      });
-    }
+    const updateData = ctx.data;
 
     const { UserPage } = await import("@/server/services/UserPageService");
-    const newPage = await UserPage.createUserPageTx({
-      userId: user.id,
-      displayName: mainSummoner.displayRiotId,
-      isPublic: false,
-      type: "DEFAULT",
-      profileImage: CDragonService.getProfileIcon(mainSummoner.profileIconId),
+    await UserPage.updateUserPage(user.id, {
+      ...updateData,
+      description: updateData.description.trim() === "" ? null : updateData.description,
+      xUsername: updateData.xUsername.trim() === "" ? null : updateData.xUsername,
+      twitchUsername: updateData.twitchUsername.trim() === "" ? null : updateData.twitchUsername,
     });
-
-    return {
-      page: newPage,
-    };
   });
 
 export type $postUserPageType = Awaited<ReturnType<typeof $postUserPage>>;

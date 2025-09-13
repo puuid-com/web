@@ -9,7 +9,7 @@ import { friendlyQueueTypeToRiot } from "@/client/lib/typeHelper";
 import { $getSummonerMatches } from "@/server/functions/$getSummonerMatches";
 import { ToggleGroup, ToggleGroupItem } from "@/client/components/ui/toggle-group";
 
-export type MatchPoint = {
+type MatchPoint = {
   datetime: string | Date;
   win: boolean;
 };
@@ -142,5 +142,3 @@ function RouteComponent() {
     </div>
   );
 }
-
-export default RouteComponent;
