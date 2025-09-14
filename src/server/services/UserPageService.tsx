@@ -4,6 +4,7 @@ import {
   userPageSummonerTable,
   userPageTable,
   type UserPageInsertType,
+  type UserPageRowType,
   type UserPageSummonerRowType,
   type UserPageUpdateType,
   type UserPageWithRelations,
@@ -68,6 +69,21 @@ export class UserPageService {
     };
   }
 
+  static async getUserPageById(id: UserPageRowType["id"]) {
+    const page = await db.query.userPageTable.findFirst({
+      where: (t, { eq }) => eq(t.id, id),
+      with: {
+        summoners: true,
+      },
+    });
+
+    if (!page) {
+      throw new Error("No page found");
+    }
+
+    return page;
+  }
+
   static async getUserPageByUser(userId: User["id"]) {
     return db.query.userPageTable.findFirst({
       where: eq(userPageTable.userId, userId),
@@ -76,9 +92,13 @@ export class UserPageService {
           with: {
             summoner: {
               with: {
-                statistics: true,
-                refresh: true,
+                statistics: {
+                  with: {
+                    league: true,
+                  },
+                },
                 leagues: true,
+                refresh: true,
               },
             },
           },

@@ -33,10 +33,7 @@ export const summonerTable = pgTable(
 export const summonerTableRelations = relations(summonerTable, ({ many, one }) => ({
   statistics: many(statisticTable),
   leagues: many(leagueTable),
-  refresh: one(summonerRefresh, {
-    fields: [summonerTable.puuid],
-    references: [summonerRefresh.puuid],
-  }),
+  refresh: one(summonerRefresh),
   comments: many(matchCommentTable),
   notes: many(noteTable),
   matchSummoner: many(matchSummonerTable),
