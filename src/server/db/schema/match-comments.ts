@@ -1,6 +1,5 @@
-import { user } from "@/server/db/schema/auth";
 import { matchTable } from "@/server/db/schema/match";
-import { summonerTable } from "@/server/db/schema/summoner";
+import { userPageSummonerTable } from "@/server/db/schema/user-page";
 import { relations } from "drizzle-orm";
 import { index, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 import { uuidv7 } from "uuidv7";
@@ -11,11 +10,8 @@ export const matchCommentTable = pgTable(
     id: uuid("id")
       .primaryKey()
       .$defaultFn(() => uuidv7()),
-    userId: text("user_id")
-      .references(() => user.id, { onDelete: "cascade" })
-      .notNull(),
-    puuid: text("puuid")
-      .references(() => summonerTable.puuid, { onDelete: "cascade" })
+    userPageSummonerId: uuid("user_page_summoner_id")
+      .references(() => userPageSummonerTable.id, { onDelete: "cascade" })
       .notNull(),
     matchId: text("match_id")
       .references(() => matchTable.matchId, { onDelete: "cascade" })
@@ -25,20 +21,19 @@ export const matchCommentTable = pgTable(
 
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
-  (t) => [index("idx_mc_matchid").on(t.matchId), index("idx_mc_userid").on(t.userId)],
+  (t) => [
+    index("idx_mc_matchid").on(t.matchId),
+    index("idx_mc_user_page_summoner_id").on(t.userPageSummonerId),
+  ],
 );
 
 export type MatchCommentRowType = typeof matchCommentTable.$inferSelect;
 export type InsertMatchCommentRowType = typeof matchCommentTable.$inferInsert;
 
 export const matchCommentTableRelations = relations(matchCommentTable, ({ one }) => ({
-  summoner: one(summonerTable, {
-    fields: [matchCommentTable.puuid],
-    references: [summonerTable.puuid],
-  }),
-  user: one(user, {
-    fields: [matchCommentTable.userId],
-    references: [user.id],
+  userPageSummoner: one(userPageSummonerTable, {
+    fields: [matchCommentTable.userPageSummonerId],
+    references: [userPageSummonerTable.id],
   }),
   match: one(matchTable, {
     fields: [matchCommentTable.matchId],

@@ -68,7 +68,7 @@ export function UserAccountButton({}: Props) {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56 bg-zinc-900 border-zinc-800 text-white">
         <DropdownMenuLabel>Your summoners</DropdownMenuLabel>
-        {summoners.map((s) => {
+        {summoners.map(({ summoner: s, type }) => {
           const [gameName, tagLine] = s.displayRiotId.split("#");
 
           const stats = s.statistics.find((s) => s.queueType === "RANKED_SOLO_5x5");
@@ -92,7 +92,7 @@ export function UserAccountButton({}: Props) {
                   } as React.CSSProperties
                 }
               >
-                {s.isMain ? (
+                {type === "MAIN" ? (
                   <React.Fragment>
                     <BrainIcon className={"text-main"} />
                   </React.Fragment>

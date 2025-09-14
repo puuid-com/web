@@ -1,41 +1,89 @@
 import { normalizeString } from "@/lib/riotID";
 import { db, type TransactionType } from "@/server/db";
 import {
+  userPageSummonerTable,
   userPageTable,
   type UserPageInsertType,
+  type UserPageSummonerRowType,
   type UserPageUpdateType,
+  type UserPageWithRelations,
 } from "@/server/db/schema/user-page";
 import { SummonerService } from "@/server/services/summoner/SummonerService";
 import { CDragonService } from "@/shared/services/CDragon/CDragonService";
 import type { User } from "better-auth";
 import { desc, eq, ilike, sql } from "drizzle-orm";
 
-export class UserPage {
-  static async gerOrCreateUserPage(userId: User["id"]) {
+export class UserPageService {
+  static async getUserPageSummoners(userId: User["id"]) {
+    return db.query.userPageTable.findFirst({
+      where: eq(userPageTable.userId, userId),
+      with: {
+        summoners: true,
+      },
+    });
+  }
+
+  static async addUserPageSummonerTx(
+    tx: TransactionType,
+    values: Pick<UserPageSummonerRowType, "puuid" | "type" | "userPageId" | "isPublic">,
+  ) {
+    const summoner = await SummonerService.getOrCreateSummonerByPuuidTx(tx, values.puuid, false);
+    const userPageSummoner = await tx.insert(userPageSummonerTable).values({
+      ...values,
+    });
+
+    return {
+      summoner,
+      userPageSummoner,
+    };
+  }
+
+  static async gerOrCreateUserPageTx(
+    tx: TransactionType,
+    userId: User["id"],
+  ): Promise<{ page: UserPageWithRelations; wasCreated: boolean }> {
     const page = await this.getUserPageByUser(userId);
 
-    if (page) return page;
-
-    const mainSummoner = await SummonerService.getMainSummoner(userId);
-
-    if (!mainSummoner) {
-      throw new Error("No main summoner for the user");
+    if (page) {
+      return {
+        page,
+        wasCreated: false,
+      };
     }
 
-    return db.transaction((tx) =>
-      this.createUserPageTx(tx, {
-        userId,
-        displayName: mainSummoner.displayRiotId,
-        isPublic: false,
-        profileImage: CDragonService.getProfileIcon(mainSummoner.profileIconId),
-        type: "DEFAULT",
-      }),
-    );
+    const newPage = await this.createUserPageTx(tx, {
+      userId,
+      displayName: "New User Page",
+      isPublic: false,
+      profileImage: CDragonService.getProfileIcon(29),
+      type: "DEFAULT",
+    });
+
+    return {
+      page: {
+        ...newPage,
+        summoners: [],
+      },
+      wasCreated: true,
+    };
   }
 
   static async getUserPageByUser(userId: User["id"]) {
     return db.query.userPageTable.findFirst({
       where: eq(userPageTable.userId, userId),
+      with: {
+        summoners: {
+          with: {
+            summoner: {
+              with: {
+                statistics: true,
+                refresh: true,
+                leagues: true,
+              },
+            },
+          },
+        },
+      },
     });
   }
 
@@ -82,6 +130,19 @@ export class UserPage {
 
     return db.query.userPageTable.findFirst({
       where: eq(userPageTable.normalizedName, normalizedName),
+      with: {
+        summoners: {
+          with: {
+            summoner: {
+              with: {
+                statistics: true,
+                refresh: true,
+                leagues: true,
+              },
+            },
+          },
+        },
+      },
     });
   }
 

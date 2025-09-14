@@ -1,7 +1,6 @@
 import { RefreshSummoner } from "@/client/components/refresh/RefreshSummoner";
 import { SummonerHeaderInfo } from "@/client/components/summoner/header/SummonerHeaderInfo";
 import { SummonerSkinDialog } from "@/client/components/summoner/header/SummonerSkinDialog";
-import { VerifiedTooltips } from "@/client/components/tooltips/VerifiedTooltips";
 import { Badge } from "@/client/components/ui/badge";
 import { useMainChampionContext } from "@/client/context/MainChampionContext";
 import { cn, timeago } from "@/client/lib/utils";
@@ -72,9 +71,6 @@ export const SummonerHeader = ({ className }: Props) => {
                     <span className={"text-main/90 text-base"}>#{tagLine}</span>
                   </h1>
                 </Link>
-                <div className={"flex gap-1.5 items-center"}>
-                  <VerifiedTooltips summoner={summoner} />
-                </div>
               </div>
               <div className="">
                 <RefreshSummoner key={summoner.puuid}>

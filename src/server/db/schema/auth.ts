@@ -1,4 +1,3 @@
-import { matchCommentTable } from "@/server/db/schema/match-comments";
 import { userPageTable } from "@/server/db/schema/user-page";
 import { relations } from "drizzle-orm";
 import { pgTable, text, timestamp, boolean } from "drizzle-orm/pg-core";
@@ -19,11 +18,13 @@ export const user = pgTable("user", {
     .notNull(),
 });
 
-export const userTableRelations = relations(user, ({ many }) => ({
+export const userRelations = relations(user, ({ many, one }) => ({
   accounts: many(account),
   sessions: many(session),
-  userPages: many(userPageTable),
-  matchComments: many(matchCommentTable),
+  userPage: one(userPageTable, {
+    fields: [user.id],
+    references: [userPageTable.userId],
+  }),
 }));
 
 export const session = pgTable("session", {

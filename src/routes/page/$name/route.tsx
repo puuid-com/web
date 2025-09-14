@@ -1,5 +1,5 @@
 import { $getUserPage } from "@/server/functions/$getUserPage";
-import { createFileRoute, Link, redirect, useRouteContext } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, redirect, useRouteContext } from "@tanstack/react-router";
 import { Card, CardContent } from "@/client/components/ui/card";
 import { Badge } from "@/client/components/ui/badge";
 import { Button } from "@/client/components/ui/button";
@@ -8,9 +8,7 @@ import {
   Globe as GlobeIcon,
   Lock as LockIcon,
   Pencil as PencilIcon,
-  Share2 as Share2Icon,
 } from "lucide-react";
-import { toast } from "sonner";
 import { SiTwitch, SiX } from "@icons-pack/react-simple-icons";
 
 export const Route = createFileRoute("/page/$name")({
@@ -31,6 +29,7 @@ export const Route = createFileRoute("/page/$name")({
 
 function RouteComponent() {
   const { page } = Route.useLoaderData();
+
   const session = useRouteContext({ from: "__root__" });
 
   const isOwner = session.userPage?.id === page.id;
@@ -44,14 +43,7 @@ function RouteComponent() {
   const xUrl = page.xUsername ? `https://x.com/${page.xUsername}` : null;
   const twitchUrl = page.twitchUsername ? `https://twitch.tv/${page.twitchUsername}` : null;
 
-  const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(window.location.href);
-      toast.success("Profile link copied");
-    } catch {
-      toast.error("Unable to copy link");
-    }
-  };
+  const pageSummoners = page.summoners;
 
   return (
     <div
@@ -125,9 +117,6 @@ function RouteComponent() {
               </div>
 
               <div className="flex flex-col gap-2 ml-auto">
-                <Button variant="outline" size="sm" onClick={() => void handleCopy()}>
-                  <Share2Icon /> Share
-                </Button>
                 {isOwner ? (
                   <Button asChild variant="secondary" size="sm">
                     <Link to="/user/settings">
@@ -139,9 +128,19 @@ function RouteComponent() {
             </div>
           </CardContent>
         </Card>
+        <div>
+          {pageSummoners.map(({ summoner }) => {
+            return (
+              <div key={summoner.puuid}>
+                <h1>{summoner.displayRiotId}</h1>
+              </div>
+            );
+          })}
+        </div>
 
-        {/* Placeholder for future sections */}
-        <div className="text-center text-neutral-400 text-sm">More content coming soon.</div>
+        <div className="text-center text-neutral-400 text-sm">
+          <Outlet />
+        </div>
       </div>
     </div>
   );

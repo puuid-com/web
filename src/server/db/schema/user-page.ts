@@ -1,6 +1,7 @@
 import { user } from "@/server/db/schema/auth";
-import { relations } from "drizzle-orm";
-import { boolean, index, pgTable, text, timestamp, unique, uuid } from "drizzle-orm/pg-core";
+import { summonerTable, type SummonerWithRelationsType } from "@/server/db/schema/summoner";
+import { relations, sql } from "drizzle-orm";
+import { boolean, index, pgTable, text, timestamp, uniqueIndex, uuid } from "drizzle-orm/pg-core";
 import { uuidv7 } from "uuidv7";
 
 export type UserPageType = "DEFAULT";
@@ -29,9 +30,44 @@ export const userPageTable = pgTable(
   },
   (t) => [
     index("idx").on(t.normalizedName, t.isPublic),
-    unique("uq_name").on(t.normalizedName, t.displayName),
+    uniqueIndex("uq_name")
+      .on(t.normalizedName, t.displayName)
+      .where(sql`${t.isPublic} = true`),
   ],
 );
+
+export type UserPageSummonerType = "MAIN" | "SMURF";
+
+export const userPageSummonerTable = pgTable("user_page_summoner", {
+  id: uuid("id")
+    .primaryKey()
+    .$defaultFn(() => uuidv7()),
+  userPageId: uuid("user_page_id")
+    .references(() => userPageTable.id, { onDelete: "cascade" })
+    .notNull(),
+  puuid: text("puuid").unique().notNull(),
+  isPublic: boolean("is_public").notNull(),
+  type: text("type").$type<UserPageSummonerType>().notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const userPageSummonerTableRelations = relations(userPageSummonerTable, ({ one }) => ({
+  userPage: one(userPageTable, {
+    fields: [userPageSummonerTable.userPageId],
+    references: [userPageTable.id],
+  }),
+  summoner: one(summonerTable, {
+    fields: [userPageSummonerTable.puuid],
+    references: [summonerTable.puuid],
+  }),
+}));
+
+export type UserPageSummonerRowType = typeof userPageSummonerTable.$inferSelect;
+export type UserPageSummonerInsertType = typeof userPageSummonerTable.$inferInsert;
+
+export type UserPageSummonerTypeWithRelations = UserPageSummonerRowType & {
+  summoner: SummonerWithRelationsType;
+};
 
 export type UserPageRowType = typeof userPageTable.$inferSelect;
 export type UserPageInsertType = typeof userPageTable.$inferInsert;
@@ -39,6 +75,11 @@ export type UserPageUpdateType = Partial<
   Omit<UserPageInsertType, "id" | "userId" | "createdAt" | "normalizedName" | "type">
 >;
 
-export const userPageTableRelations = relations(userPageTable, ({ one }) => ({
+export type UserPageWithRelations = UserPageRowType & {
+  summoners: UserPageSummonerTypeWithRelations[];
+};
+
+export const userPageTableRelations = relations(userPageTable, ({ one, many }) => ({
   user: one(user),
+  summoners: many(userPageSummonerTable),
 }));

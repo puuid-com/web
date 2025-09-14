@@ -18,9 +18,10 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as UserSettingsRouteImport } from './routes/user/settings'
 import { Route as UserAccountsRouteImport } from './routes/user/accounts'
 import { Route as RPuuidRouteImport } from './routes/r.$puuid'
-import { Route as PageNameRouteImport } from './routes/page/$name'
 import { Route as LolLiveRouteImport } from './routes/lol/live'
+import { Route as PageNameRouteRouteImport } from './routes/page/$name/route'
 import { Route as LolFeedRouteRouteImport } from './routes/lol/feed/route'
+import { Route as PageNameIndexRouteImport } from './routes/page/$name/index'
 import { Route as LolSummonerIndexRouteImport } from './routes/lol/summoner/index'
 import { Route as LolFeedIndexRouteImport } from './routes/lol/feed/index'
 import { Route as LolFeedForYouRouteImport } from './routes/lol/feed/for-you'
@@ -75,20 +76,25 @@ const RPuuidRoute = RPuuidRouteImport.update({
   path: '/r/$puuid',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PageNameRoute = PageNameRouteImport.update({
-  id: '/page/$name',
-  path: '/page/$name',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const LolLiveRoute = LolLiveRouteImport.update({
   id: '/lol/live',
   path: '/lol/live',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PageNameRouteRoute = PageNameRouteRouteImport.update({
+  id: '/page/$name',
+  path: '/page/$name',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LolFeedRouteRoute = LolFeedRouteRouteImport.update({
   id: '/lol/feed',
   path: '/lol/feed',
   getParentRoute: () => rootRouteImport,
+} as any)
+const PageNameIndexRoute = PageNameIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => PageNameRouteRoute,
 } as any)
 const LolSummonerIndexRoute = LolSummonerIndexRouteImport.update({
   id: '/lol/summoner/',
@@ -180,8 +186,8 @@ export interface FileRoutesByFullPath {
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
   '/lol/feed': typeof LolFeedRouteRouteWithChildren
+  '/page/$name': typeof PageNameRouteRouteWithChildren
   '/lol/live': typeof LolLiveRoute
-  '/page/$name': typeof PageNameRoute
   '/r/$puuid': typeof RPuuidRoute
   '/user/accounts': typeof UserAccountsRoute
   '/user/settings': typeof UserSettingsRoute
@@ -191,6 +197,7 @@ export interface FileRoutesByFullPath {
   '/lol/feed/for-you': typeof LolFeedForYouRoute
   '/lol/feed/': typeof LolFeedIndexRoute
   '/lol/summoner': typeof LolSummonerIndexRoute
+  '/page/$name/': typeof PageNameIndexRoute
   '/lol/summoner/$riotID/charts': typeof LolSummonerRiotIDChartsRoute
   '/lol/summoner/$riotID/live': typeof LolSummonerRiotIDLiveRoute
   '/lol/summoner/$riotID/mastery': typeof LolSummonerRiotIDMasteryRoute
@@ -203,7 +210,6 @@ export interface FileRoutesByTo {
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
   '/lol/live': typeof LolLiveRoute
-  '/page/$name': typeof PageNameRoute
   '/r/$puuid': typeof RPuuidRoute
   '/user/accounts': typeof UserAccountsRoute
   '/user/settings': typeof UserSettingsRoute
@@ -212,6 +218,7 @@ export interface FileRoutesByTo {
   '/lol/feed/for-you': typeof LolFeedForYouRoute
   '/lol/feed': typeof LolFeedIndexRoute
   '/lol/summoner': typeof LolSummonerIndexRoute
+  '/page/$name': typeof PageNameIndexRoute
   '/lol/summoner/$riotID/charts': typeof LolSummonerRiotIDChartsRoute
   '/lol/summoner/$riotID/live': typeof LolSummonerRiotIDLiveRoute
   '/lol/summoner/$riotID/mastery': typeof LolSummonerRiotIDMasteryRoute
@@ -225,8 +232,8 @@ export interface FileRoutesById {
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
   '/lol/feed': typeof LolFeedRouteRouteWithChildren
+  '/page/$name': typeof PageNameRouteRouteWithChildren
   '/lol/live': typeof LolLiveRoute
-  '/page/$name': typeof PageNameRoute
   '/r/$puuid': typeof RPuuidRoute
   '/user/accounts': typeof UserAccountsRoute
   '/user/settings': typeof UserSettingsRoute
@@ -236,6 +243,7 @@ export interface FileRoutesById {
   '/lol/feed/for-you': typeof LolFeedForYouRoute
   '/lol/feed/': typeof LolFeedIndexRoute
   '/lol/summoner/': typeof LolSummonerIndexRoute
+  '/page/$name/': typeof PageNameIndexRoute
   '/lol/summoner/$riotID/charts': typeof LolSummonerRiotIDChartsRoute
   '/lol/summoner/$riotID/live': typeof LolSummonerRiotIDLiveRoute
   '/lol/summoner/$riotID/mastery': typeof LolSummonerRiotIDMasteryRoute
@@ -250,8 +258,8 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/terms'
     | '/lol/feed'
-    | '/lol/live'
     | '/page/$name'
+    | '/lol/live'
     | '/r/$puuid'
     | '/user/accounts'
     | '/user/settings'
@@ -261,6 +269,7 @@ export interface FileRouteTypes {
     | '/lol/feed/for-you'
     | '/lol/feed/'
     | '/lol/summoner'
+    | '/page/$name/'
     | '/lol/summoner/$riotID/charts'
     | '/lol/summoner/$riotID/live'
     | '/lol/summoner/$riotID/mastery'
@@ -273,7 +282,6 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/terms'
     | '/lol/live'
-    | '/page/$name'
     | '/r/$puuid'
     | '/user/accounts'
     | '/user/settings'
@@ -282,6 +290,7 @@ export interface FileRouteTypes {
     | '/lol/feed/for-you'
     | '/lol/feed'
     | '/lol/summoner'
+    | '/page/$name'
     | '/lol/summoner/$riotID/charts'
     | '/lol/summoner/$riotID/live'
     | '/lol/summoner/$riotID/mastery'
@@ -294,8 +303,8 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/terms'
     | '/lol/feed'
-    | '/lol/live'
     | '/page/$name'
+    | '/lol/live'
     | '/r/$puuid'
     | '/user/accounts'
     | '/user/settings'
@@ -305,6 +314,7 @@ export interface FileRouteTypes {
     | '/lol/feed/for-you'
     | '/lol/feed/'
     | '/lol/summoner/'
+    | '/page/$name/'
     | '/lol/summoner/$riotID/charts'
     | '/lol/summoner/$riotID/live'
     | '/lol/summoner/$riotID/mastery'
@@ -318,8 +328,8 @@ export interface RootRouteChildren {
   PrivacyRoute: typeof PrivacyRoute
   TermsRoute: typeof TermsRoute
   LolFeedRouteRoute: typeof LolFeedRouteRouteWithChildren
+  PageNameRouteRoute: typeof PageNameRouteRouteWithChildren
   LolLiveRoute: typeof LolLiveRoute
-  PageNameRoute: typeof PageNameRoute
   RPuuidRoute: typeof RPuuidRoute
   LolSummonerRiotIDRouteRoute: typeof LolSummonerRiotIDRouteRouteWithChildren
   LolFeaturedGamesRegionRoute: typeof LolFeaturedGamesRegionRoute
@@ -430,18 +440,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RPuuidRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/page/$name': {
-      id: '/page/$name'
-      path: '/page/$name'
-      fullPath: '/page/$name'
-      preLoaderRoute: typeof PageNameRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/lol/live': {
       id: '/lol/live'
       path: '/lol/live'
       fullPath: '/lol/live'
       preLoaderRoute: typeof LolLiveRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/page/$name': {
+      id: '/page/$name'
+      path: '/page/$name'
+      fullPath: '/page/$name'
+      preLoaderRoute: typeof PageNameRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/lol/feed': {
@@ -450,6 +460,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/lol/feed'
       preLoaderRoute: typeof LolFeedRouteRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/page/$name/': {
+      id: '/page/$name/'
+      path: '/'
+      fullPath: '/page/$name/'
+      preLoaderRoute: typeof PageNameIndexRouteImport
+      parentRoute: typeof PageNameRouteRoute
     }
     '/lol/summoner/': {
       id: '/lol/summoner/'
@@ -600,6 +617,18 @@ const LolFeedRouteRouteWithChildren = LolFeedRouteRoute._addFileChildren(
   LolFeedRouteRouteChildren,
 )
 
+interface PageNameRouteRouteChildren {
+  PageNameIndexRoute: typeof PageNameIndexRoute
+}
+
+const PageNameRouteRouteChildren: PageNameRouteRouteChildren = {
+  PageNameIndexRoute: PageNameIndexRoute,
+}
+
+const PageNameRouteRouteWithChildren = PageNameRouteRoute._addFileChildren(
+  PageNameRouteRouteChildren,
+)
+
 interface LolSummonerRiotIDRouteRouteChildren {
   LolSummonerRiotIDChartsRoute: typeof LolSummonerRiotIDChartsRoute
   LolSummonerRiotIDLiveRoute: typeof LolSummonerRiotIDLiveRoute
@@ -628,8 +657,8 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyRoute: PrivacyRoute,
   TermsRoute: TermsRoute,
   LolFeedRouteRoute: LolFeedRouteRouteWithChildren,
+  PageNameRouteRoute: PageNameRouteRouteWithChildren,
   LolLiveRoute: LolLiveRoute,
-  PageNameRoute: PageNameRoute,
   RPuuidRoute: RPuuidRoute,
   LolSummonerRiotIDRouteRoute: LolSummonerRiotIDRouteRouteWithChildren,
   LolFeaturedGamesRegionRoute: LolFeaturedGamesRegionRoute,

@@ -1,4 +1,5 @@
 import { auth } from "@/lib/auth";
+import type { UserPageSummonerTypeWithRelations } from "@/server/db/schema/user-page";
 import { createServerFn } from "@tanstack/react-start";
 import { getHeaders } from "@tanstack/react-start/server";
 
@@ -17,28 +18,44 @@ export const $getUserSession = createServerFn({ method: "GET" }).handler(async (
     };
   }
 
-  const { SummonerService } = await import("@/server/services/summoner/SummonerService");
+  const { db } = await import("@/server/db");
+  const { UserPageService } = await import("@/server/services/UserPageService");
+  const { page } = await db.transaction((tx) => UserPageService.gerOrCreateUserPageTx(tx, user.id));
 
-  const summoners = await SummonerService.getVerifiedSummoners(user.id);
+  const { mainSummoner, otherSummoners, summoners } = page.summoners.reduce<{
+    mainSummoner: UserPageSummonerTypeWithRelations | null;
+    otherSummoners: UserPageSummonerTypeWithRelations[];
+    summoners: UserPageSummonerTypeWithRelations[];
+  }>(
+    (acc, summoner) => {
+      if (summoner.type === "MAIN") {
+        acc.mainSummoner = summoner;
+      } else {
+        acc.otherSummoners.push(summoner);
+      }
+      acc.summoners.push(summoner);
 
-  const mainAccount = summoners.find((s) => s.isMain);
-  const otherAccounts = summoners.filter((s) => !s.isMain);
-
-  const { UserPage } = await import("@/server/services/UserPageService");
-  const page = await UserPage.gerOrCreateUserPage(user.id);
+      return acc;
+    },
+    {
+      mainSummoner: null,
+      otherSummoners: [],
+      summoners: [],
+    },
+  );
 
   return {
     user: user,
     userPage: page,
-    mainSummoner: mainAccount,
-    otherSummoners: otherAccounts,
+    mainSummoner: mainSummoner,
+    otherSummoners: otherSummoners,
     summoners: summoners.sort((a, b) => {
       // First, sort by isMain (main accounts first)
-      if (a.isMain !== b.isMain) {
-        return a.isMain ? -1 : 1;
+      if (a.type !== b.type) {
+        return a.type === "MAIN" ? -1 : 1;
       }
       // Then sort by summonerLevel in descending order
-      return b.summonerLevel - a.summonerLevel;
+      return b.summoner.summonerLevel - a.summoner.summonerLevel;
     }),
   };
 });

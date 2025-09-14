@@ -23,7 +23,7 @@ export const SummonerListItem = ({ s }: Props) => {
       to={"/lol/summoner/$riotID"}
       params={{ riotID: s.riotId.replace("#", "-") }}
       search={{
-        queue: "RANKED_SOLO_5x5",
+        q: "solo",
       }}
       style={
         {

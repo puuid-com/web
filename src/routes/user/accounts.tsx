@@ -59,7 +59,7 @@ function AccountsPage() {
             </div>
           ) : (
             <div className="space-y-3">
-              {summoners.map((summoner) => {
+              {summoners.map(({ summoner, type }) => {
                 const [gameName, tagLine] = summoner.displayRiotId.split("#");
 
                 const mainStats = summoner.statistics.at(0);
@@ -95,7 +95,7 @@ function AccountsPage() {
                         </div>
                         <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
                           <Badge variant="outline" className="gap-1">
-                            {summoner.isMain ? (
+                            {type === "MAIN" ? (
                               <>
                                 <BrainIcon className="w-3 h-3" /> Main
                               </>

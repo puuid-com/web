@@ -9,8 +9,8 @@ export const $postUserPage = createServerFn({ method: "POST" })
     const { user } = ctx.context;
     const updateData = ctx.data;
 
-    const { UserPage } = await import("@/server/services/UserPageService");
-    await UserPage.updateUserPage(user.id, {
+    const { UserPageService } = await import("@/server/services/UserPageService");
+    await UserPageService.updateUserPage(user.id, {
       ...updateData,
       description: updateData.description.trim() === "" ? null : updateData.description,
       xUsername: updateData.xUsername.trim() === "" ? null : updateData.xUsername,

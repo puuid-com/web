@@ -102,6 +102,7 @@ export const SummonerLiveMatchHeader = ({}: Props) => {
   return (
     <Link
       to={"/lol/summoner/$riotID/live"}
+      search={{ q: "solo" }}
       params={{ riotID: params.riotID }}
       className={cn(
         "group rounded-xl flex justify-between items-center gap-2 p-2",

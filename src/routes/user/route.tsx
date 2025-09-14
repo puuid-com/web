@@ -12,9 +12,11 @@ import { CogIcon, UsersIcon } from "lucide-react";
 export const Route = createFileRoute("/user")({
   beforeLoad: (ctx) => {
     const context = ctx.context;
-    if (!context.user) {
+
+    if (!context.user || !context.userPage) {
       throw redirect({ to: "/" });
     }
+
     return {
       user: context.user,
       userPage: context.userPage,

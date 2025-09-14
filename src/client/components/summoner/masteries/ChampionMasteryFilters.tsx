@@ -109,7 +109,7 @@ export const ChampionMasteryFilters = ({ dataCount }: Props) => {
                 handleQueueChange("solo");
               }}
               className={`px-3 py-1.5 text-sm font-medium rounded transition-all ${
-                search.queue === "solo"
+                search.q === "solo"
                   ? "bg-background text-foreground shadow-sm"
                   : "text-muted-foreground hover:text-foreground"
               }`}
@@ -121,7 +121,7 @@ export const ChampionMasteryFilters = ({ dataCount }: Props) => {
                 handleQueueChange("flex");
               }}
               className={`px-3 py-1.5 text-sm font-medium rounded transition-all ${
-                search.queue === "flex"
+                search.q === "flex"
                   ? "bg-background text-foreground shadow-sm"
                   : "text-muted-foreground hover:text-foreground"
               }`}

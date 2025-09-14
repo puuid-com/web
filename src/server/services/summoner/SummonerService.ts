@@ -1,5 +1,4 @@
 import { db, type TransactionType } from "@/server/db";
-import { user } from "@/server/db/schema/auth";
 import type {
   AccountDTOType,
   AccountRegionDTOType,
@@ -20,12 +19,6 @@ import type { User } from "better-auth";
 import { noteTable } from "@/server/db/schema/note";
 
 export class SummonerService {
-  static async getMainSummoner(userId: User["id"]) {
-    return db.query.summonerTable.findFirst({
-      where: and(eq(summonerTable.verifiedUserId, userId), eq(summonerTable.isMain, true)),
-    });
-  }
-
   static async getSummonersWithRelations(search?: string) {
     const norm = search ? normalizeRiotID(search) : "";
     const whereClause = norm ? ilike(summonerTable.normalizedRiotId, `%${norm}%`) : undefined;
@@ -114,12 +107,6 @@ export class SummonerService {
         },
         leagues: true,
         refresh: true,
-        verifiedUser: {
-          columns: {
-            name: true,
-            image: true,
-          },
-        },
       },
     });
   }
@@ -143,12 +130,6 @@ export class SummonerService {
             },
             leagues: true,
             refresh: true,
-            verifiedUser: {
-              columns: {
-                name: true,
-                image: true,
-              },
-            },
           },
         });
 
@@ -256,15 +237,13 @@ export class SummonerService {
     tx: TransactionType,
     account: AccountDTOType,
     accountRegion: AccountRegionDTOType,
-    userId: typeof user.$inferSelect.id | null = null,
-    isMain = false,
   ): Promise<SummonerWithRelationsType> {
     const summoner = await SummonerDTOService.getSummonerDTOByPuuid({
       puuid: account.puuid,
       region: accountRegion.region,
     });
 
-    const data = this.summonerDataToDB(account, summoner, accountRegion, userId, isMain);
+    const data = this.summonerDataToDB(account, summoner, accountRegion);
 
     await tx
       .insert(summonerTable)
@@ -294,8 +273,6 @@ export class SummonerService {
     account: AccountDTOType,
     summoner: SummonerDTOType,
     accountRegion: AccountRegionDTOType,
-    userId?: string | null,
-    isMain?: boolean,
   ): InsertSummonerType {
     return {
       puuid: account.puuid,
@@ -308,111 +285,6 @@ export class SummonerService {
       profileIconId: summoner.profileIconId,
       region: accountRegion.region,
       createdAt: new Date(),
-      verifiedUserId: userId ?? null,
-      isMain: isMain ?? false,
     };
-  }
-
-  static async getVerifiedSummoners(
-    userID: typeof user.$inferSelect.id,
-  ): Promise<SummonerWithRelationsType[]> {
-    return db.query.summonerTable.findMany({
-      where: eq(summonerTable.verifiedUserId, userID),
-      with: {
-        statistics: {
-          with: {
-            league: true,
-          },
-        },
-        leagues: true,
-        refresh: true,
-        verifiedUser: {
-          columns: {
-            name: true,
-            image: true,
-          },
-        },
-      },
-    });
-  }
-
-  static async getVerifiedPuuids(userID: typeof user.$inferSelect.id) {
-    const data = await db
-      .select({
-        puuid: summonerTable.puuid,
-      })
-      .from(summonerTable)
-      .where(eq(summonerTable.verifiedUserId, userID));
-
-    return data.map((d) => d.puuid);
-  }
-
-  static async unverifySummoner(userID: typeof user.$inferSelect.id, puuid: SummonerType["puuid"]) {
-    const whereClause = and(
-      eq(summonerTable.verifiedUserId, userID),
-      eq(summonerTable.puuid, puuid),
-    );
-
-    const data = await db.select().from(summonerTable).where(whereClause);
-
-    const idData = data.length === 0 ? null : data[0];
-
-    if (!idData) {
-      throw new Error("No verified account");
-    }
-
-    return await db
-      .update(summonerTable)
-      .set({
-        verifiedUserId: null,
-      })
-      .where(whereClause)
-      .returning();
-  }
-
-  static async SummonerIsVerifiedTx(tx: TransactionType, puuid: SummonerType["puuid"]) {
-    const data = await tx.select().from(summonerTable).where(eq(summonerTable.puuid, puuid));
-
-    const id = data.length === 0 ? null : data[0];
-
-    if (!id) return false;
-
-    return !!id.verifiedUserId;
-  }
-
-  static async verifySummonerTx(
-    tx: TransactionType,
-    userID: typeof user.$inferSelect.id,
-    account: AccountDTOType,
-  ) {
-    const isAlreadyVerified = await this.SummonerIsVerifiedTx(tx, account.puuid);
-
-    if (isAlreadyVerified) {
-      throw new Error("Account is already verified by a user.");
-    }
-
-    const verifiedAccounts = await tx.query.summonerTable.findMany({
-      where: eq(summonerTable.verifiedUserId, user),
-    });
-
-    const accountRegion = await AccountService.getAccountRegion(account.puuid);
-
-    return this.handleSummonerCreationFromAccountTx(
-      tx,
-      account,
-      accountRegion,
-      userID,
-      verifiedAccounts.length === 0,
-    );
-  }
-
-  static async assertSummonerIsVerifyByUserId(puuid: SummonerType["puuid"], userId: User["id"]) {
-    const data = await db.query.summonerTable.findFirst({
-      where: and(eq(summonerTable.verifiedUserId, userId), eq(summonerTable.puuid, puuid)),
-    });
-
-    if (!data) {
-      throw new Error("Summoner is not verified by the user.");
-    }
   }
 }

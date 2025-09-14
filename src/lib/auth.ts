@@ -7,11 +7,8 @@ import { genericOAuth } from "better-auth/plugins";
 import ky from "ky";
 import type { AccountDTOType } from "@/server/api-route/riot/account/AccountDTO";
 import type { SummonerDTOType } from "@/server/api-route/riot/summoner/SummonerDTO";
-import { eq, sql } from "drizzle-orm";
-import { SummonerService } from "@/server/services/summoner/SummonerService";
 import { CDragonService } from "@/shared/services/CDragon/CDragonService";
-import { summonerTable } from "@/server/db/schema/summoner";
-import { UserPage } from "@/server/services/UserPageService";
+import { UserPageService } from "@/server/services/UserPageService";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -24,42 +21,18 @@ export const auth = betterAuth({
         after: async (account) => {
           const { accountId, userId } = account;
 
-          const [data] = await db
-            .select({
-              count: sql<string>`count(*)`,
-            })
-            .from(summonerTable)
-            .where(eq(summonerTable.verifiedUserId, userId));
-
-          const isMain = !data || data.count === "0";
-
           await db.transaction(async (tx) => {
-            const summoner = await SummonerService.getOrCreateSummonerByPuuidTx(
+            const { page, wasCreated: created } = await UserPageService.gerOrCreateUserPageTx(
               tx,
-              accountId,
-              false,
+              userId,
             );
 
-            /**
-             * If the account was a main Account, we need to create a page for the user.
-             */
-            if (isMain) {
-              await UserPage.createUserPageTx(tx, {
-                userId,
-                displayName: summoner.displayRiotId,
-                profileImage: CDragonService.getProfileIcon(summoner.profileIconId),
-                type: "DEFAULT",
-                isPublic: false,
-              });
-            }
-
-            await tx
-              .update(summonerTable)
-              .set({
-                verifiedUserId: userId,
-                isMain,
-              })
-              .where(eq(summonerTable.puuid, accountId));
+            await UserPageService.addUserPageSummonerTx(tx, {
+              isPublic: false,
+              puuid: accountId,
+              type: created ? "MAIN" : "SMURF",
+              userPageId: page.id,
+            });
           });
         },
       },

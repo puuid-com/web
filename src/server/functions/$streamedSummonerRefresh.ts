@@ -19,7 +19,7 @@ export const $streamedSummonerRefresh = createServerFn({
 
     const { puuid, queue } = data;
 
-    const canRefresh = await RefreshService.canRefresh(puuid);
+    const canRefresh = await RefreshService.canRefresh(puuid, queue);
 
     if (!canRefresh) {
       return new Response("Not allowed", { status: 403 });

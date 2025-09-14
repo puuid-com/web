@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { Badge } from "@/client/components/ui/badge";
 import { Button } from "@/client/components/ui/button";
 import { Separator } from "@/client/components/ui/separator";
-import { ExternalLink, BrainIcon, RatIcon, NotebookPenIcon } from "lucide-react";
+import { ExternalLink, NotebookPenIcon } from "lucide-react";
 import { CDragonService } from "@/shared/services/CDragon/CDragonService";
 import { timeago, formatSeconds } from "@/client/lib/utils";
 import { getQueueById } from "@/server/services/match/queues";
@@ -75,17 +75,6 @@ export const FollowingPost: React.FC<Props> = ({
             </Badge>
             <Badge variant="secondary" className="text-[10px]">
               Lv. {summoner.summonerLevel}
-            </Badge>
-            <Badge variant="outline" className="gap-1">
-              {summoner.isMain ? (
-                <>
-                  <BrainIcon className="w-3 h-3" /> Main
-                </>
-              ) : (
-                <>
-                  <RatIcon className="w-3 h-3" /> Smurf
-                </>
-              )}
             </Badge>
             {note ? (
               <Badge variant="secondary" className="gap-1 max-w-[50%] truncate">
