@@ -1,97 +1,136 @@
+import { useMemo } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/client/components/ui/avatar";
 import { Badge } from "@/client/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/client/components/ui/card";
+import { Button } from "@/client/components/ui/button";
+import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/client/components/ui/card";
 import { timeago } from "@/client/lib/utils";
 import { CDragonService } from "@/shared/services/CDragon/CDragonService";
 import { Link, useLoaderData } from "@tanstack/react-router";
-import { ChevronRightIcon } from "lucide-react";
+import { BrainIcon, ChevronRightIcon, GlobeIcon, LockIcon, RatIcon } from "lucide-react";
 
 type Props = {};
 
 export const UserPageSummoners = ({}: Props) => {
-  const { page } = useLoaderData({ from: "/page/$name" });
+  const { page, isOwner } = useLoaderData({ from: "/page/$name" });
 
   const pageSummoners = page.summoners;
 
+  const orderedSummoners = useMemo(() => {
+    const priority: Record<"MAIN" | "SMURF", number> = {
+      MAIN: 0,
+      SMURF: 1,
+    };
+
+    return [...pageSummoners].sort((a, b) => {
+      const typeDiff = priority[a.type] - priority[b.type];
+      if (typeDiff !== 0) return typeDiff;
+
+      const refreshedA = a.summoner.refresh?.refreshedAt
+        ? new Date(a.summoner.refresh.refreshedAt).getTime()
+        : 0;
+      const refreshedB = b.summoner.refresh?.refreshedAt
+        ? new Date(b.summoner.refresh.refreshedAt).getTime()
+        : 0;
+
+      if (refreshedA !== refreshedB) {
+        return refreshedB - refreshedA;
+      }
+
+      return a.summoner.displayRiotId.localeCompare(b.summoner.displayRiotId);
+    });
+  }, [pageSummoners]);
+
   return (
-    <Card className="">
-      <CardHeader className="">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-sm text-neutral-200">Summoners</CardTitle>
-          <Badge variant="outline" className="text-xs">
+    <Card>
+      <CardHeader className="gap-2">
+        <CardTitle className="flex items-center gap-2 text-sm">
+          Summoners
+          <Badge variant="outline" className="text-[11px]">
             {pageSummoners.length}
           </Badge>
-        </div>
+        </CardTitle>
+        {isOwner ? (
+          <CardAction>
+            <Button asChild size="xs" variant="outline">
+              <Link to="/user/settings">Manage</Link>
+            </Button>
+          </CardAction>
+        ) : null}
       </CardHeader>
-      <CardContent className="">
-        {pageSummoners.length === 0 ? (
-          <div className="text-sm text-neutral-400">No summoners linked.</div>
+      <CardContent className="pb-5">
+        {orderedSummoners.length === 0 ? (
+          <div className="rounded-lg border border-dashed border-neutral-800/70 bg-neutral-900/50 py-8 text-center text-sm text-neutral-400">
+            No summoners linked yet.
+          </div>
         ) : (
-          <div className="space-y-1">
-            {pageSummoners.map(({ summoner, type, isPublic }) => {
-              const riotId = summoner.displayRiotId;
-              const [gameNameRaw, tagLine = ""] = riotId.includes("#")
-                ? riotId.split("#")
-                : [riotId, ""];
-              const gameName = gameNameRaw ?? riotId;
-              const mainStats = summoner.statistics.at(0);
-              const backgroundColor = mainStats?.mainChampionBackgroundColor;
-              const foregroundColor = mainStats?.mainChampionForegroundColor;
+          <ul className="space-y-2">
+            {orderedSummoners.map(({ summoner, type, isPublic }) => {
+              const [gameName = summoner.displayRiotId, tagLine] =
+                summoner.displayRiotId.split("#");
 
               return (
-                <Link
-                  key={summoner.puuid}
-                  to={"/lol/summoner/$riotID/matches"}
-                  params={{ riotID: summoner.riotId.replace("#", "-") }}
-                  search={{ q: "solo" }}
-                  target="_blank"
-                  className="group flex items-center justify-between gap-3 rounded-md border border-neutral-800/80 bg-neutral-900/50 p-3 hover:bg-neutral-800/60 transition-colors"
-                  style={
-                    {
-                      "--color-main": backgroundColor ?? undefined,
-                      "--color-main-foreground": foregroundColor ?? undefined,
-                    } as React.CSSProperties
-                  }
-                >
-                  <div className="flex items-center gap-3 min-w-0">
-                    <Avatar className="h-10 w-10">
+                <li key={summoner.puuid}>
+                  <Link
+                    to={"/lol/summoner/$riotID/matches"}
+                    params={{ riotID: summoner.riotId.replace("#", "-") }}
+                    search={{ q: "solo" }}
+                    target="_blank"
+                    className="group flex items-center gap-3 rounded-lg border border-neutral-800/70 bg-neutral-900/40 p-3 transition-colors hover:border-main/70 hover:bg-neutral-900/70"
+                  >
+                    <Avatar className="h-10 w-10 border border-neutral-800">
                       <AvatarImage
                         src={CDragonService.getProfileIcon(summoner.profileIconId)}
-                        alt="profile icon"
+                        alt={`${gameName} profile icon`}
                       />
-                      <AvatarFallback>{(gameName || "?").slice(0, 1).toUpperCase()}</AvatarFallback>
+                      <AvatarFallback>{gameName.slice(0, 1).toUpperCase()}</AvatarFallback>
                     </Avatar>
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-2 min-w-0">
-                        <h3 className="text-sm font-medium text-neutral-100 truncate">
+
+                    <div className="min-w-0 flex-1">
+                      <div className="flex min-w-0 flex-wrap items-baseline gap-2">
+                        <span className="truncate text-sm font-medium text-neutral-100">
                           {gameName}
-                        </h3>
-                        <span className="text-xs text-neutral-400 shrink-0">#{tagLine}</span>
+                        </span>
+                        {tagLine ? (
+                          <span className="text-xs text-neutral-400">#{tagLine}</span>
+                        ) : null}
                       </div>
-                      <div className="mt-1 flex items-center gap-2 text-xs text-neutral-300">
+                      <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-neutral-300">
                         <Badge variant="outline" className="gap-1">
-                          {type}
+                          {type === "MAIN" ? (
+                            <>
+                              <BrainIcon className="h-3 w-3" /> Main
+                            </>
+                          ) : (
+                            <>
+                              <RatIcon className="h-3 w-3" /> Smurf
+                            </>
+                          )}
                         </Badge>
                         <Badge variant="outline" className="gap-1">
-                          {isPublic ? "Public" : "Private"}
+                          {isPublic ? (
+                            <>
+                              <GlobeIcon className="h-3 w-3" /> Public
+                            </>
+                          ) : (
+                            <>
+                              <LockIcon className="h-3 w-3" /> Private
+                            </>
+                          )}
                         </Badge>
+                        <span className="text-[11px] text-neutral-500">
+                          {summoner.refresh?.refreshedAt
+                            ? `Updated ${timeago(summoner.refresh.refreshedAt)} ago`
+                            : "Not refreshed yet"}
+                        </span>
                       </div>
                     </div>
-                  </div>
-                  <div className="flex items-center gap-2 shrink-0">
-                    <div className="text-[10px] text-neutral-400 hidden sm:block">
-                      {summoner.refresh?.refreshedAt ? (
-                        <span>Refreshed {timeago(summoner.refresh.refreshedAt)} ago</span>
-                      ) : (
-                        <span>Not refreshed yet</span>
-                      )}
-                    </div>
-                    <ChevronRightIcon className="w-4 h-4 text-neutral-500 group-hover:text-neutral-300" />
-                  </div>
-                </Link>
+
+                    <ChevronRightIcon className="h-4 w-4 text-neutral-500 transition-colors group-hover:text-neutral-300" />
+                  </Link>
+                </li>
               );
             })}
-          </div>
+          </ul>
         )}
       </CardContent>
     </Card>

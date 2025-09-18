@@ -13,7 +13,7 @@ export const Route = createFileRoute("/user")({
   beforeLoad: (ctx) => {
     const context = ctx.context;
 
-    if (!context.user || !context.userPage) {
+    if (!context.user) {
       throw redirect({ to: "/" });
     }
 
