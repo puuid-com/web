@@ -1,4 +1,4 @@
-import type { SummonerType } from "@/server/db/schema/summoner";
+import type { SummonerType } from "@puuid/core/server/db/schema/summoner";
 import { $getSummonerActiveMatch } from "@/server/functions/$getSummonerActiveMatch";
 import { useQuery } from "@tanstack/react-query";
 import { useLoaderData } from "@tanstack/react-router";

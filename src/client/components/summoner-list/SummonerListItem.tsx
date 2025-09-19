@@ -1,5 +1,5 @@
 import { Badge } from "@/client/components/ui/badge";
-import { DDragonService } from "@/shared/services/DDragon/DDragonService";
+import { DDragonService } from "@puuid/core/shared/services/DDragonService";
 import type { $GetSummonersWithRelationsType } from "@/server/functions/$getSummonersWithRelations";
 import { Link, useLoaderData } from "@tanstack/react-router";
 

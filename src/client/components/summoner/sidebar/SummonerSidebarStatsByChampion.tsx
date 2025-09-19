@@ -3,8 +3,8 @@ import { SummonerSidebarStats } from "@/client/components/summoner/sidebar/Summo
 import { SummonerSidebarStatsHeader } from "@/client/components/summoner/sidebar/SummonerSidebarStatsHeader";
 import { useSummonerFilter, type MatchesSearchKey } from "@/client/hooks/useSummonerFilter";
 import { cn } from "@/client/lib/utils";
-import type { StatsByChampionId } from "@/server/db/schema/summoner-statistic";
-import { DDragonService } from "@/shared/services/DDragon/DDragonService";
+import type { StatsByChampionId } from "@puuid/core/server/db/schema/summoner-statistic";
+import { DDragonService } from "@puuid/core/shared/services/DDragonService";
 import { useLoaderData } from "@tanstack/react-router";
 import { type LucideIcon } from "lucide-react";
 

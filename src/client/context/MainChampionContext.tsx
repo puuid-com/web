@@ -1,4 +1,4 @@
-import type { StatisticRowType } from "@/server/db/schema/summoner-statistic";
+import type { StatisticRowType } from "@puuid/core/server/db/schema/summoner-statistic";
 import React from "react";
 
 type ContextType = {

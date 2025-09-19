@@ -4,7 +4,7 @@ import { Badge } from "@/client/components/ui/badge";
 import { Button } from "@/client/components/ui/button";
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/client/components/ui/card";
 import { timeago } from "@/client/lib/utils";
-import { CDragonService } from "@/shared/services/CDragon/CDragonService";
+import { CDragonService } from "@puuid/core/shared/services/CDragonService";
 import { Link, useLoaderData } from "@tanstack/react-router";
 import { BrainIcon, ChevronRightIcon, GlobeIcon, LockIcon, RatIcon } from "lucide-react";
 

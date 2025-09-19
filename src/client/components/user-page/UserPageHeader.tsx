@@ -1,6 +1,6 @@
 import { Badge } from "@/client/components/ui/badge";
 import { Button } from "@/client/components/ui/button";
-import { CDragonService } from "@/shared/services/CDragon/CDragonService";
+import { CDragonService } from "@puuid/core/shared/services/CDragonService";
 import { SiTwitch, SiX } from "@icons-pack/react-simple-icons";
 import { Link, useLoaderData } from "@tanstack/react-router";
 import { PencilIcon } from "lucide-react";

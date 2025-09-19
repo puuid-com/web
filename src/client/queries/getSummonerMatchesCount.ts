@@ -1,5 +1,5 @@
-import type { LolQueueType } from "@/server/api-route/riot/league/LeagueDTO";
-import type { SummonerType } from "@/server/db/schema/summoner";
+import type { LolQueueType } from "@puuid/core/server/api-route/riot/league/LeagueDTO";
+import type { SummonerType } from "@puuid/core/server/db/schema/summoner";
 import { $getSummonerMatchesCount } from "@/server/functions/$getSummonerMatchesCount";
 import { queryOptions, useQuery } from "@tanstack/react-query";
 

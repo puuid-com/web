@@ -2,8 +2,8 @@ import React from "react";
 import { useLoaderData } from "@tanstack/react-router";
 import { useGetSummonerMatches } from "@/client/queries/getSummonerMatches";
 import type { FriendlyQueueType } from "@/client/lib/typeHelper";
-import { CDragonService } from "@/shared/services/CDragon/CDragonService";
-import { DDragonService } from "@/shared/services/DDragon/DDragonService";
+import { CDragonService } from "@puuid/core/shared/services/CDragonService";
+import { DDragonService } from "@puuid/core/shared/services/DDragonService";
 import { ItemTooltip } from "@/client/components/tooltips/ItemTooltip";
 import { cn } from "@/client/lib/utils";
 

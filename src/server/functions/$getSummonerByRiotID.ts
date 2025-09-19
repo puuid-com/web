@@ -6,8 +6,10 @@ export const $getSummonerByRiotID = createServerFn({ method: "GET" })
   .handler(async (ctx) => {
     const riotID = ctx.data;
 
-    const { SummonerService } = await import("@/server/services/summoner/SummonerService");
-    const { db } = await import("@/server/db");
+    const { SummonerService } = await import(
+      "@puuid/core/server/services/summoner/SummonerService"
+    );
+    const { db } = await import("@puuid/core/server/db");
     const data = await db.transaction(async (tx) => {
       const data = await SummonerService.getOrCreateSummonerByRiotIDTx(tx, riotID);
 

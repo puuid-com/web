@@ -4,7 +4,7 @@ import {
 } from "@/client/components/summoner/live/utils";
 import { cn } from "@/client/lib/utils";
 import type { $GetSummonerActiveMatchType } from "@/server/functions/$getSummonerActiveMatch";
-import { DDragonService } from "@/shared/services/DDragon/DDragonService";
+import { DDragonService } from "@puuid/core/shared/services/DDragonService";
 import { useLoaderData } from "@tanstack/react-router";
 import { ChampionTile } from "@/client/components/summoner/live-match-header/ChampionTile";
 import React from "react";

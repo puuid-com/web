@@ -1,7 +1,7 @@
 import { friendlyQueueTypeToRiot, type FriendlyQueueType } from "@/client/lib/typeHelper";
 import { $getSummonerMatches } from "@/server/functions/$getSummonerMatches";
 import { queryOptions, useQuery } from "@tanstack/react-query";
-import type { SummonerType } from "@/server/db/schema/summoner";
+import type { SummonerType } from "@puuid/core/server/db/schema/summoner";
 
 type QueryParams = {
   summoner: Pick<SummonerType, "puuid" | "region">;

@@ -11,7 +11,6 @@
 import { createServerRootRoute } from '@tanstack/react-start/server'
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as TestRouteImport } from './routes/test'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as UserRouteRouteImport } from './routes/user/route'
@@ -42,11 +41,6 @@ import { ServerRoute as ApiAuthSplatServerRouteImport } from './routes/api/auth/
 
 const rootServerRouteImport = createServerRootRoute()
 
-const TestRoute = TestRouteImport.update({
-  id: '/test',
-  path: '/test',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
   path: '/terms',
@@ -191,7 +185,6 @@ export interface FileRoutesByFullPath {
   '/user': typeof UserRouteRouteWithChildren
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
-  '/test': typeof TestRoute
   '/lol/feed': typeof LolFeedRouteRouteWithChildren
   '/page/$name': typeof PageNameRouteRouteWithChildren
   '/lol/live': typeof LolLiveRoute
@@ -216,7 +209,6 @@ export interface FileRoutesByTo {
   '/user': typeof UserRouteRouteWithChildren
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
-  '/test': typeof TestRoute
   '/lol/live': typeof LolLiveRoute
   '/r/$puuid': typeof RPuuidRoute
   '/user/accounts': typeof UserAccountsRoute
@@ -239,7 +231,6 @@ export interface FileRoutesById {
   '/user': typeof UserRouteRouteWithChildren
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
-  '/test': typeof TestRoute
   '/lol/feed': typeof LolFeedRouteRouteWithChildren
   '/page/$name': typeof PageNameRouteRouteWithChildren
   '/lol/live': typeof LolLiveRoute
@@ -266,7 +257,6 @@ export interface FileRouteTypes {
     | '/user'
     | '/privacy'
     | '/terms'
-    | '/test'
     | '/lol/feed'
     | '/page/$name'
     | '/lol/live'
@@ -291,7 +281,6 @@ export interface FileRouteTypes {
     | '/user'
     | '/privacy'
     | '/terms'
-    | '/test'
     | '/lol/live'
     | '/r/$puuid'
     | '/user/accounts'
@@ -313,7 +302,6 @@ export interface FileRouteTypes {
     | '/user'
     | '/privacy'
     | '/terms'
-    | '/test'
     | '/lol/feed'
     | '/page/$name'
     | '/lol/live'
@@ -339,7 +327,6 @@ export interface RootRouteChildren {
   UserRouteRoute: typeof UserRouteRouteWithChildren
   PrivacyRoute: typeof PrivacyRoute
   TermsRoute: typeof TermsRoute
-  TestRoute: typeof TestRoute
   LolFeedRouteRoute: typeof LolFeedRouteRouteWithChildren
   PageNameRouteRoute: typeof PageNameRouteRouteWithChildren
   LolLiveRoute: typeof LolLiveRoute
@@ -404,13 +391,6 @@ export interface RootServerRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/test': {
-      id: '/test'
-      path: '/test'
-      fullPath: '/test'
-      preLoaderRoute: typeof TestRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/terms': {
       id: '/terms'
       path: '/terms'
@@ -676,7 +656,6 @@ const rootRouteChildren: RootRouteChildren = {
   UserRouteRoute: UserRouteRouteWithChildren,
   PrivacyRoute: PrivacyRoute,
   TermsRoute: TermsRoute,
-  TestRoute: TestRoute,
   LolFeedRouteRoute: LolFeedRouteRouteWithChildren,
   PageNameRouteRoute: PageNameRouteRouteWithChildren,
   LolLiveRoute: LolLiveRoute,

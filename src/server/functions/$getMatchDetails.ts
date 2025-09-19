@@ -10,7 +10,7 @@ export const $getMatchDetails = createServerFn({ method: "GET" })
   .handler(async (ctx) => {
     const { matchId } = ctx.data;
 
-    const { MatchService } = await import("@/server/services/match/MatchService");
+    const { MatchService } = await import("@puuid/core/server/services/match/MatchService");
     const details = await MatchService.getMatchTimelineDTOById(matchId);
 
     return details;

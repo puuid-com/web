@@ -1,4 +1,4 @@
-import { DDragonService } from "@/shared/services/DDragon/DDragonService";
+import { DDragonService } from "@puuid/core/shared/services/DDragonService";
 import { useQuery } from "@tanstack/react-query";
 import { useLoaderData } from "@tanstack/react-router";
 

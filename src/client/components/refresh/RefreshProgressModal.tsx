@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/client/compo
 import { Progress } from "@/client/components/ui/progress";
 import { Badge } from "@/client/components/ui/badge";
 import { CheckCircle, Loader2, User, Trophy, BarChart3, GamepadIcon } from "lucide-react";
-import type { RefreshProgressMsgType } from "@/server/services/RefreshService";
+import type { RefreshProgressMsgType } from "@puuid/core/server/services/RefreshService";
 import React from "react";
 import { DialogDescription } from "@radix-ui/react-dialog";
 

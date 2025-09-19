@@ -11,7 +11,7 @@ import { useMainChampionContext } from "@/client/context/MainChampionContext";
 import { useGetChampionData } from "@/client/hooks/useChampionData";
 import { ClientColorsService } from "@/client/service/ClientColorsService";
 import { $changeMainChampionColors } from "@/server/functions/$changeMainChampionColors";
-import { CDragonService } from "@/shared/services/CDragon/CDragonService";
+import { CDragonService } from "@puuid/core/shared/services/CDragonService";
 import { useMutation } from "@tanstack/react-query";
 import { useLoaderData } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";

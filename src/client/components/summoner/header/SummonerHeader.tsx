@@ -4,8 +4,8 @@ import { SummonerSkinDialog } from "@/client/components/summoner/header/Summoner
 import { Badge } from "@/client/components/ui/badge";
 import { useMainChampionContext } from "@/client/context/MainChampionContext";
 import { cn, timeago } from "@/client/lib/utils";
-import { CDragonService } from "@/shared/services/CDragon/CDragonService";
-import { DDragonService } from "@/shared/services/DDragon/DDragonService";
+import { CDragonService } from "@puuid/core/shared/services/CDragonService";
+import { DDragonService } from "@puuid/core/shared/services/DDragonService";
 import { Link, useParams, useLoaderData, useSearch } from "@tanstack/react-router";
 import { RefreshCw } from "lucide-react";
 import type React from "react";

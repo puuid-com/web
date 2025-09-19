@@ -4,9 +4,9 @@ import { Badge } from "@/client/components/ui/badge";
 import { Button } from "@/client/components/ui/button";
 import { Separator } from "@/client/components/ui/separator";
 import { ExternalLink, NotebookPenIcon } from "lucide-react";
-import { CDragonService } from "@/shared/services/CDragon/CDragonService";
+import { CDragonService } from "@puuid/core/shared/services/CDragonService";
 import { timeago, formatSeconds } from "@/client/lib/utils";
-import { getQueueById } from "@/server/services/match/queues";
+import { getQueueById } from "@puuid/core/server/services/match/queues";
 
 import { MainChampionProvider } from "@/client/context/MainChampionContext";
 import type { $GetFollowingType } from "@/server/functions/$getFollowing";

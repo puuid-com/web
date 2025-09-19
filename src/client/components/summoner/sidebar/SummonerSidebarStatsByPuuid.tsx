@@ -1,11 +1,11 @@
 import { SummonerSidebarStats } from "@/client/components/summoner/sidebar/SummonerSidebarStats";
 import { SummonerSidebarStatsHeader } from "@/client/components/summoner/sidebar/SummonerSidebarStatsHeader";
 import { Skeleton } from "@/client/components/ui/skeleton";
-import { CDragonService } from "@/shared/services/CDragon/CDragonService";
+import { CDragonService } from "@puuid/core/shared/services/CDragonService";
 import { type LucideIcon } from "lucide-react";
 import React from "react";
-import type { StatsByTeammate } from "@/server/db/schema/summoner-statistic";
-import type { SummonerType } from "@/server/db/schema/summoner";
+import type { StatsByTeammate } from "@puuid/core/server/db/schema/summoner-statistic";
+import type { SummonerType } from "@puuid/core/server/db/schema/summoner";
 import { cn } from "@/client/lib/utils";
 import { useSummonerFilter, type MatchesSearchKey } from "@/client/hooks/useSummonerFilter";
 import { useSummoners } from "@/client/queries/useSummoners";

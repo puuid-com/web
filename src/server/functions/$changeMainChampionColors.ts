@@ -1,4 +1,4 @@
-import { LolQueues } from "@/server/api-route/riot/league/LeagueDTO";
+import { LolQueues } from "@puuid/core/server/api-route/riot/league/LeagueDTO";
 import { $authMiddleware } from "@/server/middleware/$authMiddleware";
 import { createServerFn } from "@tanstack/react-start";
 import * as v from "valibot";
@@ -17,7 +17,7 @@ export const $changeMainChampionColors = createServerFn({ method: "GET" })
 
     // ensureSummonerOwnership(puuid, ctx.context.verifiedPuuids);
 
-    const { StatisticService } = await import("@/server/services/StatisticService");
+    const { StatisticService } = await import("@puuid/core/server/services/StatisticService");
 
     return StatisticService.changeMainChampionColors(puuid, queueType, skinId);
   });

@@ -1,1 +1,0 @@
-ALTER TABLE "match" ALTER COLUMN "result_type" SET NOT NULL;

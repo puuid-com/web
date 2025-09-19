@@ -1,6 +1,6 @@
-import { CDNService } from "@/shared/services/CDNService";
-import { LeagueTierOrder, LeagueToLP } from "@/shared/util";
-import type { LeagueRowType } from "@/server/db/schema/league";
+import { CDNService } from "@puuid/core/shared/services/CDNService";
+import type { LeagueRowType } from "@puuid/core/server/db/schema/league";
+import { LeagueTierOrder, LeagueToLP } from "@puuid/core/lib/lp";
 import { useMemo } from "react";
 import {
   CartesianGrid,

@@ -1,4 +1,4 @@
-import type { LolPositionType } from "@/server/api-route/riot/match/MatchDTO";
+import type { LolPositionType } from "@puuid/core/server/api-route/riot/match/MatchDTO";
 import type { $GetChampionsDataType } from "@/server/functions/$getChampionsData";
 import type { $GetSummonerActiveMatchType } from "@/server/functions/$getSummonerActiveMatch";
 

@@ -1,4 +1,4 @@
-import type { SummonerType } from "@/server/db/schema/summoner";
+import type { SummonerType } from "@puuid/core/server/db/schema/summoner";
 import { $getSummonersByPuuids } from "@/server/functions/$getSummonersByPuuids";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";

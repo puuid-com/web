@@ -13,7 +13,7 @@ export const $follow = createServerFn({ method: "GET" })
     const user = ctx.context.user;
     const { puuid } = ctx.data;
 
-    const { FollowService } = await import("@/server/services/FollowService");
+    const { FollowService } = await import("@puuid/core/server/services/FollowService");
     await FollowService.followSummoner(puuid, user.id);
   });
 

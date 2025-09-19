@@ -1,7 +1,7 @@
 import { Badge } from "@/client/components/ui/badge";
 import { useSummonerFilter, type MatchesSearchKey } from "@/client/hooks/useSummonerFilter";
-import { CDragonService } from "@/shared/services/CDragon/CDragonService";
-import { DDragonService } from "@/shared/services/DDragon/DDragonService";
+import { CDragonService } from "@puuid/core/shared/services/CDragonService";
+import { DDragonService } from "@puuid/core/shared/services/DDragonService";
 import { useLoaderData, useSearch } from "@tanstack/react-router";
 import { XIcon, type LucideIcon } from "lucide-react";
 import React from "react";

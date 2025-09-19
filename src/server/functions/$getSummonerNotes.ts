@@ -13,7 +13,7 @@ export const $getSummonerNotes = createServerFn({ method: "GET" })
     const user = ctx.context.user;
     const { puuid } = ctx.data;
 
-    const { NotesService } = await import("@/server/services/NotesService");
+    const { NotesService } = await import("@puuid/core/server/services/NotesService");
     const data = await NotesService.getSummonerNotes({
       puuid,
       userId: user.id,

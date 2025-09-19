@@ -1,4 +1,4 @@
-import type { LeagueHistoryType } from "@/server/services/league/type";
+import type { LeagueHistoryType } from "@puuid/core/server/services/league/type";
 
 type Props = {
   league: LeagueHistoryType | undefined;

@@ -1,6 +1,9 @@
 import { createServerFileRoute } from "@tanstack/react-start/server";
 import { clientEnv } from "@/client/lib/env/client";
-import { SitemapService, SITEMAP_SUMMONERS_PAGE_SIZE } from "@/server/services/SitemapService";
+import {
+  SitemapService,
+  SITEMAP_SUMMONERS_PAGE_SIZE,
+} from "@puuid/core/server/services/SitemapService";
 
 function xmlEscape(s: string) {
   return s

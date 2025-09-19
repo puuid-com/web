@@ -5,8 +5,8 @@ import { ItemTooltip } from "@/client/components/tooltips/ItemTooltip";
 import { Badge } from "@/client/components/ui/badge";
 import { useMatchContext } from "@/client/context/MatchContext";
 import { cn, formatSeconds } from "@/client/lib/utils";
-import { CDragonService } from "@/shared/services/CDragon/CDragonService";
-import { DDragonService } from "@/shared/services/DDragon/DDragonService";
+import { CDragonService } from "@puuid/core/shared/services/CDragonService";
+import { DDragonService } from "@puuid/core/shared/services/DDragonService";
 import { Link, useLoaderData } from "@tanstack/react-router";
 
 type Props = {};

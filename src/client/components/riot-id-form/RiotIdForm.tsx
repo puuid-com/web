@@ -4,7 +4,7 @@ import { Input } from "@/client/components/ui/input";
 import { cn } from "@/client/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { debounce } from "@tanstack/react-pacer";
-import { CDragonService } from "@/shared/services/CDragon/CDragonService";
+import { CDragonService } from "@puuid/core/shared/services/CDragonService";
 import { useServerFn } from "@tanstack/react-start";
 import { $getSummoners, type $GetSummonersType } from "@/server/functions/$getSummoners";
 import { Badge } from "@/client/components/ui/badge";

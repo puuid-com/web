@@ -8,7 +8,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Footer } from "@/client/components/footer/Footer";
 import { Navbar } from "@/client/components/navbar/Navbar";
 import { getUserSessionOptions } from "@/client/queries/getUserSession";
-import { DDragonService } from "@/shared/services/DDragon/DDragonService";
+import { DDragonService } from "@puuid/core/shared/services/DDragonService";
 import { $getChampionsData } from "@/server/functions/$getChampionsData";
 
 export const Route = createRootRouteWithContext<{

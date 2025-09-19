@@ -1,10 +1,10 @@
 import { LiveSummonerStats } from "@/client/components/summoner/live/summoner/LiveSummonerStats";
 import { cn } from "@/client/lib/utils";
-import type { LeagueRowType } from "@/server/db/schema/league";
+import type { LeagueRowType } from "@puuid/core/server/db/schema/league";
 import type { $GetSummonerActiveMatchType } from "@/server/functions/$getSummonerActiveMatch";
-import { CDNService } from "@/shared/services/CDNService";
-import { CDragonService } from "@/shared/services/CDragon/CDragonService";
-import { DDragonService } from "@/shared/services/DDragon/DDragonService";
+import { CDNService } from "@puuid/core/shared/services/CDNService";
+import { CDragonService } from "@puuid/core/shared/services/CDragonService";
+import { DDragonService } from "@puuid/core/shared/services/DDragonService";
 import { Link, useLoaderData } from "@tanstack/react-router";
 
 type Props = {

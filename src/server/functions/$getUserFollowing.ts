@@ -6,7 +6,7 @@ export const $getUserFollowers = createServerFn({ method: "GET" })
   .handler(async (ctx) => {
     const { user } = ctx.context;
 
-    const { FollowService } = await import("@/server/services/FollowService");
+    const { FollowService } = await import("@puuid/core/server/services/FollowService");
     const following = await FollowService.getFollowing(user.id);
 
     return {

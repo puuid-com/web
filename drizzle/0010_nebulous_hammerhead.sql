@@ -1,1 +1,0 @@
-ALTER TABLE "summoner-statistic" ADD COLUMN "main_champion_skin_id" integer DEFAULT 0 NOT NULL;

@@ -6,7 +6,9 @@ export const $getSummonersByPuuids = createServerFn({ method: "GET" })
   .handler(async (ctx) => {
     const puuids = ctx.data;
 
-    const { SummonerService } = await import("@/server/services/summoner/SummonerService");
+    const { SummonerService } = await import(
+      "@puuid/core/server/services/summoner/SummonerService"
+    );
     const data = await SummonerService.getOrCreateSummonersByPuuids(puuids);
 
     return data;

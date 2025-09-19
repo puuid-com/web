@@ -8,7 +8,7 @@ export const $getUserPage = createServerFn({ method: "GET" })
     }),
   )
   .handler(async (ctx) => {
-    const { UserPageService } = await import("@/server/services/UserPageService");
+    const { UserPageService } = await import("@puuid/core/server/services/UserPageService");
     const page = await UserPageService.getUserPage(ctx.data.name);
 
     return {

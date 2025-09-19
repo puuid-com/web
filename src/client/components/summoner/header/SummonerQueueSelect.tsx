@@ -7,7 +7,7 @@ import { useNavigate, useParams, useSearch } from "@tanstack/react-router";
 export const SummonerQueueSelect = () => {
   const q = useSearch({ from: "/lol/summoner/$riotID", select: (s) => s.q });
   const params = useParams({ from: "/lol/summoner/$riotID" });
-  const navigate = useNavigate();
+  const navigate = useNavigate({ from: "/lol/summoner/$riotID" });
   const { backgroundColor, foregroundColor } = useMainChampionContext();
 
   const handleChange = (value: FriendlyQueueType) => {

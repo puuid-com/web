@@ -1,4 +1,4 @@
-import type { SummonerType } from "@/server/db/schema/summoner";
+import type { SummonerType } from "@puuid/core/server/db/schema/summoner";
 import { $isInActiveMatch } from "@/server/functions/$checkActiveMatch";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";

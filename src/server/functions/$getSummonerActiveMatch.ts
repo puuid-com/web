@@ -1,4 +1,4 @@
-import { AccountRegionDTOSchema } from "@/server/api-route/riot/account/AccountDTO";
+import { AccountRegionDTOSchema } from "@puuid/core/server/api-route/riot/account/AccountDTO";
 import { createServerFn } from "@tanstack/react-start";
 import * as v from "valibot";
 
@@ -10,7 +10,7 @@ export const $getSummonerActiveMatch = createServerFn({ method: "GET" })
     }),
   )
   .handler(async (ctx) => {
-    const { SpectatorService } = await import("@/server/services/SpectatorService");
+    const { SpectatorService } = await import("@puuid/core/server/services/SpectatorService");
     const data = await SpectatorService.getActiveGameData(ctx.data);
 
     return data;

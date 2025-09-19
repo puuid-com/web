@@ -1,4 +1,4 @@
-import { auth } from "@/lib/auth";
+import { auth } from "@puuid/core/lib/auth";
 import { createMiddleware } from "@tanstack/react-start";
 import { getHeaders } from "@tanstack/react-start/server";
 

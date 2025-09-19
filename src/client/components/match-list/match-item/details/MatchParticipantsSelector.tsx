@@ -2,8 +2,8 @@ import React from "react";
 import { useLoaderData } from "@tanstack/react-router";
 import type { $getMatchDetailsType } from "@/server/functions/$getMatchDetails";
 import type { GetSummonerMatchesType } from "@/client/queries/getSummonerMatches";
-import { CDragonService } from "@/shared/services/CDragon/CDragonService";
-import { CDNService } from "@/shared/services/CDNService";
+import { CDragonService } from "@puuid/core/shared/services/CDragonService";
+import { CDNService } from "@puuid/core/shared/services/CDNService";
 import { cn } from "@/client/lib/utils";
 import { POSITION_INDEXES } from "@/client/components/summoner/live/utils";
 
@@ -68,7 +68,7 @@ export const MatchParticipantsSelector: React.FC<Props> = ({
               onClick={() => onSelect?.(p.puuid)}
               className={cn(
                 "relative w-10 h-10 rounded-md overflow-hidden ring-1 ring-border/60",
-                isActive ? "outline outline-2 outline-main/70" : "hover:ring-border",
+                isActive ? "outline-2 outline-main/70" : "hover:ring-border",
               )}
               title={`${p.gameName}#${p.tagLine}`}
             >
@@ -100,7 +100,7 @@ export const MatchParticipantsSelector: React.FC<Props> = ({
               onClick={() => onSelect?.(p.puuid)}
               className={cn(
                 "relative w-10 h-10 rounded-md overflow-hidden ring-1 ring-border/60",
-                isActive ? "outline outline-2 outline-main/70" : "hover:ring-border",
+                isActive ? "outline-2 outline-main/70" : "hover:ring-border",
               )}
               title={`${p.gameName}#${p.tagLine}`}
             >

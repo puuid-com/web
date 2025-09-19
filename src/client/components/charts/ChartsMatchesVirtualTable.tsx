@@ -10,7 +10,7 @@ import {
 } from "@tanstack/react-table";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { useLoaderData } from "@tanstack/react-router";
-import { DDragonService } from "@/shared/services/DDragon/DDragonService";
+import { DDragonService } from "@puuid/core/shared/services/DDragonService";
 import { Clock, Flame, User } from "lucide-react";
 
 export type MatchRow = {

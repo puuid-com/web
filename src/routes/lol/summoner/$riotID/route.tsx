@@ -63,7 +63,7 @@ export const Route = createFileRoute("/lol/summoner/$riotID")({
     const description = `League of Legends profile for ${displayRiodId}`;
     const title = displayRiodId;
 
-    const { CDragonService } = await import("@/shared/services/CDragon/CDragonService");
+    const { CDragonService } = await import("@puuid/core/shared/services/CDragonService");
     const { clientEnv } = await import("@/client/lib/env/client");
     const profileIconUrl = CDragonService.getProfileIcon(summoner.profileIconId);
     const canonicalUrl = `${clientEnv.VITE_CLIENT_ORIGIN}/lol/summoner/${params.riotID}`;

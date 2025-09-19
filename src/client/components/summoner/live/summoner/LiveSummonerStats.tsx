@@ -1,6 +1,6 @@
-import type { StatisticRowType } from "@/server/db/schema/summoner-statistic";
-import { CDragonService } from "@/shared/services/CDragon/CDragonService";
-import { DDragonService } from "@/shared/services/DDragon/DDragonService";
+import type { StatisticRowType } from "@puuid/core/server/db/schema/summoner-statistic";
+import { CDragonService } from "@puuid/core/shared/services/CDragonService";
+import { DDragonService } from "@puuid/core/shared/services/DDragonService";
 import { useLoaderData } from "@tanstack/react-router";
 
 // tone for KDA badge

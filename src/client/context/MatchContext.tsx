@@ -1,4 +1,7 @@
-import type { MatchSummonerRowType, MatchWithSummonersType } from "@/server/db/schema/match";
+import type {
+  MatchSummonerRowType,
+  MatchWithSummonersType,
+} from "@puuid/core/server/db/schema/match";
 import React from "react";
 
 type ContextType = {

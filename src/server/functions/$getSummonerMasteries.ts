@@ -1,4 +1,4 @@
-import { AccountRegionDTOSchema } from "@/server/api-route/riot/account/AccountDTO";
+import { AccountRegionDTOSchema } from "@puuid/core/server/api-route/riot/account/AccountDTO";
 import { createServerFn } from "@tanstack/react-start";
 import * as v from "valibot";
 
@@ -12,7 +12,7 @@ export const $getSummonerMasteries = createServerFn({ method: "GET" })
   .handler(async (ctx) => {
     const { region, puuid } = ctx.data;
 
-    const { MasteryService } = await import("@/server/services/MasteryService");
+    const { MasteryService } = await import("@puuid/core/server/services/MasteryService");
     const masteries = await MasteryService.getMasteryBySummoner({
       puuid,
       region,

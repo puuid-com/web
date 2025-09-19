@@ -35,7 +35,7 @@ import type {
   FeaturedGameInfoDTOType,
   FeaturedGamesDTOType,
   ParticipantDTOType,
-} from "@/server/api-route/riot/spectator/FeaturedGamesDTO";
+} from "@puuid/core/server/api-route/riot/spectator/FeaturedGamesDTO";
 import { Clock3, Copy, Gamepad2, MapPinned, ShieldQuestion, Users } from "lucide-react";
 import React from "react";
 

@@ -3,8 +3,8 @@ import { Button } from "@/client/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/client/components/ui/card";
 import { timeago } from "@/client/lib/utils";
 import { authClient } from "@/lib/auth-client";
-import { CDragonService } from "@/shared/services/CDragon/CDragonService";
-import { DDragonService } from "@/shared/services/DDragon/DDragonService";
+import { CDragonService } from "@puuid/core/shared/services/CDragonService";
+import { DDragonService } from "@puuid/core/shared/services/DDragonService";
 import { createFileRoute, Link, useLoaderData } from "@tanstack/react-router";
 import {
   BrainIcon,

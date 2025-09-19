@@ -2,7 +2,7 @@ import React from "react";
 import { useLoaderData } from "@tanstack/react-router";
 import type { $getMatchDetailsType } from "@/server/functions/$getMatchDetails";
 import type { GetSummonerMatchesType } from "@/client/queries/getSummonerMatches";
-import { DDragonService } from "@/shared/services/DDragon/DDragonService";
+import { DDragonService } from "@puuid/core/shared/services/DDragonService";
 import { ItemTooltip } from "@/client/components/tooltips/ItemTooltip";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/client/components/ui/tooltip";
 import { MinusCircle, ChevronRight, Info } from "lucide-react";

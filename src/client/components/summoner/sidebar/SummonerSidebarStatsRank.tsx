@@ -1,7 +1,7 @@
 import { SummonerSidebarRankHistoryChart } from "@/client/components/summoner/sidebar/SummonerSidebarRankHistoryChart";
 import { SummonerSidebarStats } from "@/client/components/summoner/sidebar/SummonerSidebarStats";
 import { SummonerSidebarStatsHeader } from "@/client/components/summoner/sidebar/SummonerSidebarStatsHeader";
-import { CDNService } from "@/shared/services/CDNService";
+import { CDNService } from "@puuid/core/shared/services/CDNService";
 import { useLoaderData, useSearch } from "@tanstack/react-router";
 import { TrophyIcon } from "lucide-react";
 

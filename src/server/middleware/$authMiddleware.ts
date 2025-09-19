@@ -1,7 +1,7 @@
-import { auth } from "@/lib/auth";
 import { redirect } from "@tanstack/react-router";
 import { createMiddleware } from "@tanstack/react-start";
 import { getHeaders } from "@tanstack/react-start/server";
+import { auth } from "@puuid/core/lib/auth";
 
 export const $authMiddleware = createMiddleware({ type: "function" }).server(async ({ next }) => {
   const headers = getHeaders() as unknown as Headers;
@@ -18,7 +18,7 @@ export const $authMiddleware = createMiddleware({ type: "function" }).server(asy
     });
   }
 
-  const { UserPageService } = await import("@/server/services/UserPageService");
+  const { UserPageService } = await import("@puuid/core/server/services");
   const page = await UserPageService.getUserPageByUser(user.id);
 
   return await next({

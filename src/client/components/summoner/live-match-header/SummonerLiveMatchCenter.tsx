@@ -1,9 +1,9 @@
 import { Skeleton } from "@/client/components/ui/skeleton";
 import { formatSeconds } from "@/client/lib/utils";
-import { CDNService } from "@/shared/services/CDNService";
-import { CDragonService } from "@/shared/services/CDragon/CDragonService";
+import { CDNService } from "@puuid/core/shared/services/CDNService";
+import { CDragonService } from "@puuid/core/shared/services/CDragonService";
 import { ChampionTooltip } from "@/client/components/tooltips/ChampionTooltip";
-import type { LolTierType } from "@/server/types/riot/common";
+import type { LolTierType } from "@puuid/core/server/types/riot/common";
 import React from "react";
 
 type TeamSummary = {

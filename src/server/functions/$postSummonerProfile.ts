@@ -12,7 +12,7 @@ export const $postSummonerProfile = createServerFn({ method: "POST" })
     const puuid = ctx.data.puuid;
     const imageSrc = ctx.data.imageSrc;
 
-    const { CacheService } = await import("@/server/services/CacheService");
+    const { CacheService } = await import("@puuid/core/server/services/CacheService");
     const data = await CacheService.saveImageToCache(puuid, imageSrc, "summoner-profile");
 
     return {

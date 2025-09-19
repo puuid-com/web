@@ -1,5 +1,5 @@
-import { LolQueues } from "@/server/api-route/riot/league/LeagueDTO";
-import { LolRegions } from "@/server/types/riot/common";
+import { LolQueues } from "@puuid/core/server/api-route/riot/league/LeagueDTO";
+import { LolRegions } from "@puuid/core/server/types/riot/common";
 import { createServerFn } from "@tanstack/react-start";
 import * as v from "valibot";
 
@@ -15,7 +15,7 @@ export const $streamedSummonerRefresh = createServerFn({
     }),
   )
   .handler(async ({ data, signal }) => {
-    const { RefreshService } = await import("@/server/services/RefreshService");
+    const { RefreshService } = await import("@puuid/core/server/services/RefreshService");
 
     const { puuid, queue } = data;
 

@@ -1,4 +1,4 @@
-import { CDragonService } from "@/shared/services/CDragon/CDragonService";
+import { CDragonService } from "@puuid/core/shared/services/CDragonService";
 import { Vibrant } from "node-vibrant/browser";
 
 export class ClientColorsService {

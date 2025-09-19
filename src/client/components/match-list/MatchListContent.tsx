@@ -2,7 +2,7 @@ import { MatchItem } from "@/client/components/match-list/match-item/MatchItem";
 import { MatchProvider } from "@/client/context/MatchContext";
 import { cn } from "@/client/lib/utils";
 import type { GetSummonerMatchesType } from "@/client/queries/getSummonerMatches";
-import type { SummonerType } from "@/server/db/schema/summoner";
+import type { SummonerType } from "@puuid/core/server/db/schema/summoner";
 import { useLoaderData } from "@tanstack/react-router";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import React from "react";
