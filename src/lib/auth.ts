@@ -99,13 +99,6 @@ export const auth = betterAuth({
     }),
     reactStartCookies(),
   ],
-  socialProviders: {
-    github: {
-      clientId: serverEnv.GITHUB_CLIENT_ID,
-      clientSecret: serverEnv.GITHUB_CLIENT_SECRET,
-      redirectURI: `${serverEnv.BETTER_AUTH_URL}/api/auth/callback/github`,
-    },
-  },
   account: {
     accountLinking: {
       enabled: true,

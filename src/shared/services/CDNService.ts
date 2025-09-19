@@ -11,4 +11,8 @@ export class CDNService {
   public static getPositionImageUrl(position: LolPositionType) {
     return `https://cdn.puuid.com/public/image/position/${position.toLowerCase()}.svg`;
   }
+
+  public static getMiniTierImageUrl(tier: LolTierType | "UNRANKED") {
+    return `https://cdn.puuid.com/public/image/mini-tier/${tier.toLowerCase()}.svg`;
+  }
 }

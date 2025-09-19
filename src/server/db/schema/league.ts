@@ -1,6 +1,6 @@
 import type { LolQueueType } from "@/server/api-route/riot/league/LeagueDTO";
 import { summonerTable } from "@/server/db/schema/summoner";
-import type { LolTierType } from "@/server/types/riot/common";
+import type { LolRankType, LolTierType } from "@/server/types/riot/common";
 import { relations, sql } from "drizzle-orm";
 import {
   boolean,
@@ -27,7 +27,7 @@ export const leagueTable = pgTable(
 
     queueType: text("queue_type").$type<LolQueueType>().notNull(),
     tier: text("tier").$type<LolTierType>().notNull(),
-    rank: text("rank"),
+    rank: text("rank").$type<LolRankType>().notNull(),
 
     leaguePoints: integer("league_points").notNull(),
     wins: integer("wins").notNull(),

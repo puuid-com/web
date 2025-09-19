@@ -51,6 +51,9 @@ export function routingValueFromRegion(region: LolRegionType): LolRoutingValueTy
   return platformToRegionMap[region];
 }
 
+export const LolRanks = ["IV", "III", "II", "I"] as const;
+export type LolRankType = (typeof LolRanks)[number];
+
 export const LolTiers = [
   "IRON",
   "BRONZE",

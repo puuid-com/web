@@ -1,4 +1,4 @@
-import { LolTiers } from "@/server/types/riot/common";
+import { LolRanks, LolTiers } from "@/server/types/riot/common";
 import * as v from "valibot";
 
 export const LolQueues = ["RANKED_SOLO_5x5", "RANKED_FLEX_SR"] as const;
@@ -8,7 +8,7 @@ export const LeagueDTOSchema = v.object({
   leagueId: v.string(),
   queueType: v.picklist(LolQueues),
   tier: v.picklist(LolTiers),
-  rank: v.optional(v.string()),
+  rank: v.picklist(LolRanks),
   puuid: v.string(),
   leaguePoints: v.number(),
   wins: v.number(),

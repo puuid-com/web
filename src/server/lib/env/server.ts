@@ -20,9 +20,6 @@ export const serverEnv = createEnv({
     DATABASE_PASSWORD: v.string(),
     DATABASE_NAME: v.string(),
 
-    GITHUB_CLIENT_ID: v.string(),
-    GITHUB_CLIENT_SECRET: v.string(),
-
     BETTER_AUTH_URL: v.string(),
   },
   extends: [],
