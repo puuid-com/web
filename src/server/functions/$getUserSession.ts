@@ -1,5 +1,5 @@
-import { auth } from "@/lib/auth";
-import type { UserPageSummonerTypeWithRelations } from "@/server/db/schema/user-page";
+import { auth } from "@puuid/core";
+import type { UserPageSummonerTypeWithRelations } from "@puuid/core";
 import { createServerFn } from "@tanstack/react-start";
 import { getHeaders } from "@tanstack/react-start/server";
 
@@ -18,8 +18,8 @@ export const $getUserSession = createServerFn({ method: "GET" }).handler(async (
     };
   }
 
-  const { db } = await import("@/server/db");
-  const { UserPageService } = await import("@/server/services/UserPageService");
+  const { db } = await import("@puuid/core");
+  const { UserPageService } = await import("@puuid/core");
   const { page } = await db.transaction((tx) => UserPageService.gerOrCreateUserPageTx(tx, user.id));
 
   const { mainSummoner, otherSummoners, summoners } = page.summoners.reduce<{

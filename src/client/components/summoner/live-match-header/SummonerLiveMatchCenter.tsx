@@ -17,7 +17,7 @@ type QueueInfo = {
   map?: string;
 };
 
-type Ban = { pickTurn: number; championId: number };
+type Ban = { pickTurn: number; championId: number } | null;
 
 type Props = {
   queue: QueueInfo;
@@ -120,18 +120,20 @@ const PLACEHOLDER_COUNT = 5;
 const BansRow: React.FC<{ bansRed: Ban[]; bansBlue: Ban[] }> = ({ bansRed, bansBlue }) => {
   const pad = (arr: Ban[]) =>
     arr
-      .filter((b) => b.championId > 0)
+      .filter((b) => b && b.championId > 0)
       .slice(0, PLACEHOLDER_COUNT)
       .concat(Array(Math.max(0, PLACEHOLDER_COUNT - arr.length)).fill(null) as unknown as Ban[]);
 
   const left = pad(bansRed);
   const right = pad(bansBlue);
 
+  console.log({ left, right });
+
   return (
     <div className={"mt-0.5 flex items-center gap-2 text-[10px] text-muted-foreground"}>
       <div className={"flex gap-1"}>
         {left.map((b, idx) =>
-          b.championId !== 0 ? (
+          b && b.championId !== 0 ? (
             <ChampionTooltip key={`r-${b.pickTurn}`} championId={b.championId}>
               <img
                 src={CDragonService.getChampionSquare(b.championId)}
@@ -153,7 +155,7 @@ const BansRow: React.FC<{ bansRed: Ban[]; bansBlue: Ban[] }> = ({ bansRed, bansB
       <span>Bans</span>
       <div className={"flex gap-1"}>
         {right.map((b, idx) =>
-          b.championId !== 0 ? (
+          b && b.championId !== 0 ? (
             <ChampionTooltip key={`b-${b.pickTurn}`} championId={b.championId}>
               <img
                 src={CDragonService.getChampionSquare(b.championId)}

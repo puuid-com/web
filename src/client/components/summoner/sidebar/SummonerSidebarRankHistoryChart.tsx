@@ -37,8 +37,19 @@ type TierMarker = {
   value: number;
 };
 
+type SegmentPoint = Pick<HistoryPoint, "timestamp" | "normalizedLp">;
+
+type TierSegment = {
+  id: string;
+  startTier: LeagueRowType["tier"];
+  endTier: LeagueRowType["tier"];
+  points: [SegmentPoint, SegmentPoint];
+};
+
+type HistoryTooltipPayload = Payload<number, string> & { payload: HistoryPoint };
+
 type HistoryTooltipProps = TooltipProps<number, string> & {
-  payload?: Payload<number, string>[];
+  payload?: HistoryTooltipPayload[];
 };
 
 const isHistoryPoint = (value: unknown): value is HistoryPoint => {
@@ -83,6 +94,27 @@ const TIER_COLOR_VAR: Record<LeagueRowType["tier"], string> = {
   MASTER: "var(--color-tier-master)",
   GRANDMASTER: "var(--color-tier-grandmaster)",
   CHALLENGER: "var(--color-tier-challenger)",
+};
+
+const formatGain = (value: number | null) => {
+  if (value === null) return "--";
+  if (value > 0) return `+${value}`;
+  return `${value}`;
+};
+
+const GainPill = ({ label, value }: { label: string; value: number | null }) => {
+  let tone = "text-slate-400";
+  if (value !== null) {
+    if (value > 0) tone = "text-emerald-400";
+    else if (value < 0) tone = "text-rose-400";
+  }
+
+  return (
+    <div className="flex items-center gap-2 rounded-md bg-slate-950/70 px-2 py-1 text-[11px]">
+      <span className="uppercase tracking-wide text-slate-500">{label}</span>
+      <span className={`font-bold ${tone}`}>{formatGain(value)} LP</span>
+    </div>
+  );
 };
 
 export function SummonerSidebarRankHistoryChart({ leagues }: Props) {
@@ -139,11 +171,55 @@ export function SummonerSidebarRankHistoryChart({ leagues }: Props) {
     return markers;
   }, [history]);
 
+  const tierSegments = useMemo<TierSegment[]>(() => {
+    if (history.length < 2) return [];
+
+    const segments: TierSegment[] = [];
+
+    for (let i = 0; i < history.length - 1; i++) {
+      const current = history[i]!;
+      const next = history[i + 1]!;
+
+      segments.push({
+        id: `${current.id}-${next.id}`,
+        startTier: current.tier,
+        endTier: next.tier,
+        points: [
+          { timestamp: current.timestamp, normalizedLp: current.normalizedLp },
+          { timestamp: next.timestamp, normalizedLp: next.normalizedLp },
+        ],
+      });
+    }
+
+    return segments;
+  }, [history]);
+
+  const lpGains = useMemo(() => {
+    if (!history.length) {
+      return { last30Days: null, last7Days: null } as const;
+    }
+
+    const latest = history[history.length - 1]!;
+    const computeGain = (days: number) => {
+      const threshold = Date.now() - days * 24 * 60 * 60 * 1000;
+      if (latest.timestamp < threshold) return null;
+      const baseline = history.find((point) => point.timestamp >= threshold);
+      if (!baseline) return null;
+      const diff = latest.normalizedLp - baseline.normalizedLp;
+      return Math.round(diff);
+    };
+
+    return {
+      last30Days: computeGain(30),
+      last7Days: computeGain(7),
+    } as const;
+  }, [history]);
+
   const renderTooltip = ({ active, payload }: HistoryTooltipProps) => {
     if (!active || !payload || payload.length === 0) return null;
     const firstEntry = payload[0];
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const dataPoint = firstEntry?.payload;
+    if (!firstEntry) return null;
+    const dataPoint = firstEntry.payload as HistoryTooltipPayload;
     if (!isHistoryPoint(dataPoint)) return null;
 
     const rankLabel = [dataPoint.tier, dataPoint.rank].filter(Boolean).join(" ") || dataPoint.tier;
@@ -171,42 +247,92 @@ export function SummonerSidebarRankHistoryChart({ leagues }: Props) {
   }
 
   return (
-    <div className="h-36 w-full">
-      <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={history} margin={{ top: 10, right: 10, left: -16, bottom: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" strokeOpacity={0.6} />
-          <XAxis
-            dataKey="timestamp"
-            type="number"
-            domain={["auto", "auto"]}
-            tickFormatter={(value) => axisFormatter.format(new Date(Number(value)))}
-            stroke="#64748b"
-            tick={{ fill: "#94a3b8", fontSize: 11 }}
-            tickLine={false}
-            axisLine={{ stroke: "#1e293b" }}
-          />
-          <YAxis dataKey="normalizedLp" domain={["dataMin", "dataMax"]} hide />
-          {tierMarkers.map((marker) => (
-            <ReferenceLine
-              key={marker.tier}
-              y={marker.value}
-              stroke={TIER_COLOR_VAR[marker.tier]}
-              strokeDasharray="4 4"
-              strokeOpacity={0.8}
-              label={<TierReferenceLabel tier={marker.tier} />}
+    <div className="flex h-36 w-full flex-col">
+      <div className="flex items-center justify-between px-1 pb-1 text-xs font-semibold text-slate-300">
+        <GainPill label="Last 30d" value={lpGains.last30Days} />
+        <GainPill label="Last 7d" value={lpGains.last7Days} />
+      </div>
+      <div className="flex-1">
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart data={history} margin={{ top: 10, right: 10, left: -16, bottom: 0 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" strokeOpacity={0.6} />
+            <XAxis
+              dataKey="timestamp"
+              type="number"
+              domain={["auto", "auto"]}
+              tickFormatter={(value) => axisFormatter.format(new Date(Number(value)))}
+              stroke="#64748b"
+              tick={{ fill: "#94a3b8", fontSize: 11 }}
+              tickLine={false}
+              axisLine={{ stroke: "#1e293b" }}
             />
-          ))}
-          <Tooltip content={renderTooltip} />
-          <Line
-            type="monotone"
-            dataKey="normalizedLp"
-            stroke="var(--color-main)"
-            strokeWidth={3}
-            dot={{ r: 3, stroke: "var(--color-main)", strokeWidth: 1 }}
-            activeDot={{ r: 5, stroke: "var(--color-main)", strokeWidth: 2 }}
-          />
-        </LineChart>
-      </ResponsiveContainer>
+            <YAxis dataKey="normalizedLp" domain={["dataMin", "dataMax"]} hide />
+            {tierMarkers.map((marker) => (
+              <ReferenceLine
+                key={marker.tier}
+                y={marker.value}
+                stroke={TIER_COLOR_VAR[marker.tier]}
+                strokeDasharray="4 4"
+                strokeOpacity={0.6}
+                label={<TierReferenceLabel tier={marker.tier} />}
+              />
+            ))}
+            <Tooltip content={renderTooltip} />
+            <Line
+              type="monotone"
+              dataKey="normalizedLp"
+              stroke="transparent"
+              strokeWidth={3}
+              dot={false}
+              activeDot={(props) => {
+                const {
+                  cx = 0,
+                  cy = 0,
+                  payload: rawPayload,
+                } = props as {
+                  cx: number;
+                  cy: number;
+                  payload: HistoryTooltipPayload;
+                };
+                const point = isHistoryPoint(rawPayload) ? rawPayload : null;
+                const fill = point ? TIER_COLOR_VAR[point.tier] : "var(--color-main)";
+                return (
+                  <circle cx={cx} cy={cy} r={5.5} fill={fill} stroke={fill} strokeWidth={1.5} />
+                );
+              }}
+              isAnimationActive={false}
+            />
+            <defs>
+              {tierSegments.map((segment) => {
+                const gradientId = `tier-gradient-${segment.id}`;
+                return (
+                  <linearGradient key={gradientId} id={gradientId} x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stopColor={TIER_COLOR_VAR[segment.startTier]} />
+                    <stop offset="40%" stopColor={TIER_COLOR_VAR[segment.startTier]} />
+                    <stop offset="60%" stopColor={TIER_COLOR_VAR[segment.endTier]} />
+                    <stop offset="100%" stopColor={TIER_COLOR_VAR[segment.endTier]} />
+                  </linearGradient>
+                );
+              })}
+            </defs>
+            {tierSegments.map((segment) => (
+              <Line
+                key={segment.id}
+                type="linear"
+                data={segment.points}
+                dataKey="normalizedLp"
+                stroke={`url(#tier-gradient-${segment.id})`}
+                strokeWidth={3}
+                dot={false}
+                isAnimationActive={false}
+                connectNulls
+                activeDot={false}
+                strokeLinecap="round"
+              />
+            ))}
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 }
