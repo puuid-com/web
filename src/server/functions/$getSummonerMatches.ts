@@ -33,8 +33,6 @@ export const $getSummonerMatches = createServerFn({ method: "GET" })
       filters,
     );
 
-    console.log({ matches });
-
     return matches;
   });
 

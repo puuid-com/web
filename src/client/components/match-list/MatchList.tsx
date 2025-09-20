@@ -29,8 +29,6 @@ export const MatchList = ({}: Props) => {
     );
   }
 
-  console.log(data);
-
   if (!data.data.length) {
     return (
       <div className={"flex flex-1 justify-start items-center text-3xl text-neutral-900 flex-col"}>

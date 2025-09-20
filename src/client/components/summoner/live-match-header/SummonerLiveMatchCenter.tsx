@@ -127,8 +127,6 @@ const BansRow: React.FC<{ bansRed: Ban[]; bansBlue: Ban[] }> = ({ bansRed, bansB
   const left = pad(bansRed);
   const right = pad(bansBlue);
 
-  console.log({ left, right });
-
   return (
     <div className={"mt-0.5 flex items-center gap-2 text-[10px] text-muted-foreground"}>
       <div className={"flex gap-1"}>

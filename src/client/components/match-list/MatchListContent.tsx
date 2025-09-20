@@ -46,6 +46,8 @@ export const MatchListContent = ({ matches }: Props) => {
       const m = matches[i]!;
       const p = m.summoners.find((s) => s.puuid === summoner.puuid)!;
 
+      console.log(p, m.summoners);
+
       const d = new Date(m.gameCreationMs);
 
       // stable day key via toLocaleString
