@@ -22,7 +22,10 @@ export const SummonerNavigation = ({ className }: Props) => {
       <SummonerNavigationItem
         to={"/lol/summoner/$riotID/matches"}
         params={params}
-        search={search}
+        search={{
+          ...search,
+          p: 1,
+        }}
         iconNode={ScrollTextIcon}
       >
         Matches

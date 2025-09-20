@@ -31,11 +31,11 @@ import {
 } from "@/client/components/ui/tooltip";
 import { cn, formatSeconds } from "@/client/lib/utils";
 import type {
-  BannedChampionDTOType,
+  FeaturedGameBannedChampionDTOType,
   FeaturedGameInfoDTOType,
+  FeaturedGameParticipantDTOType,
   FeaturedGamesDTOType,
-  ParticipantDTOType,
-} from "@puuid/core/server/api-route/riot/spectator/FeaturedGamesDTO";
+} from "@puuid/core/shared/types/index";
 import { Clock3, Copy, Gamepad2, MapPinned, ShieldQuestion, Users } from "lucide-react";
 import React from "react";
 
@@ -59,7 +59,7 @@ function TeamPill({ id }: { id: number }) {
   );
 }
 
-function BansRow({ bans }: { bans: BannedChampionDTOType[] }) {
+function BansRow({ bans }: { bans: FeaturedGameBannedChampionDTOType[] }) {
   if (!bans.length) return null;
 
   return (
@@ -82,7 +82,13 @@ function BansRow({ bans }: { bans: BannedChampionDTOType[] }) {
   );
 }
 
-function ParticipantsTable({ team, list }: { team: number; list: ParticipantDTOType[] }) {
+function ParticipantsTable({
+  team,
+  list,
+}: {
+  team: number;
+  list: FeaturedGameParticipantDTOType[];
+}) {
   return (
     <div className="rounded-xl border bg-card p-3 shadow-sm">
       <div className="mb-2 flex items-center gap-2">

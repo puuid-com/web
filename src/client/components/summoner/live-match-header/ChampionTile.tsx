@@ -1,10 +1,10 @@
 import { ChampionTooltip } from "@/client/components/tooltips/ChampionTooltip";
 import { cn } from "@/client/lib/utils";
-import type { LolPositionType } from "@puuid/core/server/api-route/riot/match/MatchDTO";
 import { CDragonService } from "@puuid/core/shared/services/CDragonService";
 import { CDNService } from "@puuid/core/shared/services/CDNService";
 import { Badge } from "@/client/components/ui/badge";
 import React from "react";
+import type { LolPositionType } from "@puuid/core/shared/types/index";
 
 type Props = {
   championId: number;

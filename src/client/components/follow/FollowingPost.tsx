@@ -6,10 +6,10 @@ import { Separator } from "@/client/components/ui/separator";
 import { ExternalLink, NotebookPenIcon } from "lucide-react";
 import { CDragonService } from "@puuid/core/shared/services/CDragonService";
 import { timeago, formatSeconds } from "@/client/lib/utils";
-import { getQueueById } from "@puuid/core/server/services/match/queues";
 
 import { MainChampionProvider } from "@/client/context/MainChampionContext";
 import type { $GetFollowingType } from "@/server/functions/$getFollowing";
+import { getQueueById } from "@puuid/core/shared/types/index";
 
 type Props = {
   item: $GetFollowingType[number];

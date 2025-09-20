@@ -1,12 +1,12 @@
-import { AccountRegionDTOSchema } from "@puuid/core/server/api-route/riot/account/AccountDTO";
+import { LolRegions } from "@puuid/core/shared/types/index";
 import { createServerFn } from "@tanstack/react-start";
 import * as v from "valibot";
 
 export const $getSummonerActiveMatch = createServerFn({ method: "GET" })
   .validator(
     v.strictObject({
-      puuid: AccountRegionDTOSchema.entries.puuid,
-      region: AccountRegionDTOSchema.entries.region,
+      puuid: v.string(),
+      region: v.picklist(LolRegions),
     }),
   )
   .handler(async (ctx) => {

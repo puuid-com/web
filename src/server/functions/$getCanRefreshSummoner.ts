@@ -1,4 +1,4 @@
-import { LolQueues } from "@puuid/core/server/api-route/riot/league/LeagueDTO";
+import { LolQueues } from "@puuid/core/shared/types/index";
 import { createServerFn } from "@tanstack/react-start";
 import * as v from "valibot";
 

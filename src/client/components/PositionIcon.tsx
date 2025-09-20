@@ -1,4 +1,4 @@
-import type { LolPositionType } from "@puuid/core/server/api-route/riot/match/MatchDTO";
+import type { LolPositionType } from "@puuid/core/shared/types/index";
 import {
   SandwichIcon,
   Mountain,

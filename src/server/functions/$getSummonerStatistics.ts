@@ -1,11 +1,10 @@
-import { AccountRegionDTOSchema } from "@puuid/core/server/api-route/riot/account/AccountDTO";
 import { createServerFn } from "@tanstack/react-start";
 import * as v from "valibot";
 
 export const $getSummonerStatistics = createServerFn({ method: "GET" })
   .validator(
     v.object({
-      puuid: AccountRegionDTOSchema.entries.puuid,
+      puuid: v.string(),
     }),
   )
   .handler(async (ctx) => {

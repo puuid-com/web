@@ -4,6 +4,8 @@ import { SummonerSidebar } from "@/client/components/summoner/sidebar/SummonerSi
 import * as v from "valibot";
 import { SummonerFilters } from "@/client/components/summoner/sidebar/filters/SummonerFilters";
 
+import { MatchListPagination } from "@/client/components/match-list/MatchListPagination";
+
 export const Route = createFileRoute("/lol/summoner/$riotID/matches")({
   component: RouteComponent,
   validateSearch: (data) =>
@@ -47,6 +49,7 @@ export const Route = createFileRoute("/lol/summoner/$riotID/matches")({
             v.transform((a) => (a.length ? a : undefined)),
           ),
         ),
+        p: v.exactOptional(v.pipe(v.number(), v.minValue(1)), 1),
       }),
       data,
     ),
@@ -61,9 +64,10 @@ function RouteComponent() {
   return (
     <div className={"flex gap-5 flex-1"}>
       <SummonerSidebar />
-      <div className={"flex flex-1 flex-col gap-5"}>
+      <div className={"flex flex-1 flex-col gap-5 pb-5"}>
         <SummonerFilters />
         <MatchList />
+        <MatchListPagination />
       </div>
     </div>
   );

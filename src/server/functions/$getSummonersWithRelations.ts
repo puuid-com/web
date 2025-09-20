@@ -8,9 +8,7 @@ export const $getSummonersWithRelations = createServerFn({ method: "GET" })
     }),
   )
   .handler(async (ctx) => {
-    const { SummonerService } = await import(
-      "@puuid/core/server/services/summoner/SummonerService"
-    );
+    const { SummonerService } = await import("@puuid/core/server/services/SummonerService");
     const data = await SummonerService.getSummonersWithRelations(ctx.data.c);
 
     return data;

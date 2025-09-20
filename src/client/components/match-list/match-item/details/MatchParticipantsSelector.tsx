@@ -7,7 +7,7 @@ import { CDNService } from "@puuid/core/shared/services/CDNService";
 import { cn } from "@/client/lib/utils";
 import { POSITION_INDEXES } from "@/client/components/summoner/live/utils";
 
-type Match = GetSummonerMatchesType["matches"][number];
+type Match = GetSummonerMatchesType["data"][number];
 
 type Props = {
   match: Match;

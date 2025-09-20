@@ -20,6 +20,7 @@ export function createRouter() {
     },
     defaultPendingComponent: LoadingScreen,
     defaultComponent: LoadingScreen,
+    scrollToTopSelectors: ["#body-content"],
   });
 
   setupRouterSsrQueryIntegration({

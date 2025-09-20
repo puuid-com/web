@@ -8,7 +8,7 @@ import { useVirtualizer } from "@tanstack/react-virtual";
 import React from "react";
 
 type Props = {
-  matches: GetSummonerMatchesType["matches"];
+  matches: GetSummonerMatchesType["data"];
   summoner: SummonerType;
 };
 

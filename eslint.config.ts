@@ -21,6 +21,7 @@ export default defineConfig(
       ".vite",
       ".netlify",
       ".nitro",
+      ".vercel",
     ],
   },
 
@@ -79,6 +80,7 @@ export default defineConfig(
       "@typescript-eslint/restrict-template-expressions": "off",
       "@typescript-eslint/only-throw-error": "off",
       "@typescript-eslint/restrict-plus-operands": "off",
+      "@typescript-eslint/no-unsafe-member-access": "off",
 
       "no-unused-vars": "off", // or "@typescript-eslint/no-unused-vars": "off",
       "unused-imports/no-unused-imports": "error",

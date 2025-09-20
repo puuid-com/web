@@ -1,6 +1,6 @@
-import type { LolPositionType } from "@puuid/core/server/api-route/riot/match/MatchDTO";
 import type { $GetChampionsDataType } from "@/server/functions/$getChampionsData";
 import type { $GetSummonerActiveMatchType } from "@/server/functions/$getSummonerActiveMatch";
+import type { LolPositionType } from "@puuid/core/shared/types/index";
 
 type Participant = NonNullable<$GetSummonerActiveMatchType>["participants"][number];
 

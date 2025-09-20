@@ -1,10 +1,9 @@
 import { SummonerLiveMatchHeaderTeam } from "@/client/components/summoner/live-match-header/SummonerLiveMatchHeaderTeam";
 import { useSummonerLiveMatch } from "@/client/hooks/useSummonerLiveMatch";
 import { cn, formatSeconds } from "@/client/lib/utils";
-import { getQueueById } from "@puuid/core/server/services/match/queues";
 import { Link, useParams } from "@tanstack/react-router";
 import { SummonerLiveMatchCenter } from "@/client/components/summoner/live-match-header/SummonerLiveMatchCenter";
-import type { LolTierType } from "@puuid/core/server/types/riot/common";
+import { getQueueById, type LolTierType } from "@puuid/core/shared/types/index";
 import React from "react";
 
 type Props = {};

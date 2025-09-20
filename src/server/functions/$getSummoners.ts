@@ -12,9 +12,7 @@ export const $getSummoners = createServerFn({ method: "GET" })
   .handler(async (ctx) => {
     const userId = ctx.context.userId;
 
-    const { SummonerService } = await import(
-      "@puuid/core/server/services/summoner/SummonerService"
-    );
+    const { SummonerService } = await import("@puuid/core/server/services/SummonerService");
     const data = await SummonerService.getSummoners({
       userId,
       search: ctx.data.c,

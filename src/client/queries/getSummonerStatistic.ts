@@ -1,4 +1,4 @@
-import type { LolQueueType } from "@puuid/core/server/api-route/riot/league/LeagueDTO";
+import type { LolQueueType } from "@puuid/core/shared/types/index";
 import type { SummonerType } from "@puuid/core/server/db/schema/summoner";
 import { $getSummonerStatistic } from "@/server/functions/$getSummonerStatistic";
 import { queryOptions, useQuery } from "@tanstack/react-query";
