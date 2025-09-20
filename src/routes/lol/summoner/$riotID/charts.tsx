@@ -8,6 +8,7 @@ import { HourlyWinrateChart } from "@/client/components/charts/HourlyWinrateChar
 import { friendlyQueueTypeToRiot } from "@/client/lib/typeHelper";
 import { $getSummonerMatches } from "@/server/functions/$getSummonerMatches";
 import { ToggleGroup, ToggleGroupItem } from "@/client/components/ui/toggle-group";
+import { LOL_QUEUES } from "@puuid/core/shared/types/index";
 
 type MatchPoint = {
   datetime: string | Date;
@@ -57,18 +58,20 @@ export const Route = createFileRoute("/lol/summoner/$riotID/charts")({
       data: {
         puuid: summoner.puuid,
         region: summoner.region,
-        queue: queue,
+        filters: {
+          queueId: LOL_QUEUES[queue].queueId,
+        },
       },
     });
 
     return {
-      data: matches.matches.map<MatchPoint>((m) => {
+      data: matches.data.map<MatchPoint>((m) => {
         return {
           datetime: new Date(m.gameCreationMs),
           win: m.summoners.find((s) => s.puuid === summoner.puuid)!.win,
         };
       }),
-      matches: matches.matches.map<MatchRow>((m) => {
+      matches: matches.data.map<MatchRow>((m) => {
         const matchSummoner = m.summoners.find((s) => s.puuid === summoner.puuid)!;
         const teammates = m.summoners.filter(
           (s) => s.teamId === matchSummoner.teamId && s.puuid !== matchSummoner.puuid,

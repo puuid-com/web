@@ -87,7 +87,7 @@ export const MatchListItem = ({}: Props) => {
             return POSITION_INDEXES[a.position] - POSITION_INDEXES[b.position];
           })
           .map((s) => {
-            const championIconUrl = CDragonService.getChampionTile(s.championId);
+            const championIconUrl = CDragonService.getChampionSquare(s.championId);
             return (
               <Link
                 to={"/r/$puuid"}

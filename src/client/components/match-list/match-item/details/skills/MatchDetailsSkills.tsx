@@ -3,7 +3,7 @@ import type { $getMatchDetailsType } from "@/server/functions/$getMatchDetails";
 import type { GetSummonerMatchesType } from "@/client/queries/getSummonerMatches";
 import { CDragonService } from "@puuid/core/shared/services/CDragonService";
 
-type Match = GetSummonerMatchesType["matches"][number];
+type Match = GetSummonerMatchesType["data"][number];
 
 type Props = {
   match: Match;

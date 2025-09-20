@@ -10,7 +10,7 @@ import { Button } from "@/client/components/ui/button";
 import { cn, formatSeconds } from "@/client/lib/utils";
 // participants selector moved to its own component
 
-type Match = GetSummonerMatchesType["matches"][number];
+type Match = GetSummonerMatchesType["data"][number];
 
 type Props = {
   match: Match;

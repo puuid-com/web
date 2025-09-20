@@ -1,6 +1,6 @@
 import FeaturedGamesUI from "@/client/components/FeaturedGames";
 import { $getFeaturedMatches } from "@/server/functions/$getFeaturedMatches";
-import { LolRegions } from "@puuid/core/server/types/riot/common";
+import { LolRegions } from "@puuid/core/shared/types/index";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import * as v from "valibot";
 

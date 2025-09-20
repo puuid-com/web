@@ -140,7 +140,7 @@ export function CumulativeWinrateChart({ data }: Props) {
               <Tooltip
                 content={({ active, payload }) => {
                   if (!active || payload.length === 0) return null;
-                  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+
                   const p = payload[0]!.payload as DailyCumulative;
                   return (
                     <div className="bg-neutral-900 border rounded-lg p-3 shadow-lg">

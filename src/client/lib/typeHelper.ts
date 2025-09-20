@@ -1,4 +1,4 @@
-import type { LolQueueType } from "@puuid/core/server/api-route/riot/league/LeagueDTO";
+import type { LolQueueType } from "@puuid/core/shared/types/index";
 
 export const FriendlyQueueTypes = ["solo", "flex"] as const;
 export type FriendlyQueueType = (typeof FriendlyQueueTypes)[number];

@@ -1,4 +1,4 @@
-import { LolRegions } from "@puuid/core/server/types/riot/common";
+import { LolRegions } from "@puuid/core/shared/types/index";
 import { createServerFn } from "@tanstack/react-start";
 import * as v from "valibot";
 

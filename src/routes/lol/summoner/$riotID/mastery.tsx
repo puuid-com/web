@@ -6,7 +6,7 @@ import { friendlyQueueTypeToRiot } from "@/client/lib/typeHelper";
 import { getSummonerMasteriesOptions } from "@/client/queries/getSummonerMasteries";
 import { getSummonerStatisticsOptions } from "@/client/queries/getSummonerStatistics";
 import { CDragonService } from "@puuid/core/shared/services/CDragonService";
-import { LolPositions } from "@puuid/core/server/api-route/riot/match/MatchDTO";
+import { LolPositions } from "@puuid/core/shared/types/index";
 import { useQueries } from "@tanstack/react-query";
 import { createFileRoute, useLoaderData, useSearch } from "@tanstack/react-router";
 import React from "react";

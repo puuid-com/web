@@ -1,22 +1,28 @@
-import { AccountRegionDTOSchema } from "@puuid/core/server/api-route/riot/account/AccountDTO";
-import { LolQueues } from "@puuid/core/server/api-route/riot/league/LeagueDTO";
-import { LOL_QUEUES } from "@puuid/core/server/services/match/queues";
+import { MatchResults } from "@puuid/core/server/db/schema/match";
+import { LolRegions } from "@puuid/core/shared/types/index";
 import { createServerFn } from "@tanstack/react-start";
 import * as v from "valibot";
 
 export const $getSummonerMatches = createServerFn({ method: "GET" })
   .validator(
     v.object({
-      puuid: AccountRegionDTOSchema.entries.puuid,
-      region: AccountRegionDTOSchema.entries.region,
-      queue: v.picklist(LolQueues),
-      count: v.optional(v.number()),
+      puuid: v.string(),
+      region: v.picklist(LolRegions),
+      filters: v.object({
+        playedChampionIds: v.optional(v.array(v.number())),
+        matchupChampionIds: v.optional(v.array(v.number())),
+        teammatePuuids: v.optional(v.array(v.string())),
+        gameResult: v.optional(v.boolean()),
+        global: v.optional(v.pipe(v.string(), v.trim())),
+        resultType: v.optional(v.picklist(MatchResults)),
+        page: v.optional(v.pipe(v.number(), v.integer(), v.minValue(0))),
+        queueId: v.optional(v.number()),
+        limit: v.optional(v.number()),
+      }),
     }),
   )
   .handler(async (ctx) => {
-    await new Promise<void>((resolve) => setTimeout(resolve, 2000));
-
-    const { region, puuid, queue, count } = ctx.data;
+    const { region, puuid, filters } = ctx.data;
 
     const { MatchService } = await import("@puuid/core/server/services/match/MatchService");
     const matches = await MatchService.getMatchesDBByPuuidFull(
@@ -24,15 +30,10 @@ export const $getSummonerMatches = createServerFn({ method: "GET" })
         puuid,
         region,
       },
-      {
-        queue: LOL_QUEUES[queue].queueId,
-        count: count,
-      },
+      filters,
     );
 
-    return {
-      matches,
-    };
+    return matches;
   });
 
 export type $GetSummonerMatchesType = Awaited<ReturnType<typeof $getSummonerMatches>>;
