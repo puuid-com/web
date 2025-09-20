@@ -21,6 +21,7 @@ export const Route = createFileRoute("/r/$puuid")({
       },
       search: {
         q: "solo",
+        p: 1,
       },
       statusCode: 301,
     });

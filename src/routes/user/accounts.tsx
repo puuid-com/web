@@ -123,7 +123,7 @@ function AccountsPage() {
                         <Link
                           to={"/lol/summoner/$riotID/matches"}
                           params={{ riotID: summoner.riotId.replace("#", "-") }}
-                          search={{ q: "solo" }}
+                          search={{ q: "solo", p: 1 }}
                           target="_blank"
                         >
                           <ExternalLink className="w-4 h-4" /> Go to page

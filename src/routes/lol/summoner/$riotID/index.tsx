@@ -8,6 +8,7 @@ export const Route = createFileRoute("/lol/summoner/$riotID/")({
       params: ctx.params,
       search: {
         q: "solo",
+        p: 1,
       },
       statusCode: 301,
     });

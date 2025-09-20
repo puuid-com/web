@@ -84,6 +84,7 @@ export function UserAccountButton({}: Props) {
                 }}
                 search={{
                   q: "solo",
+                  p: 1,
                 }}
                 style={
                   {

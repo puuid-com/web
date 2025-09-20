@@ -73,7 +73,7 @@ export const UserPageSummoners = ({}: Props) => {
                   <Link
                     to={"/lol/summoner/$riotID/matches"}
                     params={{ riotID: summoner.riotId.replace("#", "-") }}
-                    search={{ q: "solo" }}
+                    search={{ q: "solo", p: 1 }}
                     target="_blank"
                     className="group flex items-center gap-3 rounded-lg border border-neutral-800/70 bg-neutral-900/40 p-3 transition-colors hover:border-main/70 hover:bg-neutral-900/70"
                   >
