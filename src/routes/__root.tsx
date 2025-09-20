@@ -50,8 +50,6 @@ export const Route = createRootRouteWithContext<{
   },
   staleTime: Infinity,
   gcTime: Infinity,
-
-  shouldReload: true,
 });
 
 function RootComponent() {

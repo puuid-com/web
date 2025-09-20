@@ -116,8 +116,6 @@ export const Route = createFileRoute("/lol/summoner/$riotID")({
   },
   staleTime: 60_000,
   gcTime: 30 * 60_000,
-
-  shouldReload: true,
 });
 
 function RouteComponent() {
