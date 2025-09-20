@@ -1,3 +1,5 @@
+/* eslint-disable react-you-might-not-need-an-effect/no-derived-state */
+/* eslint-disable react-you-might-not-need-an-effect/no-adjust-state-on-prop-change */
 "use client";
 
 import { useState, useEffect } from "react";

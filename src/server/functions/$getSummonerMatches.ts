@@ -24,6 +24,8 @@ export const $getSummonerMatches = createServerFn({ method: "GET" })
   .handler(async (ctx) => {
     const { region, puuid, filters } = ctx.data;
 
+    console.log({ filters, region, puuid });
+
     const { MatchService } = await import("@puuid/core/server/services/match/MatchService");
     const matches = await MatchService.getMatchesDBByPuuidFull(
       {

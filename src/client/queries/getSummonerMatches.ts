@@ -1,5 +1,5 @@
 import { $getSummonerMatches } from "@/server/functions/$getSummonerMatches";
-import { keepPreviousData, queryOptions, useQuery } from "@tanstack/react-query";
+import { queryOptions, useQuery } from "@tanstack/react-query";
 import type { SummonerType } from "@puuid/core/server/db/schema/summoner";
 import type { Route } from "@/routes/lol/summoner/$riotID/matches";
 import { friendlyQueueTypeToRiot } from "@/client/lib/typeHelper";
@@ -42,7 +42,6 @@ export const getSummonerMatchesOptions = ({ summoner, filters }: QueryParams) =>
           },
         },
       }),
-    placeholderData: keepPreviousData,
   });
 
 export const useGetSummonerMatches = (params: QueryParams) => {

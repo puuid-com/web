@@ -2,7 +2,7 @@ import * as React from "react";
 import { Button } from "@/client/components/ui/button";
 import { Input } from "@/client/components/ui/input";
 import { cn } from "@/client/lib/utils";
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { debounce } from "@tanstack/react-pacer";
 import { CDragonService } from "@puuid/core/shared/services/CDragonService";
 import { useServerFn } from "@tanstack/react-start";
@@ -25,7 +25,7 @@ export function RiotIdForm({ onSuccess }: Props) {
     (text: string) => {
       setTerm(text.trim());
     },
-    { wait: 250 },
+    { wait: 500 },
   );
 
   const { data: results = [], isFetching } = useQuery({
@@ -33,6 +33,7 @@ export function RiotIdForm({ onSuccess }: Props) {
     enabled: term.length >= 2,
     queryFn: async () => await $fn({ data: { c: term } }),
     staleTime: 10_000,
+    placeholderData: keepPreviousData,
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -98,9 +99,7 @@ export function RiotIdForm({ onSuccess }: Props) {
                 setHighlight(-1);
               }}
             >
-              {isFetching ? (
-                <div className="px-3 py-2 text-sm text-neutral-400">Searching…</div>
-              ) : results.length > 0 ? (
+              {results.length > 0 ? (
                 results.map((s, i) => {
                   const [gameName, tagLine] = s.summoner.displayRiotId.split("#");
                   const active = i === highlight;

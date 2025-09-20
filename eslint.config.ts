@@ -6,6 +6,7 @@ import reactRefresh from "eslint-plugin-react-refresh";
 import tanstackQuery from "@tanstack/eslint-plugin-query";
 import eslintConfigPrettier from "eslint-config-prettier/flat";
 import unusedImports from "eslint-plugin-unused-imports";
+import reactYouMightNotNeedAnEffect from "eslint-plugin-react-you-might-not-need-an-effect";
 import { defineConfig } from "eslint/config";
 
 export default defineConfig(
@@ -39,6 +40,7 @@ export default defineConfig(
   },
   tseslint.configs.strictTypeChecked,
   tseslint.configs.stylisticTypeChecked,
+  reactYouMightNotNeedAnEffect.configs.recommended,
   // React, Hooks, React Refresh, TanStack Query
   {
     files: ["**/*.{ts,tsx}"],

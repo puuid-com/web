@@ -1,23 +1,12 @@
-import { createFileRoute, Link, Outlet, redirect } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useRouteContext } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/lol/feed")({
   component: RouteComponent,
-  beforeLoad: (ctx) => {
-    const context = ctx.context;
-
-    if (!context.user) {
-      throw redirect({ to: "/" });
-    }
-    return {
-      user: context.user,
-      summoners: context.summoners,
-      mainSummoner: context.mainSummoner,
-      otherSummoners: context.otherSummoners,
-    };
-  },
 });
 
 function RouteComponent() {
+  const { user } = useRouteContext({ from: "__root__" });
+
   return (
     <div className={"flex flex-col gap-4"}>
       <nav
@@ -38,19 +27,21 @@ function RouteComponent() {
         >
           For you
         </Link>
-        <Link
-          to={"/lol/feed/following"}
-          preload="intent"
-          activeProps={{
-            className:
-              "data-[status=active]:bg-main/15 data-[status=active]:text-main data-[status=active]:border-main",
-          }}
-          className={
-            "px-3 py-1.5 rounded-md border text-sm text-muted-foreground hover:text-foreground hover:bg-muted"
-          }
-        >
-          Following
-        </Link>
+        {user ? (
+          <Link
+            to={"/lol/feed/following"}
+            preload="intent"
+            activeProps={{
+              className:
+                "data-[status=active]:bg-main/15 data-[status=active]:text-main data-[status=active]:border-main",
+            }}
+            className={
+              "px-3 py-1.5 rounded-md border text-sm text-muted-foreground hover:text-foreground hover:bg-muted"
+            }
+          >
+            Following
+          </Link>
+        ) : null}
       </nav>
       <div>
         <Outlet />

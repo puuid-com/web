@@ -29,7 +29,7 @@ export const Navbar = ({ className }: Props) => {
               puuid.com
             </Link>
             <Link
-              to="/lol/feed/following"
+              to="/lol/feed/for-you"
               preload="intent"
               className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground px-2 py-1 rounded-md hover:bg-muted"
               activeProps={{ className: "text-main bg-main/10" }}
