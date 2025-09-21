@@ -1,15 +1,18 @@
 /// <reference types="vite/client" />
-import type { ReactNode } from "react";
+import { Suspense, lazy, type ReactNode } from "react";
 import { Outlet, HeadContent, Scripts, createRootRouteWithContext } from "@tanstack/react-router";
 import { QueryClient } from "@tanstack/react-query";
 import appCss from "@/client/styles/app.css?url";
 import { Toaster } from "sonner";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Footer } from "@/client/components/footer/Footer";
 import { Navbar } from "@/client/components/navbar/Navbar";
 import { getUserSessionOptions } from "@/client/queries/getUserSession";
 import { DDragonService } from "@puuid/core/shared/services/DDragonService";
 import { $getChampionsData } from "@/server/functions/$getChampionsData";
+
+const ReactQueryDevtools = import.meta.env.DEV
+  ? lazy(() => import("@tanstack/react-query-devtools").then((mod) => ({ default: mod.ReactQueryDevtools })))
+  : null;
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
@@ -57,7 +60,11 @@ function RootComponent() {
     <RootDocument>
       <Outlet />
       <Toaster richColors />
-      <ReactQueryDevtools initialIsOpen={false} />
+      {ReactQueryDevtools ? (
+        <Suspense fallback={null}>
+          <ReactQueryDevtools initialIsOpen={false} />
+        </Suspense>
+      ) : null}
     </RootDocument>
   );
 }

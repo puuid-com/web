@@ -1,5 +1,4 @@
 import * as React from "react";
-import { UserAccountButton } from "@/client/components/navbar/UserButton";
 import { RiotIdForm } from "@/client/components/riot-id-form/RiotIdForm";
 import { cn } from "@/client/lib/utils";
 import { Link, useNavigate } from "@tanstack/react-router";
@@ -8,6 +7,14 @@ import { NewspaperIcon } from "lucide-react";
 type Props = {
   className?: React.ComponentProps<"div">["className"];
 };
+
+const UserAccountButton = React.lazy(() =>
+  import("@/client/components/navbar/UserButton").then((mod) => ({ default: mod.UserAccountButton })),
+);
+
+const UserButtonFallback = () => (
+  <div className="w-8 h-8 rounded-md bg-muted animate-pulse" aria-hidden />
+);
 
 export const Navbar = ({ className }: Props) => {
   const navigate = useNavigate();
@@ -43,7 +50,9 @@ export const Navbar = ({ className }: Props) => {
             <div className="hidden sm:block">
               <RiotIdForm onSuccess={handleSummonerSearch} />
             </div>
-            <UserAccountButton />
+            <React.Suspense fallback={<UserButtonFallback />}>
+              <UserAccountButton />
+            </React.Suspense>
           </div>
         </div>
       </div>

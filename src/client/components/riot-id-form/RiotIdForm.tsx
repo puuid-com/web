@@ -6,7 +6,7 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { debounce } from "@tanstack/react-pacer";
 import { CDragonService } from "@puuid/core/shared/services/CDragonService";
 import { useServerFn } from "@tanstack/react-start";
-import { $getSummoners, type $GetSummonersType } from "@/server/functions/$getSummoners";
+import { $SearchSummoners, type $SearchSummonersType } from "@/server/functions/$searchSummoners";
 import { Badge } from "@/client/components/ui/badge";
 import { NotebookPenIcon } from "lucide-react";
 
@@ -18,7 +18,7 @@ export function RiotIdForm({ onSuccess }: Props) {
   const [value, setValue] = React.useState("");
   const [open, setOpen] = React.useState(false);
   const [highlight, setHighlight] = React.useState<number>(-1);
-  const $fn = useServerFn($getSummoners);
+  const $fn = useServerFn($SearchSummoners);
 
   const [term, setTerm] = React.useState("");
   const setTermDebounced = debounce(
@@ -45,7 +45,7 @@ export function RiotIdForm({ onSuccess }: Props) {
     setOpen(false);
   };
 
-  const handlePick = (s: $GetSummonersType[number]) => {
+  const handlePick = (s: $SearchSummonersType[number]) => {
     onSuccess(s.summoner.displayRiotId);
     setOpen(false);
   };

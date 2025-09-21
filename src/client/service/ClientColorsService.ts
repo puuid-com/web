@@ -1,5 +1,14 @@
 import { CDragonService } from "@puuid/core/shared/services/CDragonService";
-import { Vibrant } from "node-vibrant/browser";
+
+let vibrantModulePromise: Promise<typeof import("node-vibrant/browser")> | undefined;
+
+const loadVibrant = async () => {
+  if (!vibrantModulePromise) {
+    vibrantModulePromise = import("node-vibrant/browser");
+  }
+
+  return vibrantModulePromise;
+};
 
 export class ClientColorsService {
   static async getMainColorsFromChampionSkin(championId: number, skinId: number) {
@@ -12,6 +21,7 @@ export class ClientColorsService {
   }
 
   private static async getColorsFromUrl(url: string) {
+    const Vibrant = (await loadVibrant()).Vibrant;
     const palette = await Vibrant.from(url).getPalette();
 
     if (palette.Vibrant) {

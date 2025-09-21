@@ -8,6 +8,8 @@ export const Route = createFileRoute("/lol/feed/for-you")({
 
     return data;
   },
+  staleTime: 1000 * 30,
+  gcTime: 1000 * 60 * 5,
 });
 
 function RouteComponent() {
@@ -16,7 +18,7 @@ function RouteComponent() {
   return (
     <div>
       {data.map((f) => {
-        return <div>{f.displayRiotId}</div>;
+        return <div key={f.puuid}>{f.displayRiotId}</div>;
       })}
     </div>
   );
