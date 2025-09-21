@@ -1,6 +1,6 @@
 import * as React from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { SummonersAndPagesForm } from "@/client/components/riot-id-form/SummonersAndPagesForm";
+import { SummonersAndPagesForm } from "@/client/components/summoners-and-pages-form/SummonersAndPagesForm";
 
 export const Route = createFileRoute("/")({ component: Landing });
 

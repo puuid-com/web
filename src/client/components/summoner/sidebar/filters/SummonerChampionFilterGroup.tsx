@@ -33,7 +33,11 @@ export const SummonerChampionFilterGroup = ({ searchKey, icon: Icon, label }: Pr
   }, [metadata.champions, searchValue]);
 
   return (
-    <div className={"flex gap-1 items-center border px-1.5 py-1 rounded-md"}>
+    <div
+      className={
+        "flex gap-1 items-center border px-1.5 py-1 rounded-md hover:bg-main/20 transition-colors duration-200 hover:cursor-pointer"
+      }
+    >
       <div className={"text-xs flex gap-1 items-center font-bold"}>
         <Icon className={"w-3"} />
         {label}

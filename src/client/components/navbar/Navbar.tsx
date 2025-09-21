@@ -1,5 +1,5 @@
 import * as React from "react";
-import { SummonersAndPagesForm } from "@/client/components/riot-id-form/SummonersAndPagesForm";
+import { SummonersAndPagesForm } from "@/client/components/summoners-and-pages-form/SummonersAndPagesForm";
 import { cn } from "@/client/lib/utils";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { NewspaperIcon } from "lucide-react";
