@@ -25,8 +25,6 @@ export const useSummonersQueryOptions = (
     queryFn: () => {
       if (!puuids.length) return [];
 
-      console.log({ puuids });
-
       return $getSummonersByPuuids({
         data: puuids,
       });

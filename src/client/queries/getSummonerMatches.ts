@@ -39,6 +39,7 @@ export const getSummonerMatchesOptions = ({ summoner, filters }: QueryParams) =>
             queueId: LOL_QUEUES[friendlyQueueTypeToRiot(filters.q)].queueId,
             resultType: "NORMAL",
             teammatePuuids: filters.t,
+            ennemyPuuids: filters.pa,
           },
         },
       }),

@@ -62,16 +62,9 @@ export function SummonerSelectDialog({
   const [isOpen, setIsOpen] = React.useState(false);
   const [inputValue, setInputValue] = React.useState("");
   const [term, setTerm] = React.useState("");
-  const [selectedIds, setSelectedIds] = React.useState<string[]>(() =>
-    selectedSummoners.map((summoner) => summoner.id),
-  );
-  const [detailsMap, setDetailsMap] = React.useState<Map<string, SelectedSummonerValue>>(() => {
-    const initial = new Map<string, SelectedSummonerValue>();
-    for (const summoner of selectedSummoners) {
-      initial.set(summoner.id, summoner);
-    }
-    return initial;
-  });
+  const [selectedDetails, setSelectedDetails] = React.useState<SelectedSummonerValue[]>(() => [
+    ...selectedSummoners,
+  ]);
 
   const maxVisible = Math.max(1, maxVisibleSummoners);
   const LIST_ITEM_HEIGHT = 56;
@@ -90,16 +83,7 @@ export function SummonerSelectDialog({
   );
 
   React.useEffect(() => {
-    // eslint-disable-next-line react-you-might-not-need-an-effect/no-pass-data-to-parent
-    setSelectedIds(selectedSummoners.map((summoner) => summoner.id));
-    setDetailsMap((prev) => {
-      const next = new Map<string, SelectedSummonerValue>();
-      for (const summoner of selectedSummoners) {
-        const existing = prev.get(summoner.id);
-        next.set(summoner.id, existing ?? summoner);
-      }
-      return next;
-    });
+    setSelectedDetails([...selectedSummoners]);
   }, [selectedSummoners]);
 
   const { data, isFetching } = useQuery<$SearchSummonersOrPageType>({
@@ -134,127 +118,80 @@ export function SummonerSelectDialog({
     });
   }, [summonerResults]);
 
-  const selectedSet = React.useMemo(() => new Set(selectedIds), [selectedIds]);
+  const visibleSummoners = summonerOptions.slice(0, maxVisible);
+  const [openingSelection, setOpeningSelection] = React.useState<SelectedSummonerValue[]>([]);
 
-  React.useEffect(() => {
-    if (summonerOptions.length === 0) return;
-    setDetailsMap((prev) => {
-      let mutated = false;
-      const next = new Map(prev);
-
-      for (const option of summonerOptions) {
-        if (selectedSet.has(option.id)) {
-          next.set(option.id, option);
-          mutated = true;
-        }
+  const closeDialog = React.useCallback(
+    (shouldCommit: boolean) => {
+      if (!shouldCommit) {
+        setSelectedDetails(openingSelection.length === 0 ? [] : openingSelection.slice());
       }
-      return mutated ? next : prev;
-    });
-  }, [summonerOptions, selectedSet]);
 
-  const visibleSummoners = React.useMemo(() => {
-    return summonerOptions.slice(0, maxVisible);
-  }, [summonerOptions, maxVisible]);
-
-  const detailsSnapshotRef = React.useRef<Map<string, SelectedSummonerValue>>(new Map());
-  const closeReasonRef = React.useRef<"save" | "cancel" | null>(null);
+      setInputValue("");
+      setTerm("");
+      setTermDebounced("");
+      setIsOpen(false);
+    },
+    [openingSelection, setTermDebounced],
+  );
 
   const handleOpenChange = React.useCallback(
     (nextOpen: boolean) => {
       if (nextOpen) {
-        detailsSnapshotRef.current = new Map(detailsMap);
-        closeReasonRef.current = null;
-      } else {
-        const reason = closeReasonRef.current;
-        const shouldRevert = reason !== "save";
-
-        if (shouldRevert) {
-          setSelectedIds(selectedSummoners.map((summoner) => summoner.id));
-          setDetailsMap(new Map(detailsSnapshotRef.current));
-        }
-
-        setInputValue("");
-        setTerm("");
-        setTermDebounced("");
+        setOpeningSelection(selectedDetails.slice());
+        setIsOpen(true);
+        return;
       }
 
-      setIsOpen(nextOpen);
+      closeDialog(false);
     },
-    [detailsMap, selectedSummoners, setTermDebounced],
+    [closeDialog, selectedDetails],
   );
 
   const handleToggleSummoner = React.useCallback(
     (option: SelectedSummonerValue) => {
-      setSelectedIds((prev) => {
-        const exists = prev.includes(option.id);
-        let next: string[];
+      setSelectedDetails((prev) => {
+        const index = prev.findIndex((detail) => detail.id === option.id);
+        const exists = index !== -1;
+
         if (allowMultiple) {
-          next = exists ? prev.filter((id) => id !== option.id) : [...prev, option.id];
-        } else {
-          next = exists ? [] : [option.id];
+          if (exists) {
+            return prev.filter((detail) => detail.id !== option.id);
+          }
+          return [...prev, option];
         }
 
-        setDetailsMap((prevMap) => {
-          const nextMap = new Map(prevMap);
-          if (!allowMultiple) {
-            nextMap.clear();
-          }
+        if (exists) {
+          return [];
+        }
 
-          if (exists) {
-            nextMap.delete(option.id);
-          } else {
-            nextMap.set(option.id, option);
-          }
-
-          for (const key of Array.from(nextMap.keys())) {
-            if (!next.includes(key)) {
-              nextMap.delete(key);
-            }
-          }
-
-          return nextMap;
-        });
-
-        return next;
+        return [option];
       });
     },
     [allowMultiple],
   );
 
   const handleRemove = React.useCallback((puuid: string) => {
-    setSelectedIds((prev) => {
-      if (!prev.includes(puuid)) return prev;
-      const next = prev.filter((id) => id !== puuid);
-      setDetailsMap((prevMap) => {
-        const nextMap = new Map(prevMap);
-        nextMap.delete(puuid);
-        return nextMap;
-      });
-      return next;
-    });
+    setSelectedDetails((prev) => prev.filter((detail) => detail.id !== puuid));
   }, []);
 
   const handleClearAll = React.useCallback(() => {
-    setSelectedIds([]);
-    setDetailsMap((prev) => {
-      if (prev.size === 0) return prev;
-      return new Map();
+    setSelectedDetails((prev) => {
+      if (prev.length === 0) return prev;
+      return [];
     });
   }, []);
 
   const handleCancel = React.useCallback(() => {
-    closeReasonRef.current = "cancel";
-    setIsOpen(false);
-  }, []);
+    closeDialog(false);
+  }, [closeDialog]);
 
   const handleSave = React.useCallback(() => {
-    const details: SelectedSummonerValue[] = selectedIds
-      .map((id) => detailsMap.get(id))
-      .filter((detail): detail is SelectedSummonerValue => !!detail);
-    onSave?.(selectedIds, details);
-    closeReasonRef.current = "save";
-    setIsOpen(false);
-  }, [detailsMap, onSave, selectedIds]);
+    const detailsToSave = [...selectedDetails];
+    const idsToSave = detailsToSave.map((detail) => detail.id);
+    onSave?.(idsToSave, detailsToSave);
+    closeDialog(true);
+  }, [closeDialog, onSave, selectedDetails]);
 
   const shouldShowInstructions = term.length < 3 && !isFetching && summonerOptions.length === 0;
   const noMatches = term.length >= 3 && summonerOptions.length === 0 && !isFetching;
@@ -290,11 +227,11 @@ export function SummonerSelectDialog({
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            {selectedIds.length > 0 ? (
+            {selectedDetails.length > 0 ? (
               <>
-                {selectedIds.map((id) => {
-                  const detail = detailsMap.get(id);
-                  const displayName = detail?.displayRiotId ?? id;
+                {selectedDetails.map((detail) => {
+                  const { id } = detail;
+                  const displayName = detail.displayRiotId;
                   const [chipName, chipTag = ""] = displayName.split("#");
                   return (
                     <Badge asChild key={id} variant="secondary" className="pr-1">
@@ -305,17 +242,13 @@ export function SummonerSelectDialog({
                           handleRemove(id);
                         }}
                       >
-                        {detail ? (
-                          <img
-                            src={detail.imageUrl}
-                            alt=""
-                            className="h-5 w-5 rounded-sm object-cover"
-                            loading="lazy"
-                            decoding="async"
-                          />
-                        ) : (
-                          <span className="h-5 w-5 rounded-sm bg-neutral-800" />
-                        )}
+                        <img
+                          src={detail.imageUrl}
+                          alt=""
+                          className="h-5 w-5 rounded-sm object-cover"
+                          loading="lazy"
+                          decoding="async"
+                        />
                         <span>
                           {chipName}
                           {chipTag ? `#${chipTag}` : ""}
@@ -353,7 +286,7 @@ export function SummonerSelectDialog({
             ) : (
               <>
                 {visibleSummoners.map((option) => {
-                  const isSelected = selectedSet.has(option.id);
+                  const isSelected = selectedDetails.some((detail) => detail.id === option.id);
                   const metaParts: string[] = [];
                   const [gameName, tagLine] = option.displayRiotId.split("#");
 
@@ -416,7 +349,7 @@ export function SummonerSelectDialog({
           <Button type="button" variant="ghost" onClick={handleCancel}>
             Cancel
           </Button>
-          <Button type="button" onClick={handleSave} disabled={selectedIds.length === 0}>
+          <Button type="button" onClick={handleSave}>
             Save
           </Button>
         </DialogFooter>
