@@ -4,10 +4,9 @@ import { Input } from "@/client/components/ui/input";
 
 import { cn } from "@/client/lib/utils";
 import { useNavigate, useSearch } from "@tanstack/react-router";
-import { CatIcon, HandshakeIcon, RatIcon, SearchIcon } from "lucide-react";
+import { CatIcon, FunnelXIcon, HandshakeIcon, RatIcon, SearchIcon, SwordsIcon } from "lucide-react";
 import { type ChangeEvent } from "react";
 import { debounce } from "@tanstack/react-pacer";
-import { ChampionSelectDialog } from "@/client/components/champion/ChampionSelectDialog";
 import { Button } from "@/client/components/ui/button";
 
 type Props = {};
@@ -15,6 +14,25 @@ type Props = {};
 export const SummonerFilters = ({}: Props) => {
   const navigate = useNavigate({ from: "/lol/summoner/$riotID/matches" });
   const c = useSearch({ from: "/lol/summoner/$riotID/matches", select: (s) => s.c });
+  const hasFilters = useSearch({
+    from: "/lol/summoner/$riotID/matches",
+    select: (s) => !!s.c || !!s.mc || !!s.pc || !!s.t || !!s.w,
+  });
+
+  const handleClearFilters = () => {
+    navigate({
+      to: ".",
+      search: (s) => ({
+        p: s.p,
+        q: s.q,
+        c: undefined,
+        mc: undefined,
+        pc: undefined,
+        t: undefined,
+        w: undefined,
+      }),
+    }).catch(console.error);
+  };
 
   const handleMainFilterChange = (e: ChangeEvent<HTMLInputElement>) => {
     navigate({
@@ -58,12 +76,16 @@ export const SummonerFilters = ({}: Props) => {
           <SummonerChampionFilterGroup
             searchKey={"mc"}
             label={"Matchup Champions"}
-            icon={RatIcon}
+            icon={SwordsIcon}
           />
+          <SummonerSummonerFilterGroup searchKey={"pa"} label={"Enemies"} icon={RatIcon} />
           <SummonerSummonerFilterGroup searchKey={"t"} label={"Teammates"} icon={HandshakeIcon} />
-          <ChampionSelectDialog>
-            <Button variant={"main"}>Test</Button>
-          </ChampionSelectDialog>
+          {hasFilters ? (
+            <Button variant={"main"} size="sm" onClick={handleClearFilters}>
+              <FunnelXIcon />
+              Clear
+            </Button>
+          ) : null}
         </div>
       </div>
     </div>

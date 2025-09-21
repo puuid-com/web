@@ -1,7 +1,7 @@
 import { CDNService } from "@puuid/core/shared/services/CDNService";
 import type { LeagueRowType } from "@puuid/core/server/db/schema/league";
 import { LeagueTierOrder, LeagueToLP } from "@puuid/core/lib/lp";
-import { useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   CartesianGrid,
   Line,
@@ -118,6 +118,26 @@ const GainPill = ({ label, value }: { label: string; value: number | null }) => 
 };
 
 export function SummonerSidebarRankHistoryChart({ leagues }: Props) {
+  const [container, setContainer] = useState<HTMLDivElement | null>(null);
+  const [hasChartDimensions, setHasChartDimensions] = useState(false);
+
+  const updateHasDimensions = useCallback((rect: { width: number; height: number }) => {
+    const nextHasSize = rect.width > 0 && rect.height > 0;
+    setHasChartDimensions((prev) => (prev === nextHasSize ? prev : nextHasSize));
+  }, []);
+
+  const handleContainerRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      setContainer(node);
+      if (!node) {
+        setHasChartDimensions((prev) => (prev ? false : prev));
+        return;
+      }
+      updateHasDimensions(node.getBoundingClientRect());
+    },
+    [updateHasDimensions],
+  );
+
   const history = useMemo<HistoryPoint[]>(() => {
     if (!leagues.length) return [];
 
@@ -240,6 +260,35 @@ export function SummonerSidebarRankHistoryChart({ leagues }: Props) {
     );
   };
 
+  useEffect(() => {
+    // eslint-disable-next-line react-you-might-not-need-an-effect/no-event-handler
+    if (!container) return;
+
+    if (typeof ResizeObserver === "undefined") {
+      if (typeof window !== "undefined") {
+        const handleResize = () => {
+          updateHasDimensions(container.getBoundingClientRect());
+        };
+        window.addEventListener("resize", handleResize);
+        return () => {
+          window.removeEventListener("resize", handleResize);
+        };
+      }
+      return;
+    }
+
+    const observer = new ResizeObserver((entries) => {
+      const entry = entries[0];
+      if (!entry) return;
+      updateHasDimensions(entry.contentRect);
+    });
+
+    observer.observe(container);
+    return () => {
+      observer.disconnect();
+    };
+  }, [container, updateHasDimensions]);
+
   if (!history.length) {
     return (
       <div className="text-xs text-muted-foreground text-center">No historical league data</div>
@@ -252,86 +301,88 @@ export function SummonerSidebarRankHistoryChart({ leagues }: Props) {
         <GainPill label="Last 30d" value={lpGains.last30Days} />
         <GainPill label="Last 7d" value={lpGains.last7Days} />
       </div>
-      <div className="flex-1">
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={history} margin={{ top: 10, right: 10, left: -16, bottom: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" strokeOpacity={0.6} />
-            <XAxis
-              dataKey="timestamp"
-              type="number"
-              domain={["auto", "auto"]}
-              tickFormatter={(value) => axisFormatter.format(new Date(Number(value)))}
-              stroke="#64748b"
-              tick={{ fill: "#94a3b8", fontSize: 11 }}
-              tickLine={false}
-              axisLine={{ stroke: "#1e293b" }}
-            />
-            <YAxis dataKey="normalizedLp" domain={["dataMin", "dataMax"]} hide />
-            {tierMarkers.map((marker) => (
-              <ReferenceLine
-                key={marker.tier}
-                y={marker.value}
-                stroke={TIER_COLOR_VAR[marker.tier]}
-                strokeDasharray="4 4"
-                strokeOpacity={0.6}
-                label={<TierReferenceLabel tier={marker.tier} />}
+      <div className="flex-1" ref={handleContainerRef}>
+        {hasChartDimensions ? (
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={history} margin={{ top: 10, right: 10, left: -16, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" strokeOpacity={0.6} />
+              <XAxis
+                dataKey="timestamp"
+                type="number"
+                domain={["auto", "auto"]}
+                tickFormatter={(value) => axisFormatter.format(new Date(Number(value)))}
+                stroke="#64748b"
+                tick={{ fill: "#94a3b8", fontSize: 11 }}
+                tickLine={false}
+                axisLine={{ stroke: "#1e293b" }}
               />
-            ))}
-            <Tooltip content={renderTooltip} />
-            <Line
-              type="monotone"
-              dataKey="normalizedLp"
-              stroke="transparent"
-              strokeWidth={3}
-              dot={false}
-              activeDot={(props) => {
-                const {
-                  cx = 0,
-                  cy = 0,
-                  payload: rawPayload,
-                } = props as {
-                  cx: number;
-                  cy: number;
-                  payload: HistoryTooltipPayload;
-                };
-                const point = isHistoryPoint(rawPayload) ? rawPayload : null;
-                const fill = point ? TIER_COLOR_VAR[point.tier] : "var(--color-main)";
-                return (
-                  <circle cx={cx} cy={cy} r={5.5} fill={fill} stroke={fill} strokeWidth={1.5} />
-                );
-              }}
-              isAnimationActive={false}
-            />
-            <defs>
-              {tierSegments.map((segment) => {
-                const gradientId = `tier-gradient-${segment.id}`;
-                return (
-                  <linearGradient key={gradientId} id={gradientId} x1="0" y1="0" x2="1" y2="0">
-                    <stop offset="0%" stopColor={TIER_COLOR_VAR[segment.startTier]} />
-                    <stop offset="40%" stopColor={TIER_COLOR_VAR[segment.startTier]} />
-                    <stop offset="60%" stopColor={TIER_COLOR_VAR[segment.endTier]} />
-                    <stop offset="100%" stopColor={TIER_COLOR_VAR[segment.endTier]} />
-                  </linearGradient>
-                );
-              })}
-            </defs>
-            {tierSegments.map((segment) => (
+              <YAxis dataKey="normalizedLp" domain={["dataMin", "dataMax"]} hide />
+              {tierMarkers.map((marker) => (
+                <ReferenceLine
+                  key={marker.tier}
+                  y={marker.value}
+                  stroke={TIER_COLOR_VAR[marker.tier]}
+                  strokeDasharray="4 4"
+                  strokeOpacity={0.6}
+                  label={<TierReferenceLabel tier={marker.tier} />}
+                />
+              ))}
+              <Tooltip content={renderTooltip} />
               <Line
-                key={segment.id}
-                type="linear"
-                data={segment.points}
+                type="monotone"
                 dataKey="normalizedLp"
-                stroke={`url(#tier-gradient-${segment.id})`}
+                stroke="transparent"
                 strokeWidth={3}
                 dot={false}
+                activeDot={(props) => {
+                  const {
+                    cx = 0,
+                    cy = 0,
+                    payload: rawPayload,
+                  } = props as {
+                    cx: number;
+                    cy: number;
+                    payload: HistoryTooltipPayload;
+                  };
+                  const point = isHistoryPoint(rawPayload) ? rawPayload : null;
+                  const fill = point ? TIER_COLOR_VAR[point.tier] : "var(--color-main)";
+                  return (
+                    <circle cx={cx} cy={cy} r={5.5} fill={fill} stroke={fill} strokeWidth={1.5} />
+                  );
+                }}
                 isAnimationActive={false}
-                connectNulls
-                activeDot={false}
-                strokeLinecap="round"
               />
-            ))}
-          </LineChart>
-        </ResponsiveContainer>
+              <defs>
+                {tierSegments.map((segment) => {
+                  const gradientId = `tier-gradient-${segment.id}`;
+                  return (
+                    <linearGradient key={gradientId} id={gradientId} x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stopColor={TIER_COLOR_VAR[segment.startTier]} />
+                      <stop offset="40%" stopColor={TIER_COLOR_VAR[segment.startTier]} />
+                      <stop offset="60%" stopColor={TIER_COLOR_VAR[segment.endTier]} />
+                      <stop offset="100%" stopColor={TIER_COLOR_VAR[segment.endTier]} />
+                    </linearGradient>
+                  );
+                })}
+              </defs>
+              {tierSegments.map((segment) => (
+                <Line
+                  key={segment.id}
+                  type="linear"
+                  data={segment.points}
+                  dataKey="normalizedLp"
+                  stroke={`url(#tier-gradient-${segment.id})`}
+                  strokeWidth={3}
+                  dot={false}
+                  isAnimationActive={false}
+                  connectNulls
+                  activeDot={false}
+                  strokeLinecap="round"
+                />
+              ))}
+            </LineChart>
+          </ResponsiveContainer>
+        ) : null}
       </div>
     </div>
   );

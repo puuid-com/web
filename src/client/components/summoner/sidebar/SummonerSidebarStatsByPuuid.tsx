@@ -9,6 +9,7 @@ import type { SummonerType } from "@puuid/core/server/db/schema/summoner";
 import { cn } from "@/client/lib/utils";
 import { useSummonerFilter, type MatchesSearchKey } from "@/client/hooks/useSummonerFilter";
 import { useSummoners } from "@/client/queries/useSummoners";
+import { useRouteContext } from "@tanstack/react-router";
 
 type Props = {
   statsByChampionId: StatsByTeammate | undefined;
@@ -23,9 +24,10 @@ export const SummonerSidebarStatsByPuuid = ({
   label,
   searchKey,
 }: Props) => {
+  const { user } = useRouteContext({ from: "__root__" });
   const { handleOnFilterClickEvent, isEqualToFilterValue } = useSummonerFilter(searchKey);
 
-  const { data: summoners } = useSummoners(stats?.map((s) => s.puuid) ?? []);
+  const { data: summoners } = useSummoners(stats?.map((s) => s.puuid) ?? [], user?.id);
 
   const _data = React.useMemo<
     {
@@ -33,10 +35,10 @@ export const SummonerSidebarStatsByPuuid = ({
       stats: StatsByTeammate[number];
     }[]
   >(() => {
-    if (!stats?.length) return [];
+    if (!stats?.length || !summoners) return [];
 
     return stats.map((s) => {
-      const summoner = summoners?.find((s2) => s2.puuid === s.puuid);
+      const summoner = summoners.find((s2) => s.puuid === s2.summoner.puuid)?.summoner;
 
       return {
         summoner: summoner ?? null,

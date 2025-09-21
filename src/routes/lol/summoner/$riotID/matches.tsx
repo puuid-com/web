@@ -49,6 +49,15 @@ export const Route = createFileRoute("/lol/summoner/$riotID/matches")({
             v.transform((a) => (a.length ? a : undefined)),
           ),
         ),
+        /**
+         * Played against Filter
+         */
+        pa: v.exactOptional(
+          v.pipe(
+            v.array(v.string()),
+            v.transform((a) => (a.length ? a : undefined)),
+          ),
+        ),
         p: v.exactOptional(v.pipe(v.number(), v.minValue(1)), 1),
       }),
       data,
