@@ -10,6 +10,7 @@ type ValueType = {
   handleOnFilterClickEvent: (value: unknown) => (e: React.MouseEvent<HTMLButtonElement>) => void;
   isEqualToFilterValue: (value: unknown) => boolean;
   handleFilterChanges: (value: unknown, isAdditive: boolean) => void;
+  setFilterValues: (values: unknown) => void;
 };
 
 export const useSummonerFilter = (key: MatchesSearchKey) => {
@@ -67,13 +68,29 @@ export const useSummonerFilter = (key: MatchesSearchKey) => {
     [searchKeyValue],
   );
 
+  const setFilterValues = useCallback(
+    (values: unknown) => {
+      navigate({
+        to: ".",
+        search: (s) => {
+          return {
+            ...s,
+            [key]: values,
+          };
+        },
+      }).catch(console.error);
+    },
+    [key, navigate],
+  );
+
   const value = React.useMemo<ValueType>(() => {
     return {
       isEqualToFilterValue,
       handleOnFilterClickEvent,
       handleFilterChanges,
+      setFilterValues,
     };
-  }, [handleFilterChanges, handleOnFilterClickEvent, isEqualToFilterValue]);
+  }, [handleFilterChanges, handleOnFilterClickEvent, isEqualToFilterValue, setFilterValues]);
 
   return value;
 };

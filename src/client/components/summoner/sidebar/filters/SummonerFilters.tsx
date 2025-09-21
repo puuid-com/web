@@ -7,6 +7,8 @@ import { useNavigate, useSearch } from "@tanstack/react-router";
 import { CatIcon, HandshakeIcon, RatIcon, SearchIcon } from "lucide-react";
 import { type ChangeEvent } from "react";
 import { debounce } from "@tanstack/react-pacer";
+import { ChampionSelectDialog } from "@/client/components/champion/ChampionSelectDialog";
+import { Button } from "@/client/components/ui/button";
 
 type Props = {};
 
@@ -59,6 +61,9 @@ export const SummonerFilters = ({}: Props) => {
             icon={RatIcon}
           />
           <SummonerSummonerFilterGroup searchKey={"t"} label={"Teammates"} icon={HandshakeIcon} />
+          <ChampionSelectDialog>
+            <Button variant={"main"}>Test</Button>
+          </ChampionSelectDialog>
         </div>
       </div>
     </div>
