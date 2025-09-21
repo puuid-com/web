@@ -1,5 +1,5 @@
 import * as React from "react";
-import { RiotIdForm } from "@/client/components/riot-id-form/RiotIdForm";
+import { SummonersAndPagesForm } from "@/client/components/riot-id-form/SummonersAndPagesForm";
 import { cn } from "@/client/lib/utils";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { NewspaperIcon } from "lucide-react";
@@ -9,7 +9,9 @@ type Props = {
 };
 
 const UserAccountButton = React.lazy(() =>
-  import("@/client/components/navbar/UserButton").then((mod) => ({ default: mod.UserAccountButton })),
+  import("@/client/components/navbar/UserButton").then((mod) => ({
+    default: mod.UserAccountButton,
+  })),
 );
 
 const UserButtonFallback = () => (
@@ -48,7 +50,7 @@ export const Navbar = ({ className }: Props) => {
           </div>
           <div className="flex items-center gap-2">
             <div className="hidden sm:block">
-              <RiotIdForm onSuccess={handleSummonerSearch} />
+              <SummonersAndPagesForm onSuccess={handleSummonerSearch} />
             </div>
             <React.Suspense fallback={<UserButtonFallback />}>
               <UserAccountButton />

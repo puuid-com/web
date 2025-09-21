@@ -1,6 +1,6 @@
 import * as React from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { RiotIdForm } from "@/client/components/riot-id-form/RiotIdForm";
+import { SummonersAndPagesForm } from "@/client/components/riot-id-form/SummonersAndPagesForm";
 
 export const Route = createFileRoute("/")({ component: Landing });
 
@@ -38,7 +38,7 @@ function Landing() {
 
             <div className="mt-8 mx-auto w-full max-w-xl">
               <div className="rounded-xl border border-neutral-800/80 bg-neutral-900/50 p-3 backdrop-blur flex items-center justify-center w-fit mx-auto">
-                <RiotIdForm onSuccess={handleSummonerSearch} />
+                <SummonersAndPagesForm onSuccess={handleSummonerSearch} />
               </div>
             </div>
 
