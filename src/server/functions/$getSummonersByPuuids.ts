@@ -11,3 +11,6 @@ export const $getSummonersByPuuids = createServerFn({ method: "GET" })
 
     return data;
   });
+
+export type $GetSummonersByPuuidsType = Awaited<ReturnType<typeof $getSummonersByPuuids>>;
+export type $GetSummonersByPuuidsItemType = $GetSummonersByPuuidsType[number];
