@@ -32,6 +32,7 @@ import { Route as LolSummonerRiotIDMatchesRouteImport } from './routes/lol/summo
 import { Route as LolSummonerRiotIDMasteryRouteImport } from './routes/lol/summoner/$riotID/mastery'
 import { Route as LolSummonerRiotIDLiveRouteImport } from './routes/lol/summoner/$riotID/live'
 import { Route as LolSummonerRiotIDChartsRouteImport } from './routes/lol/summoner/$riotID/charts'
+import { Route as LeaderboardRegionTierQueueRouteImport } from './routes/leaderboard.$region.$tier.$queue'
 import { ServerRoute as SitemapXmlServerRouteImport } from './routes/sitemap.xml'
 import { ServerRoute as SitemapStaticXmlServerRouteImport } from './routes/sitemap-static.xml'
 import { ServerRoute as RobotsTxtServerRouteImport } from './routes/robots.txt'
@@ -147,6 +148,12 @@ const LolSummonerRiotIDChartsRoute = LolSummonerRiotIDChartsRouteImport.update({
   path: '/charts',
   getParentRoute: () => LolSummonerRiotIDRouteRoute,
 } as any)
+const LeaderboardRegionTierQueueRoute =
+  LeaderboardRegionTierQueueRouteImport.update({
+    id: '/leaderboard/$region/$tier/$queue',
+    path: '/leaderboard/$region/$tier/$queue',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const SitemapXmlServerRoute = SitemapXmlServerRouteImport.update({
   id: '/sitemap/xml',
   path: '/sitemap/xml',
@@ -191,6 +198,7 @@ export interface FileRoutesByFullPath {
   '/lol/feed/for-you': typeof LolFeedForYouRoute
   '/lol/summoner': typeof LolSummonerIndexRoute
   '/page/$name/': typeof PageNameIndexRoute
+  '/leaderboard/$region/$tier/$queue': typeof LeaderboardRegionTierQueueRoute
   '/lol/summoner/$riotID/charts': typeof LolSummonerRiotIDChartsRoute
   '/lol/summoner/$riotID/live': typeof LolSummonerRiotIDLiveRoute
   '/lol/summoner/$riotID/mastery': typeof LolSummonerRiotIDMasteryRoute
@@ -212,6 +220,7 @@ export interface FileRoutesByTo {
   '/lol/feed/for-you': typeof LolFeedForYouRoute
   '/lol/summoner': typeof LolSummonerIndexRoute
   '/page/$name': typeof PageNameIndexRoute
+  '/leaderboard/$region/$tier/$queue': typeof LeaderboardRegionTierQueueRoute
   '/lol/summoner/$riotID/charts': typeof LolSummonerRiotIDChartsRoute
   '/lol/summoner/$riotID/live': typeof LolSummonerRiotIDLiveRoute
   '/lol/summoner/$riotID/mastery': typeof LolSummonerRiotIDMasteryRoute
@@ -236,6 +245,7 @@ export interface FileRoutesById {
   '/lol/feed/for-you': typeof LolFeedForYouRoute
   '/lol/summoner/': typeof LolSummonerIndexRoute
   '/page/$name/': typeof PageNameIndexRoute
+  '/leaderboard/$region/$tier/$queue': typeof LeaderboardRegionTierQueueRoute
   '/lol/summoner/$riotID/charts': typeof LolSummonerRiotIDChartsRoute
   '/lol/summoner/$riotID/live': typeof LolSummonerRiotIDLiveRoute
   '/lol/summoner/$riotID/mastery': typeof LolSummonerRiotIDMasteryRoute
@@ -261,6 +271,7 @@ export interface FileRouteTypes {
     | '/lol/feed/for-you'
     | '/lol/summoner'
     | '/page/$name/'
+    | '/leaderboard/$region/$tier/$queue'
     | '/lol/summoner/$riotID/charts'
     | '/lol/summoner/$riotID/live'
     | '/lol/summoner/$riotID/mastery'
@@ -282,6 +293,7 @@ export interface FileRouteTypes {
     | '/lol/feed/for-you'
     | '/lol/summoner'
     | '/page/$name'
+    | '/leaderboard/$region/$tier/$queue'
     | '/lol/summoner/$riotID/charts'
     | '/lol/summoner/$riotID/live'
     | '/lol/summoner/$riotID/mastery'
@@ -305,6 +317,7 @@ export interface FileRouteTypes {
     | '/lol/feed/for-you'
     | '/lol/summoner/'
     | '/page/$name/'
+    | '/leaderboard/$region/$tier/$queue'
     | '/lol/summoner/$riotID/charts'
     | '/lol/summoner/$riotID/live'
     | '/lol/summoner/$riotID/mastery'
@@ -324,6 +337,7 @@ export interface RootRouteChildren {
   LolSummonerRiotIDRouteRoute: typeof LolSummonerRiotIDRouteRouteWithChildren
   LolFeaturedGamesRegionRoute: typeof LolFeaturedGamesRegionRoute
   LolSummonerIndexRoute: typeof LolSummonerIndexRoute
+  LeaderboardRegionTierQueueRoute: typeof LeaderboardRegionTierQueueRoute
 }
 export interface FileServerRoutesByFullPath {
   '/robots/txt': typeof RobotsTxtServerRoute
@@ -528,6 +542,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LolSummonerRiotIDChartsRouteImport
       parentRoute: typeof LolSummonerRiotIDRouteRoute
     }
+    '/leaderboard/$region/$tier/$queue': {
+      id: '/leaderboard/$region/$tier/$queue'
+      path: '/leaderboard/$region/$tier/$queue'
+      fullPath: '/leaderboard/$region/$tier/$queue'
+      preLoaderRoute: typeof LeaderboardRegionTierQueueRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 declare module '@tanstack/react-start/server' {
@@ -644,6 +665,7 @@ const rootRouteChildren: RootRouteChildren = {
   LolSummonerRiotIDRouteRoute: LolSummonerRiotIDRouteRouteWithChildren,
   LolFeaturedGamesRegionRoute: LolFeaturedGamesRegionRoute,
   LolSummonerIndexRoute: LolSummonerIndexRoute,
+  LeaderboardRegionTierQueueRoute: LeaderboardRegionTierQueueRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

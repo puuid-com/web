@@ -2,7 +2,7 @@ import * as React from "react";
 import { SummonersAndPagesForm } from "@/client/components/summoners-and-pages-form/SummonersAndPagesForm";
 import { cn } from "@/client/lib/utils";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { NewspaperIcon } from "lucide-react";
+import { CassetteTapeIcon, NewspaperIcon } from "lucide-react";
 
 type Props = {
   className?: React.ComponentProps<"div">["className"];
@@ -46,6 +46,21 @@ export const Navbar = ({ className }: Props) => {
             >
               <NewspaperIcon className="w-4 h-4" />
               <span className="hidden sm:inline">Feed</span>
+            </Link>
+            <Link
+              to="/leaderboard/$region/$tier/$queue"
+              params={{
+                queue: "RANKED_SOLO_5x5",
+                region: "na1",
+                tier: "CHALLENGER",
+              }}
+              preload="intent"
+              className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground px-2 py-1 rounded-md hover:bg-muted"
+              activeProps={{ className: "text-main bg-main/10" }}
+              aria-label="Feed"
+            >
+              <CassetteTapeIcon className="w-4 h-4" />
+              <span className="hidden sm:inline">Leaderboard</span>
             </Link>
           </div>
           <div className="flex items-center gap-2">
