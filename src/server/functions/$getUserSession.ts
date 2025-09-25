@@ -22,10 +22,9 @@ export const $getUserSession = createServerFn({ method: "GET" }).handler(async (
   const { UserPageService } = await import("@puuid/core/server/services/UserPageService");
   const { page } = await db.transaction((tx) => UserPageService.gerOrCreateUserPageTx(tx, user.id));
 
-  const { mainSummoner, otherSummoners, summoners } = page.summoners.reduce<{
+  const lists = page.summoners.reduce<{
     mainSummoner: UserPageSummonerTypeWithRelations | null;
     otherSummoners: UserPageSummonerTypeWithRelations[];
-    summoners: UserPageSummonerTypeWithRelations[];
   }>(
     (acc, summoner) => {
       if (summoner.type === "MAIN") {
@@ -33,30 +32,30 @@ export const $getUserSession = createServerFn({ method: "GET" }).handler(async (
       } else {
         acc.otherSummoners.push(summoner);
       }
-      acc.summoners.push(summoner);
 
       return acc;
     },
     {
       mainSummoner: null,
       otherSummoners: [],
-      summoners: [],
     },
   );
+
+  lists.otherSummoners = lists.otherSummoners.sort((a, b) =>
+    a.summoner.displayRiotId.localeCompare(b.summoner.displayRiotId),
+  );
+
+  const summoners: UserPageSummonerTypeWithRelations[] = [
+    ...(lists.mainSummoner ? [lists.mainSummoner] : []),
+    ...lists.otherSummoners,
+  ];
 
   return {
     user: user,
     userPage: page,
-    mainSummoner: mainSummoner,
-    otherSummoners: otherSummoners,
-    summoners: summoners.sort((a, b) => {
-      // First, sort by isMain (main accounts first)
-      if (a.type !== b.type) {
-        return a.type === "MAIN" ? -1 : 1;
-      }
-      // Then sort by summonerLevel in descending order
-      return b.summoner.summonerLevel - a.summoner.summonerLevel;
-    }),
+    mainSummoner: lists.mainSummoner,
+    otherSummoners: lists.otherSummoners,
+    summoners: summoners,
   };
 });
 
