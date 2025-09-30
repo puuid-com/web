@@ -57,7 +57,7 @@ export const UserPageSummoners = ({}: Props) => {
           </CardAction>
         ) : null}
       </CardHeader>
-      <CardContent className="pb-5">
+      <CardContent className="pb-5 max-h-100 overflow-auto">
         {orderedSummoners.length === 0 ? (
           <div className="rounded-lg border border-dashed border-neutral-800/70 bg-neutral-900/50 py-8 text-center text-sm text-neutral-400">
             No summoners linked yet.

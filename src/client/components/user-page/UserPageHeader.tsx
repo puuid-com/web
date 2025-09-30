@@ -4,6 +4,7 @@ import { CDragonService } from "@puuid/core/shared/services/CDragonService";
 import { SiTwitch, SiX } from "@icons-pack/react-simple-icons";
 import { Link, useLoaderData } from "@tanstack/react-router";
 import { PencilIcon } from "lucide-react";
+import { combinedSummonerLevels } from "@puuid/core/shared";
 
 type Props = {};
 
@@ -32,6 +33,8 @@ export const UserPageHeader = ({}: Props) => {
   const xUrl = page.xUsername ? `https://x.com/${page.xUsername}` : null;
   const twitchUrl = page.twitchUsername ? `https://twitch.tv/${page.twitchUsername}` : null;
 
+  const combinedLevel = combinedSummonerLevels(pageSummoners.map((s) => s.summoner.summonerLevel));
+
   return (
     <div
       className="rounded-b-3xl flex relative justify-between bg-main/10 bg-cover bg-blend-exclusion bg-no-repeat bg-[position:50%_-200px] h-[200px]"
@@ -53,15 +56,9 @@ export const UserPageHeader = ({}: Props) => {
             style={{ backgroundImage: `url(${page.profileImage})` }}
           >
             <div className="absolute left-1/2 bottom-0 -translate-x-1/2 translate-y-1/2">
-              {page.isPublic ? (
-                <Badge variant="secondary" className="border-main/ bg-main/70">
-                  Public
-                </Badge>
-              ) : (
-                <Badge variant="outline" className="border-neutral-700 bg-neutral-900/70">
-                  Private
-                </Badge>
-              )}
+              <Badge variant="secondary" className="border-main/ bg-main/70">
+                {combinedLevel.level}
+              </Badge>
             </div>
           </div>
           <div className="flex flex-col justify-center gap-1.5 p-5 pl-0">

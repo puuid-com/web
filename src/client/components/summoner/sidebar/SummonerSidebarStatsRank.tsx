@@ -1,4 +1,5 @@
 import { SummonerSidebarRankHistoryChart } from "@/client/components/summoner/sidebar/SummonerSidebarRankHistoryChart";
+import { SummonerSidebarRankLeaderboard } from "@/client/components/summoner/sidebar/SummonerSidebarRankLeaderboard";
 import { SummonerSidebarStats } from "@/client/components/summoner/sidebar/SummonerSidebarStats";
 import { SummonerSidebarStatsHeader } from "@/client/components/summoner/sidebar/SummonerSidebarStatsHeader";
 import { CDNService } from "@puuid/core/shared/services/CDNService";
@@ -19,7 +20,7 @@ export const SummonerSidebarStatsRank = ({}: Props) => {
   const leagues = queueStats
     ? summoner.leagues.filter((l) => l.queueType === queueStats.queueType)
     : [];
-
+  const leaderboardEntry = league?.leaderboardEntry ?? null;
   return (
     <SummonerSidebarStats>
       <SummonerSidebarStatsHeader iconName={TrophyIcon}>
@@ -53,7 +54,12 @@ export const SummonerSidebarStatsRank = ({}: Props) => {
               </div>
             </div>
           </div>
-          <div>{league.leaderboardEntry?.dayIndex}</div>
+          <SummonerSidebarRankLeaderboard
+            tier={league.tier}
+            queueType={league.queueType}
+            region={league.region}
+            leaderboardEntry={leaderboardEntry}
+          />
           <SummonerSidebarRankHistoryChart leagues={leagues} />
         </div>
       ) : (
