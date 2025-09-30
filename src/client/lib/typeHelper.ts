@@ -1,6 +1,6 @@
 import type { LolQueueType } from "@puuid/core/shared/types/index";
 
-export const FriendlyQueueTypes = ["solo", "flex"] as const;
+export const FriendlyQueueTypes = ["solo", "flex", "aram"] as const;
 export type FriendlyQueueType = (typeof FriendlyQueueTypes)[number];
 
 export const friendlyQueueTypeToRiot = (type: FriendlyQueueType): LolQueueType => {
@@ -9,6 +9,8 @@ export const friendlyQueueTypeToRiot = (type: FriendlyQueueType): LolQueueType =
       return "RANKED_SOLO_5x5";
     case "flex":
       return "RANKED_FLEX_SR";
+    case "aram":
+      return "ARAM";
   }
 };
 
@@ -18,6 +20,8 @@ export const riotQueueTypeToFriendly = (type: LolQueueType): FriendlyQueueType =
       return "solo";
     case "RANKED_FLEX_SR":
       return "flex";
+    case "ARAM":
+      return "aram";
   }
 };
 

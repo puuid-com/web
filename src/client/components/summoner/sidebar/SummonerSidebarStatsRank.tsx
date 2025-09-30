@@ -53,6 +53,7 @@ export const SummonerSidebarStatsRank = ({}: Props) => {
               </div>
             </div>
           </div>
+          <div>{league.leaderboardEntry?.dayIndex}</div>
           <SummonerSidebarRankHistoryChart leagues={leagues} />
         </div>
       ) : (

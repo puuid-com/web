@@ -11,7 +11,9 @@ import { DDragonService } from "@puuid/core/shared/services/DDragonService";
 import { $getChampionsData } from "@/server/functions/$getChampionsData";
 
 const ReactQueryDevtools = import.meta.env.DEV
-  ? lazy(() => import("@tanstack/react-query-devtools").then((mod) => ({ default: mod.ReactQueryDevtools })))
+  ? lazy(() =>
+      import("@tanstack/react-query-devtools").then((mod) => ({ default: mod.ReactQueryDevtools })),
+    )
   : null;
 
 export const Route = createRootRouteWithContext<{

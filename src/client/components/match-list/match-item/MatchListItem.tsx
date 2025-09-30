@@ -57,9 +57,9 @@ export const MatchListItem = ({}: Props) => {
         <div className="flex gap-1">
           <span>{matchSummoner.kills}</span>
           <span>/</span>
-          <span>{matchSummoner.assists}</span>
-          <span>/</span>
           <span>{matchSummoner.deaths}</span>
+          <span>/</span>
+          <span>{matchSummoner.assists}</span>
         </div>
       </div>
 

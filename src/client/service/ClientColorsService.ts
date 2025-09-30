@@ -3,9 +3,7 @@ import { CDragonService } from "@puuid/core/shared/services/CDragonService";
 let vibrantModulePromise: Promise<typeof import("node-vibrant/browser")> | undefined;
 
 const loadVibrant = async () => {
-  if (!vibrantModulePromise) {
-    vibrantModulePromise = import("node-vibrant/browser");
-  }
+  vibrantModulePromise ??= import("node-vibrant/browser");
 
   return vibrantModulePromise;
 };
