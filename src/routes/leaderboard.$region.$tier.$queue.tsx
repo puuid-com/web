@@ -61,6 +61,7 @@ const PODIUM_ACCENTS = [
 const QUEUE_LABELS: Record<LolQueueType, string> = {
   RANKED_SOLO_5x5: "Ranked Solo",
   RANKED_FLEX_SR: "Ranked Flex",
+  ARAM: "Aram",
 } as const;
 
 const ESTIMATED_ROW_HEIGHT = 88;
