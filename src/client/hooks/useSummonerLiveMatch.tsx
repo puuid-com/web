@@ -16,6 +16,7 @@ export const useSummonerLiveMatch = () => {
 
   return useQuery({
     queryKey: useSummonerLiveMatchKey(summoner),
+    retry: false,
     queryFn: () =>
       $fn({
         data: {

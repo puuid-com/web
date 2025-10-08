@@ -1,4 +1,4 @@
-import type { StatisticRowType } from "@puuid/core/server/db/schema/summoner-statistic";
+import type { SummonerStatisticRowType } from "@puuid/core/server/db/schema/summoner-statistic";
 import { CDragonService } from "@puuid/core/shared/services/CDragonService";
 import { DDragonService } from "@puuid/core/shared/services/DDragonService";
 import { useLoaderData } from "@tanstack/react-router";
@@ -20,7 +20,7 @@ function clamp01(n: number) {
 }
 
 type StatsPanelProps = {
-  stats: StatisticRowType;
+  stats: SummonerStatisticRowType;
 };
 
 /**

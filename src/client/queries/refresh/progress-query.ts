@@ -1,8 +1,8 @@
 import { queryOptions, experimental_streamedQuery as streamedQuery } from "@tanstack/react-query";
 import { progressAnswer } from "./progress-answer";
-import type { RefreshProgressMsgType } from "@puuid/core/server/services/RefreshService";
 import type { LolRegionType } from "@puuid/core/shared/types/index";
 import type { LolQueueType } from "@puuid/core/shared/types/index";
+import type { RefreshProgressMsgType } from "@puuid/core/server/services/RefreshProgressService";
 
 type Args = { puuid: string; region: LolRegionType; queue: LolQueueType };
 

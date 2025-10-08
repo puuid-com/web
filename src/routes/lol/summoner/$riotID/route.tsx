@@ -47,7 +47,7 @@ export const Route = createFileRoute("/lol/summoner/$riotID")({
 
     return {
       summoner,
-      queueStats: summoner.statistics.find((s) => s.queueType === queue) ?? null,
+      queueStats: summoner.refreshes.find((s) => s.queueType === queue) ?? null,
     };
   },
   head: async ({ loaderData, params }) => {
@@ -119,10 +119,10 @@ export const Route = createFileRoute("/lol/summoner/$riotID")({
 });
 
 function RouteComponent() {
-  const { queueStats: stats } = Route.useLoaderData();
+  const { summoner } = Route.useLoaderData();
 
   return (
-    <MainChampionProvider statistic={stats}>
+    <MainChampionProvider summoner={summoner}>
       <SummonerPage />
     </MainChampionProvider>
   );

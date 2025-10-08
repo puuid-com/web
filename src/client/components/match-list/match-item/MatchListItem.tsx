@@ -19,8 +19,8 @@ export const MatchListItem = ({}: Props) => {
 
   const teammatesPuuids = getMatchSummonerTeammates().map((t) => t.puuid);
 
-  const isGroupGame = queueStats
-    ? queueStats.statsByTeammates.some((t) => teammatesPuuids.includes(t.puuid))
+  const isGroupGame = queueStats?.summonerStatistic
+    ? queueStats.summonerStatistic.statsByTeammates.some((t) => teammatesPuuids.includes(t.puuid))
     : null;
 
   return (

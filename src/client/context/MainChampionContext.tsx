@@ -1,4 +1,4 @@
-import type { StatisticRowType } from "@puuid/core/server/db/schema/summoner-statistic";
+import type { SummonerType } from "@puuid/core/server/db/types";
 import React from "react";
 
 type ContextType = {
@@ -21,33 +21,33 @@ export const useMainChampionContext = () => {
 };
 
 type Props = {
-  statistic: StatisticRowType | null;
+  summoner: SummonerType;
 };
 
 export const MainChampionProvider: React.FC<React.PropsWithChildren<Props>> = ({
   children,
-  statistic,
+  summoner,
 }) => {
   const [tempBackgroundColor, setTempBackgroundColor] = React.useState<string | null>(null);
   const [tempForegroundColor, setTempForegroundColor] = React.useState<string | null>(null);
   const [tempSkinId, setTempSkinId] = React.useState<number | null>(null);
 
   const [backgroundColor, setBackgroundColor] = React.useState<string | null>(
-    statistic?.mainChampionBackgroundColor ?? null,
+    summoner.mainChampionBackgroundColor ?? null,
   );
   const [foregroundColor, setForegroundColor] = React.useState<string | null>(
-    statistic?.mainChampionForegroundColor ?? null,
+    summoner.mainChampionForegroundColor ?? null,
   );
-  const [skinId, setSkinId] = React.useState<number | null>(statistic?.mainChampionSkinId ?? null);
+  const [skinId, setSkinId] = React.useState<number | null>(summoner.mainChampionSkinId ?? null);
 
   React.useEffect(() => {
-    setBackgroundColor(statistic?.mainChampionBackgroundColor ?? null);
-    setForegroundColor(statistic?.mainChampionForegroundColor ?? null);
-    setSkinId(statistic?.mainChampionSkinId ?? null);
+    setBackgroundColor(summoner.mainChampionBackgroundColor ?? null);
+    setForegroundColor(summoner.mainChampionForegroundColor ?? null);
+    setSkinId(summoner.mainChampionSkinId ?? null);
   }, [
-    statistic?.mainChampionBackgroundColor,
-    statistic?.mainChampionForegroundColor,
-    statistic?.mainChampionSkinId,
+    summoner.mainChampionBackgroundColor,
+    summoner.mainChampionForegroundColor,
+    summoner.mainChampionSkinId,
   ]);
 
   const handleTempColorChange = React.useCallback(

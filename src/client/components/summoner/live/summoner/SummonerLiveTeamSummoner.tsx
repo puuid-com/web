@@ -112,7 +112,7 @@ export function SummonerLiveTeamSummoner({ /* side, */ isSelf, league, participa
         ) : null}
       </div>
 
-      {stats ? <LiveSummonerStats stats={stats} /> : null}
+      {stats?.summonerStatistic ? <LiveSummonerStats stats={stats.summonerStatistic} /> : null}
 
       {/* bloc rang, toujours dernier dans le DOM, donc au bord externe */}
       <div className="flex items-center gap-3">

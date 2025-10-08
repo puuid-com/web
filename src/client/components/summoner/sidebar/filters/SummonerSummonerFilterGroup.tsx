@@ -27,8 +27,8 @@ export const SummonerSummonerFilterGroup = ({ searchKey, icon: Icon, label }: Pr
    * These puuids were fetched by the sidebar
    */
   const alreadyFetchedPuuids = React.useMemo(
-    () => queueStats?.statsByTeammates.map((t) => t.puuid) ?? [],
-    [queueStats?.statsByTeammates],
+    () => queueStats?.summonerStatistic?.statsByTeammates.map((t) => t.puuid) ?? [],
+    [queueStats?.summonerStatistic?.statsByTeammates],
   );
   /**
    * Now, we would like to only fetch the puuids that are used in the filters, but do not come from the sidebar

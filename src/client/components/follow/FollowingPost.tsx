@@ -30,10 +30,6 @@ export const FollowingPost: React.FC<Props> = ({
   const [gameName, tagLine] = summoner.displayRiotId.split("#");
   const note = summoner.notes.at(0);
 
-  const stats =
-    summoner.statistics.find((s) => s.queueType === "RANKED_SOLO_5x5") ??
-    summoner.statistics.find((s) => s.queueType === "RANKED_FLEX_SR");
-
   const lastMatchSummoner = summoner.matchSummoner.at(0);
   const lastMatch = lastMatchSummoner ? lastMatchSummoner.match : undefined;
 
@@ -159,7 +155,7 @@ export const FollowingPost: React.FC<Props> = ({
   );
 
   return (
-    <MainChampionProvider statistic={stats ?? null}>
+    <MainChampionProvider summoner={summoner}>
       <div
         ref={measureElement}
         data-index={index}

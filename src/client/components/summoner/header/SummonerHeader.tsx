@@ -2,7 +2,6 @@ import { RefreshSummoner } from "@/client/components/refresh/RefreshSummoner";
 import { SummonerHeaderInfo } from "@/client/components/summoner/header/SummonerHeaderInfo";
 import { SummonerSkinDialog } from "@/client/components/summoner/header/SummonerSkinDialog";
 import { Badge } from "@/client/components/ui/badge";
-import { useMainChampionContext } from "@/client/context/MainChampionContext";
 import { cn, timeago } from "@/client/lib/utils";
 import { CDragonService } from "@puuid/core/shared/services/CDragonService";
 import { DDragonService } from "@puuid/core/shared/services/DDragonService";
@@ -16,7 +15,6 @@ type Props = {
 
 export const SummonerHeader = ({ className }: Props) => {
   const metadata = useLoaderData({ from: "__root__" });
-  const { skinId } = useMainChampionContext();
 
   const params = useParams({ from: "/lol/summoner/$riotID" });
   const search = useSearch({ from: "/lol/summoner/$riotID" });
@@ -25,6 +23,10 @@ export const SummonerHeader = ({ className }: Props) => {
   });
   const [gameName, tagLine] = summoner.displayRiotId.split("#");
 
+  const mainStats = stats?.summonerStatistic;
+  const mainChampionId = summoner.mainChampionId;
+  const skinId = summoner.mainChampionSkinId;
+
   return (
     <div
       className={cn(
@@ -32,13 +34,13 @@ export const SummonerHeader = ({ className }: Props) => {
         className,
       )}
       style={{
-        backgroundImage: stats
-          ? `url(${CDragonService.getChampionSplashArtCenteredSkin(stats.mainChampionId, skinId!)})`
+        backgroundImage: mainChampionId
+          ? `url(${CDragonService.getChampionSplashArtCenteredSkin(mainChampionId, skinId ?? 0)})`
           : undefined,
       }}
     >
       <div className={"absolute top-0 right-0 m-1.5 flex gap-1.5 items-center"}>
-        {stats?.mainChampionId ? (
+        {mainChampionId ? (
           <>
             <SummonerSkinDialog />
             <SummonerHeaderInfo />
@@ -76,8 +78,8 @@ export const SummonerHeader = ({ className }: Props) => {
                 <RefreshSummoner key={summoner.puuid}>
                   <>
                     <RefreshCw />
-                    {summoner.refresh?.refreshedAt ? (
-                      `Refreshed ${timeago(summoner.refresh.refreshedAt)} ago`
+                    {stats?.refreshedAt ? (
+                      `Refreshed ${timeago(stats.refreshedAt)} ago`
                     ) : (
                       <span className={"font-bold"}>Refresh</span>
                     )}
@@ -85,15 +87,15 @@ export const SummonerHeader = ({ className }: Props) => {
                 </RefreshSummoner>
               </div>
             </div>
-            {stats ? (
+            {mainStats ? (
               <div className="flex gap-2.5 text-sm">
                 <div>
-                  Main Position: <Badge variant={"main"}>{stats.mainPosition}</Badge>
+                  Main Position: <Badge variant={"main"}>{mainStats.mainPosition}</Badge>
                 </div>
                 <div>
                   Main Champion:{" "}
                   <Badge variant={"main"}>
-                    {DDragonService.getChampionName(metadata.champions, stats.mainChampionId)}
+                    {DDragonService.getChampionName(metadata.champions, mainStats.mainChampionId)}
                   </Badge>
                 </div>
               </div>

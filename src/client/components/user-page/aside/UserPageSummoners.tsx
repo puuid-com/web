@@ -3,7 +3,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/client/components/ui/avat
 import { Badge } from "@/client/components/ui/badge";
 import { Button } from "@/client/components/ui/button";
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/client/components/ui/card";
-import { timeago } from "@/client/lib/utils";
 import { CDragonService } from "@puuid/core/shared/services/CDragonService";
 import { Link, useLoaderData } from "@tanstack/react-router";
 import { BrainIcon, ChevronRightIcon, GlobeIcon, LockIcon, RatIcon } from "lucide-react";
@@ -24,17 +23,6 @@ export const UserPageSummoners = ({}: Props) => {
     return [...pageSummoners].sort((a, b) => {
       const typeDiff = priority[a.type] - priority[b.type];
       if (typeDiff !== 0) return typeDiff;
-
-      const refreshedA = a.summoner.refresh?.refreshedAt
-        ? new Date(a.summoner.refresh.refreshedAt).getTime()
-        : 0;
-      const refreshedB = b.summoner.refresh?.refreshedAt
-        ? new Date(b.summoner.refresh.refreshedAt).getTime()
-        : 0;
-
-      if (refreshedA !== refreshedB) {
-        return refreshedB - refreshedA;
-      }
 
       return a.summoner.displayRiotId.localeCompare(b.summoner.displayRiotId);
     });
@@ -118,9 +106,7 @@ export const UserPageSummoners = ({}: Props) => {
                           )}
                         </Badge>
                         <span className="text-[11px] text-neutral-500">
-                          {summoner.refresh?.refreshedAt
-                            ? `Updated ${timeago(summoner.refresh.refreshedAt)} ago`
-                            : "Not refreshed yet"}
+                          {summoner.refreshes.length ? null : "Not refreshed yet"}
                         </span>
                       </div>
                     </div>

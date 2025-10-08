@@ -71,9 +71,8 @@ export function UserAccountButton({}: Props) {
         {summoners.map(({ summoner: s, type }) => {
           const [gameName, tagLine] = s.displayRiotId.split("#");
 
-          const stats = s.statistics.find((s) => s.queueType === "RANKED_SOLO_5x5");
-          const bgColor = stats?.mainChampionBackgroundColor;
-          const textColor = stats?.mainChampionForegroundColor;
+          const bgColor = s.mainChampionBackgroundColor;
+          const textColor = s.mainChampionForegroundColor;
 
           return (
             <DropdownMenuItem key={s.puuid} asChild>

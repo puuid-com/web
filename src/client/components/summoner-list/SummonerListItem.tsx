@@ -10,10 +10,7 @@ type Props = {
 export const SummonerListItem = ({ s }: Props) => {
   const metadata = useLoaderData({ from: "__root__" });
 
-  const soloDuoStats = s.statistics.find((s) => s.queueType === "RANKED_SOLO_5x5");
-  const bgColor = soloDuoStats?.mainChampionBackgroundColor;
-  const textColor = soloDuoStats?.mainChampionForegroundColor;
-
+  const soloDuoStats = s.refreshes.find((s) => s.queueType === "RANKED_SOLO_5x5");
   const soloLeague = s.leagues.find((l) => l.queueType === "RANKED_SOLO_5x5");
 
   return (
@@ -27,8 +24,8 @@ export const SummonerListItem = ({ s }: Props) => {
       }}
       style={
         {
-          "--color-main": bgColor ?? undefined,
-          "--color-main-foreground": textColor ?? undefined,
+          "--color-main": s.mainChampionBackgroundColor ?? undefined,
+          "--color-main-foreground": s.mainChampionForegroundColor ?? undefined,
         } as React.CSSProperties
       }
     >
@@ -61,14 +58,14 @@ export const SummonerListItem = ({ s }: Props) => {
               {s.region}
             </Badge>
           </div>
-          {soloDuoStats ? (
+          {soloDuoStats?.summonerStatistic ? (
             <Badge className={"px-1"}>
               <img
                 className={"w-4 rounded-md"}
                 src={DDragonService.getChampionIconUrlFromParticipant(
                   metadata.champions,
                   metadata.latest_version,
-                  { championId: soloDuoStats.mainChampionId },
+                  { championId: soloDuoStats.summonerStatistic.mainChampionId },
                 )}
                 alt=""
               />
@@ -76,7 +73,7 @@ export const SummonerListItem = ({ s }: Props) => {
                 <span className={"font-bold"}>
                   {DDragonService.getChampionName(
                     metadata.champions,
-                    soloDuoStats.mainChampionId,
+                    soloDuoStats.summonerStatistic.mainChampionId,
                   )}{" "}
                 </span>
                 main

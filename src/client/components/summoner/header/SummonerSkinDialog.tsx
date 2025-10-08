@@ -38,7 +38,7 @@ export const SummonerSkinDialog = ({}: Props) => {
     from: "/lol/summoner/$riotID",
   });
 
-  const { data } = useGetChampionData(queueStats?.mainChampionId, isOpen);
+  const { data } = useGetChampionData(queueStats?.summonerStatistic?.mainChampionId, isOpen);
   const $m = useServerFn($changeMainChampionColors);
 
   const q_m = useMutation({
@@ -54,7 +54,6 @@ export const SummonerSkinDialog = ({}: Props) => {
       return $m({
         data: {
           puuid: summoner.puuid,
-          queueType: queueStats.queueType,
           skinId: skinId,
         },
       });
@@ -66,9 +65,9 @@ export const SummonerSkinDialog = ({}: Props) => {
     },
   });
 
-  const handleSkinSelection = async (newSkinId: number) => {
-    const championId = queueStats?.mainChampionId;
+  const championId = queueStats?.summonerStatistic?.mainChampionId;
 
+  const handleSkinSelection = async (newSkinId: number) => {
     if (!championId) {
       throw new Error("No champion id");
     }
@@ -98,7 +97,7 @@ export const SummonerSkinDialog = ({}: Props) => {
     handleTempColorReset();
   };
 
-  if (!queueStats?.mainChampionId) return null;
+  if (!championId) return null;
 
   return (
     <Sheet open={isOpen} onOpenChange={handleOnOpenChange}>

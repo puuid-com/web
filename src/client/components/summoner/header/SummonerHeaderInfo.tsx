@@ -18,7 +18,9 @@ export const SummonerHeaderInfo = ({}: Props) => {
     from: "/lol/summoner/$riotID",
   });
 
-  if (!queueStats?.mainChampionId) return null;
+  const mainChampionId = queueStats?.summonerStatistic?.mainChampionId;
+
+  if (!mainChampionId) return null;
 
   return (
     <Dialog>
@@ -28,11 +30,7 @@ export const SummonerHeaderInfo = ({}: Props) => {
         }
       >
         <InfoIcon className={"w-2"} />
-        Why do I see {DDragonService.getChampionName(
-          metadata.champions,
-          queueStats.mainChampionId,
-        )}{" "}
-        ?
+        Why do I see {DDragonService.getChampionName(metadata.champions, mainChampionId)} ?
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

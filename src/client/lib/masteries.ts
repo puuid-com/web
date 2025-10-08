@@ -1,5 +1,7 @@
-import type { StatsByChampionId } from "@puuid/core/server/db/schema/summoner-statistic";
-import type { $GetSummonerStatisticType } from "@/server/functions/$getSummonerStatistic";
+import type {
+  StatsByChampionId,
+  SummonerStatisticRowType,
+} from "@puuid/core/server/db/schema/summoner-statistic";
 import type { ChampionMasteryDTOType } from "@puuid/core/shared/types/index";
 
 export type MasteryWithStatistic = {
@@ -10,7 +12,7 @@ export type MasteryWithStatistic = {
 
 export const combineMasteryWithStatistic = (
   masteries: ChampionMasteryDTOType[],
-  statistic: $GetSummonerStatisticType | null | undefined,
+  statistic: SummonerStatisticRowType | null | undefined,
 ): MasteryWithStatistic[] => {
   return masteries.map((m) => {
     const _stats = statistic?.statsByChampionId.find((s) => s.championId === m.championId);

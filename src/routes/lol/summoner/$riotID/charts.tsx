@@ -50,16 +50,17 @@ export const Route = createFileRoute("/lol/summoner/$riotID/charts")({
   },
   loader: async (context) => {
     const summoner = context.context.summoner;
-    const queue = friendlyQueueTypeToRiot(context.deps.search.q);
-    const queueStats = context.context.summoner.statistics.find((s) => s.queueType === queue);
-    const frenquentTeammatesPuuids = queueStats?.statsByTeammates.map((t) => t.puuid) ?? [];
+    const queueType = friendlyQueueTypeToRiot(context.deps.search.q);
+    const queueStats = context.context.summoner.refreshes.find((r) => r.queueType === queueType);
+    const frenquentTeammatesPuuids =
+      queueStats?.summonerStatistic?.statsByTeammates.map((t) => t.puuid) ?? [];
 
     const matches = await $getSummonerMatches({
       data: {
         puuid: summoner.puuid,
         region: summoner.region,
         filters: {
-          queueId: LOL_QUEUES[queue].queueId,
+          queueId: LOL_QUEUES[queueType].queueId,
         },
       },
     });

@@ -48,7 +48,7 @@ function RouteComponent() {
   });
 
   const { data, isPending, isError, _masteriesData } = React.useMemo(() => {
-    const isPending = masteriesQuery.status === "pending" || statisticsQuery.status === "pending";
+    const isPending = masteriesQuery.status === "pending";
     const isError = masteriesQuery.status === "error" || statisticsQuery.status === "error";
 
     const _masteriesData = masteriesQuery.data;
@@ -63,8 +63,12 @@ function RouteComponent() {
       };
     }
 
-    const stat = _statisticData?.find((s) => s.queueType === friendlyQueueTypeToRiot(queue));
-    const combined = combineMasteryWithStatistic(_masteriesData.masteries, stat).filter((c) => {
+    const queueType = friendlyQueueTypeToRiot(queue);
+    const stat = _statisticData?.refreshes[queueType];
+    const combined = combineMasteryWithStatistic(
+      _masteriesData.masteries,
+      stat?.summonerStatistic,
+    ).filter((c) => {
       const championName = metadata.champions[c.championId]!.name;
 
       if (onlyPlayed && !c.statistic) return false;

@@ -11,12 +11,8 @@ export const $getCanRefreshSummoner = createServerFn({
       queue: v.picklist(LolQueues),
     }),
   )
-  .handler(async ({ data }) => {
-    const { RefreshService } = await import("@puuid/core/server/services/RefreshService");
-
-    const canRefresh = await RefreshService.canRefresh(data.puuid, data.queue);
-
+  .handler(() => {
     return {
-      canRefresh,
+      canRefresh: true,
     };
   });

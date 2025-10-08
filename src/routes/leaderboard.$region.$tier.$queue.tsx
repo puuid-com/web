@@ -17,10 +17,10 @@ import {
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import * as v from "valibot";
-import { TIER_COLOR_VAR } from "@/lib/colors";
 import { useUpdateLeaderboard } from "@/client/queries/useUpdateLeaderboard";
 import { Button } from "@/client/components/ui/button";
 import { Loader2Icon, RefreshCcwDotIcon } from "lucide-react";
+import { TIER_COLOR_VAR } from "@/lib/colors";
 
 export const Route = createFileRoute("/leaderboard/$region/$tier/$queue")({
   component: RouteComponent,
@@ -107,7 +107,14 @@ function RouteComponent() {
   const $m = useUpdateLeaderboard(params);
 
   return (
-    <div className="container mx-auto max-w-6xl space-y-8 py-8">
+    <div
+      className="container mx-auto max-w-6xl space-y-8 py-8"
+      style={
+        {
+          "--color-tier": TIER_COLOR_VAR[params.tier],
+        } as React.CSSProperties
+      }
+    >
       <header className="space-y-2">
         <p className="text-sm font-semibold uppercase tracking-widest text-muted-foreground">
           League of Legends Leaderboard
@@ -220,12 +227,6 @@ function RegionFilter({ value, onChange }: RegionFilterProps) {
         <span className="text-[11px] font-semibold uppercase tracking-[0.25em] text-muted-foreground">
           Region
         </span>
-        <Badge
-          variant="outline"
-          className="border-transparent bg-muted/30 px-2 py-0.5 text-[11px] uppercase tracking-wide text-muted-foreground"
-        >
-          {formatRegion(value)}
-        </Badge>
       </div>
       <ToggleGroup
         type="single"
@@ -238,14 +239,10 @@ function RegionFilter({ value, onChange }: RegionFilterProps) {
         }}
         variant="outline"
         size="sm"
-        className="grid grid-cols-3 gap-1.5 sm:grid-cols-5 lg:grid-cols-8"
+        className="flex justify-between items-center w-full"
       >
         {LolRegions.map((region) => (
-          <ToggleGroupItem
-            key={region}
-            value={region}
-            className="h-auto rounded-lg px-2 py-1.5 text-[11px] font-semibold uppercase tracking-wide data-[state=on]:border-main/60 data-[state=on]:bg-main/15"
-          >
+          <ToggleGroupItem key={region} value={region} className="data-[state=on]:bg-tier/50">
             {formatRegion(region)}
           </ToggleGroupItem>
         ))}
@@ -266,12 +263,6 @@ function TierFilter({ value, onChange }: TierFilterProps) {
         <span className="text-[11px] font-semibold uppercase tracking-[0.25em] text-muted-foreground">
           Tier
         </span>
-        <Badge
-          variant="outline"
-          className="border-transparent bg-muted/30 px-2 py-0.5 text-[11px] uppercase tracking-wide text-muted-foreground"
-        >
-          {formatTier(value)}
-        </Badge>
       </div>
       <ToggleGroup
         type="single"
@@ -283,11 +274,6 @@ function TierFilter({ value, onChange }: TierFilterProps) {
           onChange(next as LolApexTierType);
         }}
         variant="outline"
-        style={
-          {
-            "--color-tier": TIER_COLOR_VAR[value],
-          } as React.CSSProperties
-        }
         className="flex flex-row justify-center items-center w-full gap-2.5"
       >
         {LolApexTiers.map((tier) => (

@@ -1,3 +1,4 @@
+import { RefreshProgressService } from "@puuid/core/server/services/RefreshProgressService";
 import { LolQueues, LolRegions } from "@puuid/core/shared/types/index";
 import { createServerFn } from "@tanstack/react-start";
 import * as v from "valibot";
@@ -13,16 +14,8 @@ export const $streamedSummonerRefresh = createServerFn({
       queue: v.picklist(LolQueues),
     }),
   )
-  .handler(async ({ data, signal }) => {
-    const { RefreshService } = await import("@puuid/core/server/services/RefreshService");
-
+  .handler(({ data, signal }) => {
     const { puuid, queue } = data;
-
-    const canRefresh = await RefreshService.canRefresh(puuid, queue);
-
-    if (!canRefresh) {
-      return new Response("Not allowed", { status: 403 });
-    }
 
     const encoder = new TextEncoder();
 
@@ -33,7 +26,7 @@ export const $streamedSummonerRefresh = createServerFn({
         };
 
         try {
-          for await (const msg of RefreshService.refreshSummonerData(puuid, queue)) {
+          for await (const msg of RefreshProgressService.refreshSummonerData(puuid, queue)) {
             if (signal.aborted) break;
             send(msg);
           }

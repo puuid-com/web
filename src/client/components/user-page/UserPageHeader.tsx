@@ -22,12 +22,12 @@ export const UserPageHeader = ({}: Props) => {
   const headerStat = pageSummoners
     .map(
       (ps) =>
-        ps.summoner.statistics.find((s) => s.queueType === "RANKED_SOLO_5x5") ??
-        ps.summoner.statistics.at(0),
+        ps.summoner.refreshes.find((s) => s.queueType === "RANKED_SOLO_5x5") ??
+        ps.summoner.refreshes.at(0),
     )
     .find(Boolean);
-  const headerBg = headerStat
-    ? CDragonService.getChampionSplashArtCentered(headerStat.mainChampionId)
+  const headerBg = headerStat?.summonerStatistic?.mainChampionId
+    ? CDragonService.getChampionSplashArtCentered(headerStat.summonerStatistic.mainChampionId)
     : undefined;
 
   const xUrl = page.xUsername ? `https://x.com/${page.xUsername}` : null;

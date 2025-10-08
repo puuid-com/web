@@ -62,10 +62,11 @@ function AccountsPage() {
               {summoners.map(({ summoner, type }) => {
                 const [gameName, tagLine] = summoner.displayRiotId.split("#");
 
-                const mainStats = summoner.statistics.at(0);
+                const backgroundColor = summoner.mainChampionBackgroundColor;
+                const foregroundColor = summoner.mainChampionForegroundColor;
 
-                const backgroundColor = mainStats?.mainChampionBackgroundColor;
-                const foregroundColor = mainStats?.mainChampionForegroundColor;
+                const refresh = summoner.refreshes.at(0);
+                const mainStats = refresh?.summonerStatistic;
 
                 return (
                   <div
@@ -133,10 +134,10 @@ function AccountsPage() {
                         </Link>
                       </Button>
                       <Badge variant="outline" className="gap-1">
-                        {summoner.refresh?.refreshedAt ? (
+                        {refresh?.refreshedAt ? (
                           <>
                             <RefreshCwIcon className="w-3 h-3" /> Refreshed{" "}
-                            {timeago(summoner.refresh.refreshedAt)} ago
+                            {timeago(refresh.refreshedAt)} ago
                           </>
                         ) : (
                           <>

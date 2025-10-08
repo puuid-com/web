@@ -10,10 +10,12 @@ export const $getSummonerStatistics = createServerFn({ method: "GET" })
   .handler(async (ctx) => {
     const params = ctx.data;
 
-    const { StatisticService } = await import("@puuid/core/server/services/StatisticService");
-    const data = await StatisticService.getSummonerStatistics(params.puuid);
+    const { SummonerRefreshService } = await import(
+      "@puuid/core/server/services/SummonerRefreshService"
+    );
+    const [data] = await SummonerRefreshService.getSummonerRefreshes([params.puuid]);
 
-    return data;
+    return data ?? null;
   });
 
 export type $GetSummonerStatisticsType = NonNullable<

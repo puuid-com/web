@@ -1,4 +1,3 @@
-import { LolQueues } from "@puuid/core/shared/types/index";
 import { $authMiddleware } from "@/server/middleware/$authMiddleware";
 import { createServerFn } from "@tanstack/react-start";
 import * as v from "valibot";
@@ -8,18 +7,17 @@ export const $changeMainChampionColors = createServerFn({ method: "GET" })
   .validator(
     v.object({
       puuid: v.string(),
-      queueType: v.picklist(LolQueues),
       skinId: v.number(),
     }),
   )
   .handler(async (ctx) => {
-    const { puuid, queueType, skinId } = ctx.data;
+    const { puuid, skinId } = ctx.data;
 
     // ensureSummonerOwnership(puuid, ctx.context.verifiedPuuids);
 
-    const { StatisticService } = await import("@puuid/core/server/services/StatisticService");
+    const { SummonerService } = await import("@puuid/core/server/services/SummonerService");
 
-    return StatisticService.changeMainChampionColors(puuid, queueType, skinId);
+    return SummonerService.changeMainChampionColors(puuid, skinId);
   });
 
 export type $changeMainChampionColorsType = Awaited<ReturnType<typeof $changeMainChampionColors>>;
