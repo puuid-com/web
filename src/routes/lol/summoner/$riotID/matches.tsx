@@ -5,6 +5,7 @@ import * as v from "valibot";
 import { SummonerFilters } from "@/client/components/summoner/sidebar/filters/SummonerFilters";
 
 import { MatchListPagination } from "@/client/components/match-list/MatchListPagination";
+import { LolPositions } from "@puuid/core/shared";
 
 export const Route = createFileRoute("/lol/summoner/$riotID/matches")({
   component: RouteComponent,
@@ -58,7 +59,14 @@ export const Route = createFileRoute("/lol/summoner/$riotID/matches")({
             v.transform((a) => (a.length ? a : undefined)),
           ),
         ),
+        /**
+         * Page
+         */
         p: v.exactOptional(v.pipe(v.number(), v.minValue(1)), 1),
+        /**
+         * Played Position
+         */
+        pp: v.exactOptional(v.array(v.picklist(LolPositions))),
       }),
       data,
     ),

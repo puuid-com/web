@@ -40,6 +40,7 @@ export const getSummonerMatchesOptions = ({ summoner, filters }: QueryParams) =>
             resultType: "NORMAL",
             teammatePuuids: filters.t,
             ennemyPuuids: filters.pa,
+            position: filters.pp,
           },
         },
       }),
