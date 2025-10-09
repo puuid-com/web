@@ -1,5 +1,5 @@
-import { MatchItemChampionName } from "@/client/components/match-list/match-item/MatchItemChampionName";
 import { POSITION_INDEXES } from "@/client/components/summoner/live/utils";
+import { MatchItemChampionName } from "@/client/components/summoner/matches/match-list/match-item/MatchItemChampionName";
 import { ChampionTooltip } from "@/client/components/tooltips/ChampionTooltip";
 import { ItemTooltip } from "@/client/components/tooltips/ItemTooltip";
 import { Badge } from "@/client/components/ui/badge";

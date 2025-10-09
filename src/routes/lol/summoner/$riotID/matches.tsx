@@ -1,11 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { MatchList } from "@/client/components/match-list/MatchList";
 import { SummonerSidebar } from "@/client/components/summoner/sidebar/SummonerSidebar";
 import * as v from "valibot";
 import { SummonerFilters } from "@/client/components/summoner/sidebar/filters/SummonerFilters";
 
-import { MatchListPagination } from "@/client/components/match-list/MatchListPagination";
 import { LolPositions } from "@puuid/core/shared";
+import { MatchList } from "@/client/components/summoner/matches/match-list/MatchList";
+import { MatchListPagination } from "@/client/components/summoner/matches/match-list/MatchListPagination";
 
 export const Route = createFileRoute("/lol/summoner/$riotID/matches")({
   component: RouteComponent,

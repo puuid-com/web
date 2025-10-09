@@ -1,10 +1,10 @@
 import React from "react";
-import { MatchListContent } from "@/client/components/match-list/MatchListContent";
 import LoadingScreen from "@/client/components/Loading";
 import { useLoaderData, useSearch } from "@tanstack/react-router";
 import { CompassIcon } from "lucide-react";
 
 import { useGetSummonerMatches } from "@/client/queries/getSummonerMatches";
+import { MatchListContent } from "@/client/components/summoner/matches/match-list/MatchListContent";
 
 type Props = {};
 
@@ -40,9 +40,5 @@ export const MatchList = ({}: Props) => {
     );
   }
 
-  return (
-    <React.Fragment>
-      <MatchListContent matches={data.data} summoner={summoner} />
-    </React.Fragment>
-  );
+  return <MatchListContent matches={data.data} summoner={summoner} />;
 };

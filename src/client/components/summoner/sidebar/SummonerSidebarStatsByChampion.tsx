@@ -1,4 +1,3 @@
-import { MatchItemChampionName } from "@/client/components/match-list/match-item/MatchItemChampionName";
 import { SummonerSidebarStats } from "@/client/components/summoner/sidebar/SummonerSidebarStats";
 import { SummonerSidebarStatsHeader } from "@/client/components/summoner/sidebar/SummonerSidebarStatsHeader";
 import { useSummonerFilter, type MatchesSearchKey } from "@/client/hooks/useSummonerFilter";
@@ -8,6 +7,7 @@ import type { StatsByChampionId } from "@puuid/core/server/db/schema/summoner-st
 import { DDragonService } from "@puuid/core/shared/services/DDragonService";
 import { useLoaderData } from "@tanstack/react-router";
 import { type LucideIcon } from "lucide-react";
+import { MatchItemChampionName } from "@/client/components/summoner/matches/match-list/match-item/MatchItemChampionName";
 
 type Props = {
   statsByChampionId: StatsByChampionId | undefined;

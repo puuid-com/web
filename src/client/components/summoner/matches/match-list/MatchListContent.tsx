@@ -1,4 +1,4 @@
-import { MatchItem } from "@/client/components/match-list/match-item/MatchItem";
+import { MatchItem } from "@/client/components/summoner/matches/match-list/match-item/MatchItem";
 import { MatchProvider } from "@/client/context/MatchContext";
 import { cn } from "@/client/lib/utils";
 import type { GetSummonerMatchesType } from "@/client/queries/getSummonerMatches";

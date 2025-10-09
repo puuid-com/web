@@ -1,11 +1,11 @@
-import { MatchListItem } from "@/client/components/match-list/match-item/MatchListItem";
+import { MatchDetailsBuilds } from "@/client/components/summoner/matches/match-list/match-item/details/builds/MatchDetailsBuilds";
+import { MatchParticipantsSelector } from "@/client/components/summoner/matches/match-list/match-item/details/MatchParticipantsSelector";
+import { MatchDetailsSkills } from "@/client/components/summoner/matches/match-list/match-item/details/skills/MatchDetailsSkills";
+import { MatchListItem } from "@/client/components/summoner/matches/match-list/match-item/MatchListItem";
 import { useMatchContext } from "@/client/context/MatchContext";
 import { useGetMatchDetails } from "@/client/queries/getMatchDetails";
 import { Loader2 } from "lucide-react";
 import React from "react";
-import { MatchDetailsBuilds } from "@/client/components/match-list/match-item/details/builds/MatchDetailsBuilds";
-import { MatchParticipantsSelector } from "@/client/components/match-list/match-item/details/MatchParticipantsSelector";
-import { MatchDetailsSkills } from "@/client/components/match-list/match-item/details/skills/MatchDetailsSkills";
 
 type Props = {};
 
