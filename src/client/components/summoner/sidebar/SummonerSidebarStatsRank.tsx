@@ -2,6 +2,7 @@ import { SummonerSidebarRankHistoryChart } from "@/client/components/summoner/si
 import { SummonerSidebarRankLeaderboard } from "@/client/components/summoner/sidebar/SummonerSidebarRankLeaderboard";
 import { SummonerSidebarStats } from "@/client/components/summoner/sidebar/SummonerSidebarStats";
 import { SummonerSidebarStatsHeader } from "@/client/components/summoner/sidebar/SummonerSidebarStatsHeader";
+import { WinrateBadge } from "@/client/components/summoner/WinrateBadge";
 import { CDNService } from "@puuid/core/shared/services/CDNService";
 import { useLoaderData, useSearch } from "@tanstack/react-router";
 import { TrophyIcon } from "lucide-react";
@@ -49,7 +50,7 @@ export const SummonerSidebarStatsRank = ({}: Props) => {
                   <span>L</span>
                 </div>
                 <div>
-                  <span>({winrate.toFixed(0)}%)</span>
+                  <WinrateBadge value={winrate} parenthetical className="text-xs" />
                 </div>
               </div>
             </div>

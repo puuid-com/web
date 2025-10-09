@@ -1,5 +1,5 @@
 import { $getUserPage } from "@/server/functions/$getUserPage";
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import { createFileRoute, Outlet, redirect, useRouteContext } from "@tanstack/react-router";
 import { UserPageHeader } from "@/client/components/user-page/UserPageHeader";
 import { UserPageSummoners } from "@/client/components/user-page/aside/UserPageSummoners";
 
@@ -22,6 +22,8 @@ export const Route = createFileRoute("/page/$name")({
 });
 
 function RouteComponent() {
+  const { role } = useRouteContext({ from: "__root__" });
+
   return (
     <div className="container mx-auto" style={{ minHeight: "var(--body-content-height)" }}>
       <div className="flex flex-col gap-5">

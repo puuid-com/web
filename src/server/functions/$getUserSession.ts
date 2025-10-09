@@ -1,4 +1,5 @@
 import { auth } from "@puuid/core/lib/auth";
+import type { UserRoleType } from "@puuid/core/server/db/schema/auth";
 import type { UserPageSummonerTypeWithRelations } from "@puuid/core/server/db/schema/user-page";
 import { createServerFn } from "@tanstack/react-start";
 import { getHeaders } from "@tanstack/react-start/server";
@@ -15,6 +16,7 @@ export const $getUserSession = createServerFn({ method: "GET" }).handler(async (
   if (!user) {
     return {
       user: null,
+      role: null,
     };
   }
 
@@ -56,6 +58,7 @@ export const $getUserSession = createServerFn({ method: "GET" }).handler(async (
     mainSummoner: lists.mainSummoner,
     otherSummoners: lists.otherSummoners,
     summoners: summoners,
+    role: user.role as UserRoleType,
   };
 });
 

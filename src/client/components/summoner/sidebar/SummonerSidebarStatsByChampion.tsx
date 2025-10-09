@@ -2,6 +2,7 @@ import { MatchItemChampionName } from "@/client/components/match-list/match-item
 import { SummonerSidebarStats } from "@/client/components/summoner/sidebar/SummonerSidebarStats";
 import { SummonerSidebarStatsHeader } from "@/client/components/summoner/sidebar/SummonerSidebarStatsHeader";
 import { useSummonerFilter, type MatchesSearchKey } from "@/client/hooks/useSummonerFilter";
+import { WinrateBadge } from "@/client/components/summoner/WinrateBadge";
 import { cn } from "@/client/lib/utils";
 import type { StatsByChampionId } from "@puuid/core/server/db/schema/summoner-statistic";
 import { DDragonService } from "@puuid/core/shared/services/DDragonService";
@@ -34,6 +35,8 @@ export const SummonerSidebarStatsByChampionId = ({
           metadata.latest_version,
           s,
         );
+        const totalMatches = s.wins + s.losses;
+        const winrate = totalMatches > 0 ? (s.wins / totalMatches) * 100 : 0;
 
         return (
           <button
@@ -57,11 +60,8 @@ export const SummonerSidebarStatsByChampionId = ({
               />
             </div>
             <div className={"leading-none text-end"}>
-              <div className={"text-xs"}>
-                {`${((s.wins / (s.wins + s.losses)) * 100).toFixed(0)}% `}
-                <span className={"text-neutral-400 text-tiny"}>WR</span>
-              </div>
-              <div className={"text-xs text-neutral-400"}>{s.wins + s.losses} matches</div>
+              <WinrateBadge value={winrate} showLabel className="text-xs" />
+              <div className={"text-xs text-neutral-400"}>{totalMatches} matches</div>
             </div>
           </button>
         );

@@ -1,15 +1,16 @@
 import { SummonerSidebarStats } from "@/client/components/summoner/sidebar/SummonerSidebarStats";
 import { SummonerSidebarStatsHeader } from "@/client/components/summoner/sidebar/SummonerSidebarStatsHeader";
 import { Skeleton } from "@/client/components/ui/skeleton";
-import { CDragonService } from "@puuid/core/shared/services/CDragonService";
-import { type LucideIcon } from "lucide-react";
-import React from "react";
+import { useSummonerFilter, type MatchesSearchKey } from "@/client/hooks/useSummonerFilter";
+import { WinrateBadge } from "@/client/components/summoner/WinrateBadge";
+import { cn } from "@/client/lib/utils";
+import { useSummoners } from "@/client/queries/useSummoners";
 import type { StatsByTeammate } from "@puuid/core/server/db/schema/summoner-statistic";
 import type { SummonerType } from "@puuid/core/server/db/schema/summoner";
-import { cn } from "@/client/lib/utils";
-import { useSummonerFilter, type MatchesSearchKey } from "@/client/hooks/useSummonerFilter";
-import { useSummoners } from "@/client/queries/useSummoners";
+import { CDragonService } from "@puuid/core/shared/services/CDragonService";
 import { useRouteContext } from "@tanstack/react-router";
+import { type LucideIcon } from "lucide-react";
+import React from "react";
 
 type Props = {
   statsByChampionId: StatsByTeammate | undefined;
@@ -55,6 +56,8 @@ export const SummonerSidebarStatsByPuuid = ({
           ? CDragonService.getProfileIcon(summoner.profileIconId)
           : null;
         const displayRiotId = summoner?.displayRiotId;
+        const totalMatches = s.wins + s.losses;
+        const winrate = totalMatches > 0 ? (s.wins / totalMatches) * 100 : 0;
 
         return (
           <button
@@ -88,11 +91,8 @@ export const SummonerSidebarStatsByPuuid = ({
               </div>
             </div>
             <div className={"leading-none text-end"}>
-              <div className={"text-xs"}>
-                {`${((s.wins / (s.wins + s.losses)) * 100).toFixed(0)}% `}
-                <span className={"text-neutral-400 text-tiny"}>WR</span>
-              </div>
-              <div className={"text-xs text-neutral-400"}>{s.wins + s.losses} matches</div>
+              <WinrateBadge value={winrate} showLabel className="text-xs" />
+              <div className={"text-xs text-neutral-400"}>{totalMatches} matches</div>
             </div>
           </button>
         );
