@@ -112,7 +112,7 @@ export const SummonerLiveMatchHeader = ({}: Props) => {
       <SummonerLiveMatchHeaderTeam match={data} teamId={100} />
 
       <SummonerLiveMatchCenter
-        queue={queue}
+        queue={queue.queue}
         matchSecSinceStartTimer={matchSecSinceStartTimer}
         red={red}
         blue={blue}

@@ -1,4 +1,4 @@
-import { LolApexTiers, LolQueues, LolRegions } from "@puuid/core/shared";
+import { LolApexTiers, LolRankedQueues, LolRegions } from "@puuid/core/shared";
 import { createServerFn } from "@tanstack/react-start";
 import * as v from "valibot";
 
@@ -7,7 +7,7 @@ export const $updateLeaderboard = createServerFn({ method: "GET" })
     v.object({
       tier: v.picklist(LolApexTiers),
       region: v.picklist(LolRegions),
-      queue: v.picklist(LolQueues),
+      queue: v.picklist(LolRankedQueues),
     }),
   )
   .handler(async (ctx) => {

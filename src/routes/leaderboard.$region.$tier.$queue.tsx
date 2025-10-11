@@ -8,10 +8,10 @@ import {
   CDNService,
   CDragonService,
   LolApexTiers,
-  LolQueues,
+  LolRankedQueues,
   LolRegions,
   type LolApexTierType,
-  type LolQueueType,
+  type LolRankedQueueType,
   type LolRegionType,
 } from "@puuid/core/shared";
 import { Link, createFileRoute } from "@tanstack/react-router";
@@ -30,7 +30,7 @@ export const Route = createFileRoute("/leaderboard/$region/$tier/$queue")({
         v.object({
           tier: v.picklist(LolApexTiers),
           region: v.picklist(LolRegions),
-          queue: v.picklist(LolQueues),
+          queue: v.picklist(LolRankedQueues),
         }),
         raw,
       ),
@@ -58,10 +58,9 @@ const PODIUM_ACCENTS = [
   },
 ] as const;
 
-const QUEUE_LABELS: Record<LolQueueType, string> = {
+const QUEUE_LABELS: Record<LolRankedQueueType, string> = {
   RANKED_SOLO_5x5: "Ranked Solo",
   RANKED_FLEX_SR: "Ranked Flex",
-  ARAM: "Aram",
 } as const;
 
 const ESTIMATED_ROW_HEIGHT = 88;
@@ -540,7 +539,7 @@ function formatTier(tier: string) {
   return toTitleCase(tier.replace(/_/g, " "));
 }
 
-function formatQueue(queue: LolQueueType) {
+function formatQueue(queue: LolRankedQueueType) {
   return QUEUE_LABELS[queue];
 }
 

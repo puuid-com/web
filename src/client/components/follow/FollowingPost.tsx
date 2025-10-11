@@ -111,7 +111,7 @@ export const FollowingPost: React.FC<Props> = ({
                 {(() => {
                   const queue = getQueueById(lastMatch.queueId);
                   return [
-                    queue?.description ?? queue?.map ?? `Queue ${lastMatch.queueId}`,
+                    queue?.queue.description ?? queue?.queue.map ?? `Queue ${lastMatch.queueId}`,
                     formatSeconds(lastMatch.gameDurationSec),
                     `Match ${lastMatch.matchId}`,
                   ]

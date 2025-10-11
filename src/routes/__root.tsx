@@ -99,7 +99,7 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
             } as React.CSSProperties
           }
           className={
-            "flex flex-col w-full overflow-y-auto relative isolate gap-[var(-default-gap-height)]"
+            "flex flex-col w-full overflow-y-auto relative isolate gap-[var(--default-gap-height)]"
           }
         >
           {children}

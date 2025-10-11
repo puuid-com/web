@@ -38,7 +38,7 @@ export const SummonerSkinDialog = ({}: Props) => {
     from: "/lol/summoner/$riotID",
   });
 
-  const { data } = useGetChampionData(queueStats?.summonerStatistic?.mainChampionId, isOpen);
+  const { data } = useGetChampionData(summoner.mainChampionId ?? undefined, isOpen);
   const $m = useServerFn($changeMainChampionColors);
 
   const q_m = useMutation({

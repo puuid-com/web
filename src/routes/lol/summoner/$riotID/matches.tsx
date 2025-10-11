@@ -6,6 +6,7 @@ import { SummonerFilters } from "@/client/components/summoner/sidebar/filters/Su
 import { LolPositions } from "@puuid/core/shared";
 import { MatchList } from "@/client/components/summoner/matches/match-list/MatchList";
 import { MatchListPagination } from "@/client/components/summoner/matches/match-list/MatchListPagination";
+import { MatchesSummary } from "@/client/components/summoner/matches/summary/MatchesSummary";
 
 export const Route = createFileRoute("/lol/summoner/$riotID/matches")({
   component: RouteComponent,
@@ -83,6 +84,7 @@ function RouteComponent() {
       <SummonerSidebar />
       <div className={"flex flex-1 flex-col gap-5 pb-5"}>
         <SummonerFilters />
+        <MatchesSummary />
         <MatchList />
         <MatchListPagination />
       </div>

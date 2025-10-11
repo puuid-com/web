@@ -2,12 +2,12 @@ import { $getSummonerMasteries } from "@/server/functions/$getSummonerMasteries"
 import { useMutation } from "@tanstack/react-query";
 import { $updateLeaderboard } from "@/server/functions/$updateLeaderboard";
 import { useServerFn } from "@tanstack/react-start";
-import type { LolApexTierType, LolQueueType, LolRegionType } from "@puuid/core/shared";
+import type { LolApexTierType, LolRankedQueueType, LolRegionType } from "@puuid/core/shared";
 import { toast } from "sonner";
 import { useRouter } from "@tanstack/react-router";
 
 type Params = {
-  queue: LolQueueType;
+  queue: LolRankedQueueType;
   tier: LolApexTierType;
   region: LolRegionType;
 };
